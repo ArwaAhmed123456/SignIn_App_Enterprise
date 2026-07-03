@@ -1,0 +1,7 @@
+﻿mobile\src\screens\GuardDashboard.js:            const res = await api.get(`/logs/active/${projectCode.trim().toUpperCase()}`);
+mobile\src\screens\GuardDashboard.js:                            await api.post(`/logs/${log.id}/checkout`);
+mobile\src\screens\GuardDashboard.js:                            const res = await api.get(`/logs/active/${projectCode.trim().toUpperCase()}`);
+mobile\src\screens\WorkerListScreen.js:            const res = await api.get(`/logs/active/${projectCode}`);
+mobile\src\screens\WorkerListScreen.js:                            await api.post(`/logs/${workerId}/checkout`);
+mobile\src\screens\WorkerListScreen.js:            await api.post(`/logs/${logId}/undo-checkout`);
+mobile\src\screens\WorkerListScreen.js:            const res = await api.get(`/logs/recent/${project.code}`);

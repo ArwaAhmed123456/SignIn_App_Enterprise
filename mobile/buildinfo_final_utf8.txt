@@ -1,0 +1,19 @@
+﻿
+Builds for @hayat123a/attendance-mobile-app:
+
+ID                       ca054817-a6c1-475a-a6ba-ec5fbaeca88f
+Platform                 Android
+Status                   finished
+Profile                  preview
+Distribution             internal
+SDK Version              54.0.0
+Version                  1.1.0
+Version code             8
+Commit                   ef9d338c7e649474a2fa78b1addc6c890704f795
+Logs                     https://expo.dev/accounts/hayat123a/projects/attendance-mobile-app/builds/ca054817-a6c1-475a-a6ba-ec5fbaeca88f
+Application Archive URL  https://expo.dev/artifacts/eas/qWTzUSUk6zrKKLwcycUbgR.apk
+Build Artifacts URL      null
+Fingerprint              fcd4e893a72cb2a1d7008b705ee0d2aba8d780e3
+Started at               3/7/2026, 1:11:10 PM
+Finished at              3/7/2026, 1:25:54 PM
+Started by               hayat123a

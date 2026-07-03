@@ -1,0 +1,52 @@
+﻿[
+  {
+    "id": "d79fa4cd-6d44-4c04-a8cf-c2f1c71adf48",
+    "status": "FINISHED",
+    "platform": "ANDROID",
+    "artifacts": {
+      "buildUrl": "https://expo.dev/artifacts/eas/sCjgZTyKcmKQtioCXumZo9.apk",
+      "applicationArchiveUrl": "https://expo.dev/artifacts/eas/sCjgZTyKcmKQtioCXumZo9.apk"
+    },
+    "fingerprint": {
+      "id": "019c97e8-90e7-7deb-88dc-9ff10142793d",
+      "hash": "8a1ab640b1b2d48b9aef5bc9bd8e8d1aa4997392"
+    },
+    "initiatingActor": {
+      "id": "27130efc-162e-4880-b455-67d25f0d0ad4",
+      "displayName": "hayat123a"
+    },
+    "logFiles": [
+      "https://job-logs.eascdn.net/production/d79fa4cd-6d44-4c04-a8cf-c2f1c71adf48/1772075127208-87c0b867-d793-40e8-8cc3-d6902960e14b.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260226%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260226T031543Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=5f0ed6bf23556c78bd33b9850f7264e6c22b8d538657ce74b2b6fd2b2135de0a47af4aa22a8fe07aa9eec54ca2b36a52a07c3e2723dd6e277f83e20b40d4dd492498500c1e64a63c9c1c251916ae5bdbb042bb97e61bed603bb41bf7f5eef6f4f7e405b88f48121dc7d096ce723c1367ea379750b59f4836006aac28360567e3acd6e44209486bd39a8d97dfe6abd2a15906004ef489d13918b62693c64bfe05221d7e5dd9c895ff9ba38c5d7cae27161be77cc81f92932218f86242bbe1353ead332117a6468e272bd26a1502203a9e2d067a7bb0e8cb4716fbed169bd08039f30ab2777f735e6e964c5c4de6d0809f35188544abc9d21802e3b77afa0bc5f4",
+      "https://job-logs.eascdn.net/production/d79fa4cd-6d44-4c04-a8cf-c2f1c71adf48/1772075135891-158f40ed-b341-4d68-bd6a-d296eef5516b.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260226%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260226T031543Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=1ac27ccaf53a7662505db31f4a6e2d80d4d0483b3e0d4117346e46b548539b12ebf33d765496e468fca15e683dafd78bfba46b8b7a679880f10a91b7daadf59110982b80aad108f33dc1fd43c813bd3497807cf82180b294be8c9339e1231e4e5f28c6e1ea24dd7e01e7dcc54d0efbebaf283d8f27b572d69524a0618649a1bbdfb8913203364d1c6bf97d6e8fb809cfb4598e2535f27d6434765fd1cab903c6a91a04f0320baa2906eae57b1cb674162a3b6c6ab2610dbbe8165cc56f6036590fb87542ac45131eb9fc6d195d830beb8ef92251c39e3e4dbffad536350b3aa491398fa7a82ca9f386de994899ba3039cbd8c2675465c939ea5cdcea550ed76f",
+      "https://job-logs.eascdn.net/production/d79fa4cd-6d44-4c04-a8cf-c2f1c71adf48/1772075136184-85807dd0-2031-44c2-bfd4-9f9b8e1c6d8c.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260226%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260226T031543Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=2f6cfa9afefe3637129eaee26170639fea30c71715a2b0d465828e1ed27811881ce4ed83b98edd80848fbbcdf92888c3f224f427f7c9be4240a256c512654f02f89a36980e1f952cc140caa6213f67d528aa2e6d8c14e52a7166e295dda150e86ecfa69fbe0cedb5c0555c43218459cc1ca52fb33e7d67a3820389cfa847f8b4d8449b592c9fb7b45df21351994a0eda662653ed8eaa8157bae37ca98f67798c813e470e6762add8044aa93c8ed2bc7454ba5cf619a7c82aa0b4a7948cc29a09d6a2a219b8888a01a12823f9c50beee848613cb6ac4a162ad14aed1d3ea29a3025046e90afa47c02011ff8fe5219ab19a4bde6b6154c646141ab182f008ceae1",
+      "https://job-logs.eascdn.net/production/d79fa4cd-6d44-4c04-a8cf-c2f1c71adf48/1772075136354-2ebe9a13-4fd2-4f25-a602-c9b1c45e8e72.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260226%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260226T031543Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=b1bf67147dfa6469ed948a025ba9e1c2fdbecb05c266a4e2830a639597af2129c01ab3ee142f82c2b7bb96998db16200eebfa930b931bde625fa1d19b102d207a296c1e8388cdfbe9425b11e934e6f6e66c3688cf61a0f306d6e4ab924dfb72eec1b4860612aa0af0e167642742b4243bf9935eb44c296f9e55f2cc50c86f6106d052f2f2b11cefb3e7007cf8abe0f2e0fee621b7df5a3c7e4bc30eca0cc8250f3bb9dd5e9975e4af2d220411174cb5203fe050fcd1e3477ac2481769506eac909dbcad7a73132dddc723f6f0c755aa0ba45fca0db1fd875ec319852a2b94f3dddd7c7743d1b9f523daf1737e80ecf9f09dd3f50e2460921305ffa626e77e9dd"
+    ],
+    "project": {
+      "id": "a5884a7e-57e6-4f24-85c3-d0dff5d1179a",
+      "name": "attendance-mobile-app",
+      "slug": "attendance-mobile-app",
+      "ownerAccount": {
+        "id": "f219ec16-37a9-4ef5-ab2d-245e73f9f9a9",
+        "name": "hayat123a"
+      }
+    },
+    "distribution": "INTERNAL",
+    "buildProfile": "preview",
+    "sdkVersion": "54.0.0",
+    "appVersion": "1.1.0",
+    "appBuildVersion": "8",
+    "gitCommitHash": "48582d5a942f62ee995790db1f30cf21f88ebe39",
+    "gitCommitMessage": "perf: Add timing logs to Site Code verification",
+    "priority": "NORMAL",
+    "createdAt": "2026-02-26T03:05:26.945Z",
+    "updatedAt": "2026-02-26T03:16:29.499Z",
+    "completedAt": "2026-02-26T03:16:28.935Z",
+    "expirationDate": "2026-03-12T03:05:27.002Z",
+    "isForIosSimulator": false,
+    "metrics": {
+      "buildWaitTime": 167,
+      "buildQueueTime": 53197,
+      "buildDuration": 606948
+    }
+  }
+]

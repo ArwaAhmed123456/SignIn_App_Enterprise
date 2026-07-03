@@ -1,0 +1,43 @@
+﻿[
+  {
+    "id": "4d3d714c-2b81-479b-bda6-a7038075ee00",
+    "status": "IN_QUEUE",
+    "platform": "ANDROID",
+    "artifacts": {},
+    "fingerprint": {
+      "id": "019c9587-2e19-7c71-8a68-d80398628744",
+      "hash": "c59cc63cbfa861552d64af561c8e317b417149ca"
+    },
+    "initiatingActor": {
+      "id": "27130efc-162e-4880-b455-67d25f0d0ad4",
+      "displayName": "hayat123a"
+    },
+    "logFiles": [
+      "https://job-logs.eascdn.net/production/4d3d714c-2b81-479b-bda6-a7038075ee00/1772041101022-2d6ee385-16c9-461a-b71a-b538ccedc6ce.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260225%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260225T175443Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=3541656ffa7b1130a7b9c75895dc279494a3fbe0f4c88f8d4d94a76dcffc824ba3330a22223ce55b3a68c9c5ab66ede2d787904ef8211012184c8e9aa102dcc934aa94f7001e1377f459b53a85bb162f15456b24d89feab3dde75ec462642e84b021f7f18303a72a0e9fed16ee753e97183a3675c34879bfe7d7576ccf1c113dcb651b5794e5152bb28d45e21b4f86054cb4afb33a6da914b76019c2dd057af3ed5d79ca03277c396439fcbcce2db76d080f9767f12ac92d1a2559c2c75eecb2cf033227c1a763dc535743261c1a413117356d5bfb31ebc11c6c468ba50e3f6d5420ace071c74a9413e05507f7f67e7e8f6f970e7899155a0ef603ef7a0f719b"
+    ],
+    "project": {
+      "id": "a5884a7e-57e6-4f24-85c3-d0dff5d1179a",
+      "name": "attendance-mobile-app",
+      "slug": "attendance-mobile-app",
+      "ownerAccount": {
+        "id": "f219ec16-37a9-4ef5-ab2d-245e73f9f9a9",
+        "name": "hayat123a"
+      }
+    },
+    "distribution": "INTERNAL",
+    "buildProfile": "preview",
+    "sdkVersion": "54.0.0",
+    "appVersion": "1.1.0",
+    "appBuildVersion": "8",
+    "gitCommitHash": "48582d5a942f62ee995790db1f30cf21f88ebe39",
+    "gitCommitMessage": "perf: Add timing logs to Site Code verification",
+    "initialQueuePosition": 550,
+    "queuePosition": 316,
+    "estimatedWaitTimeLeftSeconds": 1634,
+    "priority": "NORMAL",
+    "createdAt": "2026-02-25T17:38:20.375Z",
+    "updatedAt": "2026-02-25T17:38:21.238Z",
+    "expirationDate": "2026-03-11T17:38:20.587Z",
+    "isForIosSimulator": false
+  }
+]

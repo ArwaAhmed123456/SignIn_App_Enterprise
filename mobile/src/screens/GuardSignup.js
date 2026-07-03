@@ -1,0 +1,298 @@
+import React, { useState, useRef } from 'react';
+import {
+    View, Text, TextInput, TouchableOpacity, ActivityIndicator,
+    ScrollView, Alert, Image, Animated, StatusBar
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Shield, Mail, Lock, User, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
+import api from '../services/api';
+
+const GuardSignup = ({ navigation }) => {
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    // Focus states
+    const [focus, setFocus] = useState({ name: false, email: false, password: false, confirm: false });
+
+    const handleSignup = async () => {
+        const { name, email, password, confirmPassword } = formData;
+        if (!name || !email || !password || !confirmPassword) {
+            setError('All fields are required');
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanName = name.trim();
+        try {
+            await api.post('/guards/signup', { name: cleanName, email: cleanEmail, password });
+            Alert.alert('Account Created!', 'You can now sign in with your credentials.', [
+                { text: 'Sign In', onPress: () => navigation.navigate('GuardLogin') }
+            ]);
+        } catch (err) {
+            setError(err.response?.data?.error || 'Registration failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const inputStyle = (focused) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: focused ? '#2b4594' : '#e2e8f0',
+        borderRadius: 14,
+        backgroundColor: focused ? '#f8fbff' : '#f8fafc',
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+    });
+
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f0f4ff' }}>
+            <StatusBar barStyle="dark-content" backgroundColor="#f0f4ff" />
+            <View style={{ height: 4, backgroundColor: '#2b4594', width: '100%' }} />
+
+            <ScrollView
+                contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 28, paddingBottom: 60 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Back button */}
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    activeOpacity={0.7}
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginBottom: 28,
+                        alignSelf: 'flex-start',
+                        paddingVertical: 8,
+                        paddingHorizontal: 12,
+                        backgroundColor: '#fff',
+                        borderRadius: 50,
+                        borderWidth: 1,
+                        borderColor: '#e2e8f0',
+                    }}
+                >
+                    <ChevronLeft size={16} color="#64748b" />
+                    <Text style={{ color: '#64748b', fontWeight: '600', fontSize: 13 }}>Back to Sign In</Text>
+                </TouchableOpacity>
+
+                {/* Header */}
+                <View style={{ alignItems: 'center', marginBottom: 32 }}>
+                    <View style={{
+                        backgroundColor: '#fff',
+                        borderRadius: 24,
+                        padding: 14,
+                        marginBottom: 18,
+                        shadowColor: '#2b4594',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.12,
+                        shadowRadius: 16,
+                        elevation: 8,
+                    }}>
+                        <Image
+                            source={require('../../assets/Tipod_Final_Logo_high_pixel.png')}
+                            style={{ width: 72, height: 72 }}
+                            resizeMode="contain"
+                        />
+                    </View>
+
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 7,
+                        backgroundColor: '#eff6ff',
+                        paddingVertical: 5,
+                        paddingHorizontal: 12,
+                        borderRadius: 50,
+                        marginBottom: 10,
+                    }}>
+                        <Shield size={12} color="#2b4594" />
+                        <Text style={{ color: '#2b4594', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                            Manager Portal
+                        </Text>
+                    </View>
+
+                    <Text style={{ fontSize: 24, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5, marginBottom: 6 }}>
+                        Create Account
+                    </Text>
+                    <Text style={{ fontSize: 14, color: '#64748b', fontWeight: '500', textAlign: 'center' }}>
+                        Register to manage your site
+                    </Text>
+                </View>
+
+                {/* Form Card */}
+                <View style={{
+                    backgroundColor: '#fff',
+                    borderRadius: 28,
+                    padding: 28,
+                    shadowColor: '#0f172a',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 24,
+                    elevation: 6,
+                    borderWidth: 1,
+                    borderColor: '#e2e8f0',
+                    marginBottom: 20,
+                }}>
+                    {/* Full Name */}
+                    <View style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Full Name
+                        </Text>
+                        <View style={inputStyle(focus.name)}>
+                            <User size={18} color={focus.name ? '#2b4594' : '#94a3b8'} />
+                            <TextInput
+                                value={formData.name}
+                                onChangeText={(val) => { setFormData({ ...formData, name: val }); setError(''); }}
+                                onFocus={() => setFocus({ ...focus, name: true })}
+                                onBlur={() => setFocus({ ...focus, name: false })}
+                                placeholder="Officer Full Name"
+                                placeholderTextColor="#c8d0dc"
+                                style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Email */}
+                    <View style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Work Email
+                        </Text>
+                        <View style={inputStyle(focus.email)}>
+                            <Mail size={18} color={focus.email ? '#2b4594' : '#94a3b8'} />
+                            <TextInput
+                                value={formData.email}
+                                onChangeText={(val) => { setFormData({ ...formData, email: val }); setError(''); }}
+                                onFocus={() => setFocus({ ...focus, email: true })}
+                                onBlur={() => setFocus({ ...focus, email: false })}
+                                placeholder="guard@tripodsvcs.co.uk"
+                                placeholderTextColor="#c8d0dc"
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                                style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Password */}
+                    <View style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Password
+                        </Text>
+                        <View style={inputStyle(focus.password)}>
+                            <Lock size={18} color={focus.password ? '#2b4594' : '#94a3b8'} />
+                            <TextInput
+                                value={formData.password}
+                                onChangeText={(val) => { setFormData({ ...formData, password: val }); setError(''); }}
+                                onFocus={() => setFocus({ ...focus, password: true })}
+                                onBlur={() => setFocus({ ...focus, password: false })}
+                                placeholder="Min. 6 characters"
+                                placeholderTextColor="#c8d0dc"
+                                secureTextEntry={!showPassword}
+                                style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
+                            />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 4 }}>
+                                {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* Confirm Password */}
+                    <View style={{ marginBottom: 24 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Confirm Password
+                        </Text>
+                        <View style={inputStyle(focus.confirm)}>
+                            <Lock size={18} color={focus.confirm ? '#2b4594' : '#94a3b8'} />
+                            <TextInput
+                                value={formData.confirmPassword}
+                                onChangeText={(val) => { setFormData({ ...formData, confirmPassword: val }); setError(''); }}
+                                onFocus={() => setFocus({ ...focus, confirm: true })}
+                                onBlur={() => setFocus({ ...focus, confirm: false })}
+                                placeholder="Re-enter password"
+                                placeholderTextColor="#c8d0dc"
+                                secureTextEntry={!showConfirmPassword}
+                                style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
+                                returnKeyType="done"
+                                onSubmitEditing={handleSignup}
+                            />
+                            {formData.confirmPassword && formData.password === formData.confirmPassword && (
+                                <CheckCircle size={18} color="#16a34a" />
+                            )}
+                            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={{ padding: 4, marginLeft: 4 }}>
+                                {showConfirmPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* Error */}
+                    {error ? (
+                        <View style={{
+                            backgroundColor: '#fef2f2',
+                            borderWidth: 1,
+                            borderColor: '#fecaca',
+                            borderRadius: 12,
+                            padding: 12,
+                            marginBottom: 20,
+                        }}>
+                            <Text style={{ color: '#dc2626', fontWeight: '600', fontSize: 13, textAlign: 'center' }}>{error}</Text>
+                        </View>
+                    ) : null}
+
+                    {/* Register Button */}
+                    <TouchableOpacity
+                        onPress={handleSignup}
+                        disabled={loading}
+                        activeOpacity={0.85}
+                        style={{
+                            backgroundColor: loading ? '#7a96cc' : '#2b4594',
+                            borderRadius: 16,
+                            paddingVertical: 18,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 10,
+                            shadowColor: '#2b4594',
+                            shadowOffset: { width: 0, height: 6 },
+                            shadowOpacity: 0.35,
+                            shadowRadius: 12,
+                            elevation: 8,
+                        }}
+                    >
+                        {loading
+                            ? <ActivityIndicator color="white" size="small" />
+                            : <>
+                                <Text style={{ color: 'white', fontWeight: '800', fontSize: 17 }}>Create Account</Text>
+                                <ChevronRight size={20} color="white" strokeWidth={3} />
+                            </>
+                        }
+                    </TouchableOpacity>
+                </View>
+
+                {/* Sign In Link */}
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 4 }}>
+                    <Text style={{ color: '#94a3b8', fontSize: 14, fontWeight: '500' }}>Already have an account?</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('GuardLogin')} activeOpacity={0.7}>
+                        <Text style={{ color: '#2b4594', fontWeight: '800', fontSize: 14 }}>Sign in</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
+};
+
+export default GuardSignup;

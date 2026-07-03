@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sites         Site[]
+  visitorGroups VisitorGroup[]
+}
+
+model Site {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityLogs ActivityLog[]
+}
+
+model VisitorGroup {
+  id          String   @id @default(uuid())
+  name        String   // e.g. "Employees", "Visitors", "Deliveries"
+  description String?
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members Member[]
+}
+
+model Member {
+  id             String       @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String?
+  phone          String?
+  status         String       @default("Current") // Current, Upcoming, Archived
+  visitorGroupId String
+  visitorGroup   VisitorGroup @relation(fields: [visitorGroupId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  activityLogs ActivityLog[]
+}
+
+model ActivityLog {
+  id        String    @id @default(uuid())
+  memberId  String
+  member    Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  siteId    String
+  site      Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  checkIn   DateTime  @default(now())
+  checkOut  DateTime?
+  duration  Int?      // Duration in minutes
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

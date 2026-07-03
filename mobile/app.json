@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Tripod Services",
+    "slug": "attendance-mobile-app",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "description": "Professional attendance tracking app for construction sites and projects with real-time reporting and multi-language support",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hayat123a.attendancemobileapp",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app does not use the camera",
+        "NSMicrophoneUsageDescription": "This app uses the microphone for voice commands"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.hayat123a.attendancemobileapp",
+      "versionCode": 8,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.0.21"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://attendence-app-uzvt.onrender.com/api",
+      "privacyPolicyUrl": "https://attendence-app-uzvt.onrender.com/privacy-policy.html",
+      "router": {},
+      "eas": {
+        "projectId": "a5884a7e-57e6-4f24-85c3-d0dff5d1179a"
+      }
+    }
+  }
+}
