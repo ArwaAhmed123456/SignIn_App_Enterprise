@@ -43,6 +43,10 @@ const guardRoutes = require('./routes/guards');
 const visitorGroupRoutes = require('./routes/visitorGroups');
 const manifestRoutes = require('./routes/manifest');
 const deliveriesRoutes = require('./routes/deliveries');
+const visitsRoutes = require('./routes/visits');
+const attendanceRoutes = require('./routes/attendance');
+const preRegistrationsRoutes = require('./routes/preRegistrations');
+const evacuationRoutes = require('./routes/evacuation');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
@@ -53,6 +57,10 @@ app.use('/api/guards', guardRoutes);
 app.use('/api/visitor-groups', visitorGroupRoutes);
 app.use('/api/manifest', manifestRoutes);
 app.use('/api/deliveries', deliveriesRoutes);
+app.use('/api/visits', visitsRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/pre-registrations', preRegistrationsRoutes);
+app.use('/api/evacuation', evacuationRoutes);
 
 // Catch-all handler for React SPA (must be last)
 app.use((req, res) => {

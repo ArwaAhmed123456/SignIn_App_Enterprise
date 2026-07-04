@@ -1,22 +1,41 @@
 import React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { useAuth } from '../context/AuthContext';
 
-const QRCodeScreen = () => {
+const QRCodeScreen = ({ navigation }) => {
+  const { user } = useAuth();
+
+  const memberId   = user?.id || user?.guard_id || user?.email || 'unknown';
+  const memberName =
+    user?.name ||
+    (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) ||
+    user?.email ||
+    'Member';
+  const group    = user?.group || user?.role || 'Employee';
+  const qrValue  = JSON.stringify({ id: memberId, name: memberName, group });
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="p-4 border-b border-gray-100">
-        <Text className="text-2xl font-bold text-gray-900">My QR Code</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      {/* Drag handle */}
+      <View style={{ alignItems: 'center', paddingTop: 10, paddingBottom: 4 }}>
+        <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: '#d1d5db' }} />
       </View>
-      <View className="flex-1 items-center justify-center">
-        <View className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-          <QRCode
-            value="employee-arwa-ahmed-12345"
-            size={250}
-            color="black"
-            backgroundColor="white"
-          />
-        </View>
+
+      {/* Title */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}>
+        <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>My QR Code</Text>
+      </View>
+
+      {/* QR Code centered */}
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 60 }}>
+        <QRCode
+          value={qrValue}
+          size={240}
+          color="#000000"
+          backgroundColor="#ffffff"
+          ecl="M"
+        />
       </View>
     </SafeAreaView>
   );

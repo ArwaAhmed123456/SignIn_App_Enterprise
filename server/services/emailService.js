@@ -188,6 +188,51 @@ const sendContactEmail = async (userEmail, query) => {
 };
 
 // ===============================
+// Send pre-registration invitation
+// ===============================
+const sendPreRegistrationInviteEmail = async ({ email, name, siteName, expectedDate, notes }) => {
+    const visitLabel = expectedDate
+        ? new Date(expectedDate).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : 'a scheduled visit';
+
+    const mailOptions = {
+        from: process.env.EMAIL_FROM || `"Sign In App" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `Your visit to ${siteName || 'our site'}`,
+        html: `
+<div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e5e7eb; border-radius: 16px; max-width: 640px;">
+    <h2 style="margin: 0 0 16px; color: #1f2937;">Visit invitation</h2>
+    <p style="margin: 0 0 12px; color: #475569;">Hello ${name || 'visitor'},</p>
+    <p style="margin: 0 0 12px; color: #475569;">
+        You have been pre-registered for a visit at <strong>${siteName || 'our site'}</strong>.
+    </p>
+    <div style="background: #f8fafc; border-radius: 12px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 8px;"><strong>Expected arrival:</strong> ${visitLabel}</p>
+        ${notes ? `<p style="margin: 0;"><strong>Notes:</strong> ${notes}</p>` : ''}
+    </div>
+    <p style="margin: 0; color: #64748b;">
+        If you need to make any changes, please reply to this email.
+    </p>
+</div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        return { success: true };
+    } catch (error) {
+        console.error('Pre-registration invite sending error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+// ===============================
 // Send mobile companion activation token (Module 2)
 // ===============================
 const sendMobileInviteEmail = async (guard, plainToken) => {
@@ -269,6 +314,7 @@ module.exports = {
     generateResetToken,
     sendPasswordResetEmail,
     sendContactEmail,
-    sendMobileInviteEmail
+    sendMobileInviteEmail,
+    sendPreRegistrationInviteEmail
 };
 

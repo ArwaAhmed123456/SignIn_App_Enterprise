@@ -35,6 +35,9 @@ const AdminLogin = () => {
             const res = await api.post('/auth/login', { email, password });
             localStorage.setItem('adminToken', res.data.token);
             localStorage.setItem('adminRole', res.data.user.role);
+            localStorage.setItem('adminFirstName', res.data.user.firstName || '');
+            localStorage.setItem('adminLastName',  res.data.user.lastName  || '');
+            localStorage.setItem('adminOrg',       res.data.user.organization || '');
 
             // Save or clear credentials based on Remember Me
             if (rememberMe) {

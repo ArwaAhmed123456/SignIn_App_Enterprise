@@ -4,18 +4,18 @@ import {
     ScrollView, Alert, Image, Animated, StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shield, Mail, Lock, User, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
+import { Shield, Mail, Lock, User, Phone, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
 import api from '../services/api';
 
 const GuardSignup = ({ navigation }) => {
-    const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     // Focus states
-    const [focus, setFocus] = useState({ name: false, email: false, password: false, confirm: false });
+    const [focus, setFocus] = useState({ name: false, email: false, phone: false, password: false, confirm: false });
 
     const handleSignup = async () => {
         const { name, email, password, confirmPassword } = formData;
@@ -36,7 +36,7 @@ const GuardSignup = ({ navigation }) => {
         const cleanEmail = email.trim().toLowerCase();
         const cleanName = name.trim();
         try {
-            await api.post('/guards/signup', { name: cleanName, email: cleanEmail, password });
+            await api.post('/guards/signup', { name: cleanName, email: cleanEmail, password, phone: formData.phone.trim() || undefined });
             Alert.alert('Account Created!', 'You can now sign in with your credentials.', [
                 { text: 'Sign In', onPress: () => navigation.navigate('GuardLogin') }
             ]);
@@ -183,6 +183,26 @@ const GuardSignup = ({ navigation }) => {
                                 placeholderTextColor="#c8d0dc"
                                 autoCapitalize="none"
                                 keyboardType="email-address"
+                                style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Mobile / Phone */}
+                    <View style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Mobile Number (Optional)
+                        </Text>
+                        <View style={inputStyle(focus.phone)}>
+                            <Phone size={18} color={focus.phone ? '#2b4594' : '#94a3b8'} />
+                            <TextInput
+                                value={formData.phone}
+                                onChangeText={(val) => { setFormData({ ...formData, phone: val }); setError(''); }}
+                                onFocus={() => setFocus({ ...focus, phone: true })}
+                                onBlur={() => setFocus({ ...focus, phone: false })}
+                                placeholder="+44 7XXX XXXXXX"
+                                placeholderTextColor="#c8d0dc"
+                                keyboardType="phone-pad"
                                 style={{ flex: 1, marginLeft: 12, fontSize: 15, color: '#0f172a', fontWeight: '500' }}
                             />
                         </View>

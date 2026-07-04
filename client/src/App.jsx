@@ -13,7 +13,15 @@ import ActivityPage from './pages/ActivityPage';
 import AttendancePage from './pages/AttendancePage';
 import PeopleDirectory from './pages/PeopleDirectory';
 import ManageSettings from './pages/ManageSettings';
+import ProfilePage from './pages/ProfilePage';
+import SupportPage from './pages/SupportPage';
+import EvacuationPage from './pages/EvacuationPage';
+import SupportCollectionPage from './pages/SupportCollectionPage';
+import SupportArticlePage from './pages/SupportArticlePage';
+import SupportWhatsNewPage from './pages/SupportWhatsNewPage';
 import ProtectedRoute from './components/ProtectedRoute';
+
+import PublicVisitorCheckIn from './pages/PublicVisitorCheckIn';
 
 const App = () => {
   return (
@@ -22,9 +30,12 @@ const App = () => {
         {/* Redirect Root to Admin Login */}
         <Route path="/" element={<Navigate to="/admin/login" replace />} />
 
-        {/* Mobile Routes (Optional/Legacy - kept if needed via direct link) */}
+        {/* Mobile Routes */}
         <Route path="/mobile-landing" element={<MobileLanding />} />
         <Route path="/form" element={<MobileForm />} />
+
+        {/* Public Visitor Check-in Route */}
+        <Route path="/checkin/:siteId" element={<PublicVisitorCheckIn />} />
 
         {/* Admin Login & Signup */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -37,7 +48,7 @@ const App = () => {
           }
         />
 
-        {/* New Modular Admin Layout */}
+        {/* Admin Layout */}
         <Route
           path="/admin"
           element={
@@ -46,16 +57,19 @@ const App = () => {
             </ProtectedRoute>
           }
         >
-            <Route index element={<Navigate to="/admin/activity" replace />} />
-            <Route path="activity" element={<ActivityPage />} />
-            <Route path="attendance" element={<AttendancePage />} />
-            
-            {/* These pages will be built in the next phases */}
-            <Route path="people" element={<PeopleDirectory />} />
-            <Route path="manage/*" element={<ManageSettings />} />
-            
-            {/* Legacy Fallback for projects while migrating */}
-            <Route path="project/:id" element={<ProjectDetails />} />
+          <Route index element={<Navigate to="/admin/activity" replace />} />
+          <Route path="activity"    element={<ActivityPage />} />
+          <Route path="attendance"  element={<AttendancePage />} />
+          <Route path="people"      element={<PeopleDirectory />} />
+          <Route path="manage/*"    element={<ManageSettings />} />
+          <Route path="evacuation"  element={<EvacuationPage />} />
+          <Route path="support"     element={<SupportPage />} />
+          <Route path="support/whats-new" element={<SupportWhatsNewPage />} />
+          <Route path="support/collections/:collectionSlug" element={<SupportCollectionPage />} />
+          <Route path="support/articles/:articleSlug" element={<SupportArticlePage />} />
+          <Route path="profile"     element={<ProfilePage />} />
+          {/* Legacy */}
+          <Route path="project/:id" element={<ProjectDetails />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

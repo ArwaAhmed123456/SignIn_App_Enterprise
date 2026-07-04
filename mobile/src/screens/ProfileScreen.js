@@ -1,122 +1,176 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Switch } from 'react-native';
-import { Plus, User, ChevronDown, Map, Bell, Globe, Ruler, LogOut } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Switch, Alert } from 'react-native';
+import { Plus, User, Phone, ChevronDown } from 'lucide-react-native';
+import { useAuth } from '../context/AuthContext';
 
 const ProfileScreen = ({ navigation }) => {
+  const { user, logout } = useAuth();
+  const [notificationsOn, setNotificationsOn] = useState(true);
+  const [showMap, setShowMap]                 = useState(false);
+  const [theme, setTheme]                     = useState('System');
+
+  // Resolve display name from whatever shape the user object takes
+  const memberName =
+    user?.name ||
+    (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) ||
+    user?.email?.split('@')[0] ||
+    'Member';
+  const group = user?.group || user?.role || 'Employees';
+  const phone  = user?.phone || null;
+
+  const handleDisconnect = () => {
+    Alert.alert('Disconnect account', 'Are you sure you want to disconnect?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Disconnect', style: 'destructive', onPress: logout },
+    ]);
+  };
+
+  const Card = ({ children, style }) => (
+    <View style={[{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e5e7eb', overflow: 'hidden' }, style]}>
+      {children}
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3 bg-white">
-        <View className="flex-row items-center">
-          {/* Mock Logo */}
-          <View className="w-10 h-10 bg-primary/20 rounded-full items-center justify-center -mr-3 z-10" />
-          <View className="w-10 h-10 bg-primary rounded-full items-center justify-center opacity-80" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+      {/* Header — overlapping circles logo (matches Sign In App companion) */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#ffffff' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#4ade80', marginRight: -10, zIndex: 1 }} />
+          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#2b4594', opacity: 0.85 }} />
         </View>
-        <TouchableOpacity className="w-12 h-12 rounded-full border border-gray-200 items-center justify-center bg-white shadow-sm">
-          <Plus size={24} color="#1e293b" />
+        <TouchableOpacity style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: '#e5e7eb', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff' }}>
+          <Plus size={22} color="#1e293b" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-4 pb-8">
-        
-        {/* Profile Card */}
-        <TouchableOpacity 
-          className="flex-row items-center justify-between bg-white rounded-2xl p-4 mb-4 border border-gray-100 shadow-sm"
-          onPress={() => navigation.navigate('QRCode')}
-        >
-          <View className="flex-row items-center">
-            <View className="w-14 h-14 bg-gray-100 rounded-full items-center justify-center mr-4">
-              <User size={28} color="#9ca3af" />
+      <ScrollView style={{ flex: 1, paddingHorizontal: 12, paddingTop: 12 }} contentContainerStyle={{ paddingBottom: 40 }}>
+
+        {/* Profile card */}
+        <Card>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('QRCode')}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: '#e5e7eb', alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
+                <User size={26} color="#9ca3af" />
+              </View>
+              <View>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827' }}>{memberName}</Text>
+                <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>{group}</Text>
+                {phone ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 4 }}>
+                    <Phone size={12} color="#9ca3af" />
+                    <Text style={{ fontSize: 13, color: '#9ca3af' }}>{phone}</Text>
+                  </View>
+                ) : null}
+              </View>
             </View>
-            <View>
-              <Text className="text-xl font-bold text-gray-900">Arwa Ahmed</Text>
-              <Text className="text-base text-gray-500">Employees</Text>
-            </View>
-          </View>
-          <ChevronDown size={24} color="#9ca3af" />
-        </TouchableOpacity>
+            <ChevronDown size={22} color="#9ca3af" />
+          </TouchableOpacity>
+        </Card>
 
         {/* Permissions */}
-        <TouchableOpacity className="flex-row items-center justify-between bg-white rounded-2xl p-4 mb-4 border border-gray-100 shadow-sm">
-          <View>
-            <Text className="text-lg font-bold text-gray-900">Permissions</Text>
-            <Text className="text-sm text-gray-500 mt-1">Your Companion permissions</Text>
-          </View>
-          <ChevronDown size={24} color="#9ca3af" />
-        </TouchableOpacity>
+        <Card>
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 }}>
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Permissions</Text>
+              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>Your Companion permissions</Text>
+            </View>
+            <ChevronDown size={22} color="#9ca3af" />
+          </TouchableOpacity>
+        </Card>
 
-        {/* Theme Settings */}
-        <View className="bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm overflow-hidden">
-          <View className="flex-row bg-gray-100/50">
-            <TouchableOpacity className="flex-1 py-4 items-center bg-white rounded-xl shadow-sm m-1">
-              <Text className="text-base font-bold text-gray-900">System</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-1 py-4 items-center justify-center m-1">
-              <Text className="text-base text-gray-600">Light</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-1 py-4 items-center justify-center m-1">
-              <Text className="text-base text-gray-600">Dark</Text>
-            </TouchableOpacity>
+        {/* Theme toggle */}
+        <Card>
+          <View style={{ flexDirection: 'row', margin: 4, backgroundColor: '#f3f4f6', borderRadius: 12 }}>
+            {['System', 'Light', 'Dark'].map(t => (
+              <TouchableOpacity key={t} onPress={() => setTheme(t)}
+                style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10,
+                  backgroundColor: theme === t ? '#ffffff' : 'transparent',
+                  shadowColor: theme === t ? '#000' : 'transparent',
+                  shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: theme === t ? 2 : 0 }}>
+                <Text style={{ fontSize: 14, fontWeight: theme === t ? '700' : '400', color: theme === t ? '#111827' : '#6b7280' }}>
+                  {t}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        </View>
+        </Card>
 
         {/* Notifications */}
-        <View className="bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm overflow-hidden">
-          <View className="p-4 border-b border-gray-100">
-            <Text className="text-lg font-bold text-gray-900">Notifications</Text>
-            <Text className="text-sm text-gray-500 mt-1">Stay up to date</Text>
+        <Card>
+          <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Notifications</Text>
+            <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>Stay up to date</Text>
           </View>
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <Text className="text-base text-gray-800">Host notifications</Text>
-            <Switch value={true} trackColor={{ true: '#2b4594', false: '#e5e7eb' }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
+            <Text style={{ fontSize: 15, color: '#1f2937' }}>Host notifications</Text>
+            <Switch
+              value={notificationsOn}
+              onValueChange={setNotificationsOn}
+              trackColor={{ true: '#4ade80', false: '#e5e7eb' }}
+              thumbColor="#ffffff"
+            />
           </View>
-          <View className="p-4">
-            <Text className="text-base font-bold text-gray-900">Notification Type</Text>
-            <Text className="text-sm text-gray-500 mt-1 mb-3">Select how you would like to be notified</Text>
-            <View className="flex-row items-center justify-between mt-2">
-              <Text className="text-base text-gray-800">Push</Text>
-              <Text className="text-base font-bold text-gray-900">Manage</Text>
+        </Card>
+
+        {/* Notification Type */}
+        <Card>
+          <View style={{ padding: 16 }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Notification Type</Text>
+            <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2, marginBottom: 14 }}>Select how you would like to be notified</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 15, color: '#1f2937' }}>Push</Text>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827' }}>Manage</Text>
             </View>
           </View>
-        </View>
+        </Card>
 
         {/* Map */}
-        <View className="bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm overflow-hidden">
-          <View className="p-4 border-b border-gray-100">
-            <Text className="text-lg font-bold text-gray-900">Map</Text>
+        <Card>
+          <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Map</Text>
           </View>
-          <View className="flex-row items-center justify-between p-4">
-            <Text className="text-base text-gray-800">Show map on today tab</Text>
-            <Switch value={false} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
+            <Text style={{ fontSize: 15, color: '#1f2937' }}>Show map on today tab</Text>
+            <Switch
+              value={showMap}
+              onValueChange={setShowMap}
+              trackColor={{ true: '#4ade80', false: '#e5e7eb' }}
+              thumbColor="#ffffff"
+            />
           </View>
-        </View>
+        </Card>
 
         {/* Language */}
-        <View className="bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm p-4">
-          <Text className="text-lg font-bold text-gray-900">Language</Text>
-          <Text className="text-sm text-gray-500 mt-1 mb-3">Set your default language</Text>
-          <TouchableOpacity className="flex-row items-center justify-between border border-gray-200 rounded-xl px-4 py-3 bg-white">
-            <Text className="text-base text-gray-800">English (UK)</Text>
-            <ChevronDown size={20} color="#6b7280" />
+        <Card style={{ padding: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Language</Text>
+          <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2, marginBottom: 12 }}>Set your default language</Text>
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
+            <Text style={{ fontSize: 15, color: '#1f2937' }}>English (UK)</Text>
+            <ChevronDown size={18} color="#6b7280" />
           </TouchableOpacity>
-        </View>
+        </Card>
 
         {/* Distance Units */}
-        <View className="bg-white rounded-2xl mb-4 border border-gray-100 shadow-sm p-4">
-          <Text className="text-lg font-bold text-gray-900">Distance Units</Text>
-          <Text className="text-sm text-gray-500 mt-1 mb-3">Set your default distance type</Text>
-          <TouchableOpacity className="flex-row items-center justify-between border border-gray-200 rounded-xl px-4 py-3 bg-white">
-            <Text className="text-base text-gray-800">Metric (km)</Text>
-            <ChevronDown size={20} color="#6b7280" />
+        <Card style={{ padding: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>Distance Units</Text>
+          <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2, marginBottom: 12 }}>Set your default distance type</Text>
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
+            <Text style={{ fontSize: 15, color: '#1f2937' }}>Metric (km)</Text>
+            <ChevronDown size={18} color="#6b7280" />
           </TouchableOpacity>
-        </View>
+        </Card>
 
         {/* Disconnect */}
-        <TouchableOpacity className="bg-white border border-gray-300 rounded-xl py-4 items-center justify-center mb-6">
-          <Text className="text-base font-bold text-gray-900">Disconnect account</Text>
+        <TouchableOpacity onPress={handleDisconnect}
+          style={{ backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginBottom: 8 }}>
+          <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827' }}>Disconnect account</Text>
         </TouchableOpacity>
 
-        <Text className="text-center text-gray-400 text-sm mb-12">Version 3.26.0 (302872)</Text>
+        <Text style={{ textAlign: 'center', color: '#9ca3af', fontSize: 13, marginBottom: 8 }}>Version 1.1.0</Text>
       </ScrollView>
     </SafeAreaView>
   );

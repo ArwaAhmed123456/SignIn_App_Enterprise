@@ -2,62 +2,72 @@ import React from 'react';
 import { NavLink, Routes, Route, Navigate } from 'react-router-dom';
 import { MapPin, Users, Bell, ShieldCheck, Code, Settings as SettingsIcon } from 'lucide-react';
 import VisitorGroupsList from './manage/VisitorGroupsList';
+import SitesList from './manage/SitesList';
 
-const ManageSettings = () => {
-  const navItems = [
-    { id: 'sites', label: 'Sites', icon: <MapPin size={18} />, path: '/admin/manage/sites' },
-    { id: 'visitor-groups', label: 'Visitor groups', icon: <Users size={18} />, path: '/admin/manage/visitor-groups' },
-    { id: 'notifications', label: 'Advanced notifications', icon: <Bell size={18} />, path: '/admin/manage/notifications' },
-    { id: 'safety', label: 'Safety check', icon: <ShieldCheck size={18} />, path: '/admin/manage/safety' },
-    { id: 'api', label: 'Client API', icon: <Code size={18} />, path: '/admin/manage/api' },
-    { id: 'account', label: 'Account management', icon: <SettingsIcon size={18} />, path: '/admin/manage/account' },
-  ];
+const navItems = [
+  { id: 'sites',         label: 'Sites',                  icon: MapPin,         path: '/admin/manage/sites' },
+  { id: 'visitor-groups',label: 'Visitor groups',          icon: Users,          path: '/admin/manage/visitor-groups' },
+  { id: 'notifications', label: 'Advanced notifications',  icon: Bell,           path: '/admin/manage/notifications' },
+  { id: 'safety',        label: 'Safety check',            icon: ShieldCheck,    path: '/admin/manage/safety' },
+  { id: 'api',           label: 'Client API',              icon: Code,           path: '/admin/manage/api' },
+  { id: 'account',       label: 'Account management',      icon: SettingsIcon,   path: '/admin/manage/account' },
+];
 
-  return (
-    <div className="h-full flex bg-slate-50">
-      
-      {/* Sidebar */}
-      <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col h-full pt-8">
-        <div className="px-6 mb-6">
-          <h2 className="text-xl font-bold text-slate-800">Manage settings</h2>
-        </div>
-        
-        <nav className="flex-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              className={({ isActive }) => `flex items-center justify-between px-6 py-3 transition-colors ${
-                isActive 
-                  ? 'bg-white border-l-4 border-[#59ce4a] text-slate-900 font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' 
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 border-l-4 border-transparent'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={item.id === 'visitor-groups' ? 'text-slate-700' : 'text-slate-400'}>{item.icon}</span>
-                <span className="text-sm">{item.label}</span>
-              </div>
-              {/* Active chevron indicator */}
-              <div className="text-slate-300">
-                <span className="opacity-0 group-[.active]:opacity-100">›</span>
-              </div>
-            </NavLink>
-          ))}
-        </nav>
+const ManageSettings = () => (
+  <div className="h-full flex bg-slate-50 overflow-hidden">
+
+    {/* Sidebar */}
+    <aside className="w-56 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0">
+      <div className="px-5 py-6 border-b border-slate-100">
+        <h2 className="text-base font-bold text-slate-800">Manage settings</h2>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-auto bg-white p-8">
+      <nav className="flex-1 py-2 overflow-y-auto">
+        {navItems.map(({ id, label, icon: Icon, path }) => (
+          <NavLink
+            key={id}
+            to={path}
+            className={({ isActive }) =>
+              `flex items-center justify-between px-5 py-2.5 text-sm transition-colors ${
+                isActive
+                  ? 'bg-slate-50 text-[#2b4594] font-semibold border-l-2 border-[#2b4594]'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-[#2b4594] border-l-2 border-transparent'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <div className="flex items-center gap-2.5">
+                  <Icon size={16} className="flex-shrink-0" />
+                  <span>{label}</span>
+                </div>
+                {isActive && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
+
+    {/* Main Content */}
+    <div className="flex-1 overflow-auto bg-slate-50">
+      <div className="max-w-5xl mx-auto p-8">
         <Routes>
-          <Route index element={<Navigate to="visitor-groups" replace />} />
+          <Route index element={<Navigate to="sites" replace />} />
+          <Route path="sites" element={<SitesList />} />
           <Route path="visitor-groups" element={<VisitorGroupsList />} />
-          {/* Placeholders for other routes */}
-          <Route path="*" element={<div className="text-slate-500">Feature coming soon.</div>} />
+          <Route path="*" element={
+            <div className="text-slate-500 text-sm py-4">Feature coming soon.</div>
+          } />
         </Routes>
       </div>
-
     </div>
-  );
-};
+
+  </div>
+);
 
 export default ManageSettings;

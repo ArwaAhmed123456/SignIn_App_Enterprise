@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Guard = require('../models/Guard');
-const Project = require('../models/Project');
+const prisma = require('../prismaClient');
 
 // Levenshtein distance for fuzzy matching
 function getLevenshteinDistance(a, b) {
@@ -64,20 +63,23 @@ router.post('/ocr-match', async (req, res) => {
     }
 
     try {
-        const project = await Project.findOne({ code: project_code.trim().toUpperCase() }).select('_id').lean();
-        if (!project) return res.status(404).json({ error: 'Project not found' });
+        const site = await prisma.site.findUnique({ where: { code: project_code.trim().toUpperCase() } });
+        if (!site) return res.status(404).json({ error: 'Project not found' });
 
         // Get all personnel for this site
-        const guards = await Guard.find({ project_id: project._id }).select('name email role').lean();
+        const members = await prisma.member.findMany({
+            where: { siteId: site.id },
+            select: { id: true, firstName: true, email: true, role: true }
+        });
 
         // Run fuzzy match against all names
-        const matches = guards.map(guard => {
-            const score = calculateMatchScore(raw_text, guard.name);
+        const matches = members.map(member => {
+            const score = calculateMatchScore(raw_text, member.firstName);
             return {
-                id: guard._id,
-                name: guard.name,
-                email: guard.email,
-                role: guard.role,
+                id: member.id,
+                name: member.firstName,
+                email: member.email,
+                role: member.role,
                 score: Math.round(score)
             };
         }).filter(m => m.score > 40); // Filter out garbage matches
