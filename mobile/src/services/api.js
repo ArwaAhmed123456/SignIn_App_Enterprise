@@ -2,14 +2,12 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 1. Production API URL (Main Deployment)
-const PROD_URL = 'https://attendence-app-uzvt.onrender.com/api';
+const PROD_URL = 'https://tripod-signin-app.onrender.com/api';
 
-// 2. Local Development URL (Your PC's IP or Tunnel)
-// Use your machine's IP (e.g., 192.168.100.XXX) or a tunnel URL (like ngrok)
-// IMPORTANT: If testing on a physical phone, you MUST use your local IP, not localhost.
+// 2. Local Development URL
 const DEV_URL = 'http://192.168.100.173:5000/api';
 
-const API_BASE_URL = PROD_URL; // Toggle to PROD_URL for live app
+const API_BASE_URL = __DEV__ ? DEV_URL : PROD_URL;
 
 const api = axios.create({
     baseURL: API_BASE_URL,
