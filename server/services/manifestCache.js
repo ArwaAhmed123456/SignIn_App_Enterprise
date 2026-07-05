@@ -1,119 +1,59 @@
-/**
- * manifestCache.js — Phase 2: High-Availability Evacuation Manifest
- * Refactored to use Prisma ORM instead of Mongoose.
- */
-
-const prisma = require('../prismaClient');
-
+const ActivityLog = require('../models/ActivityLog');
+const Site = require('../models/Site');
 const cache = new Map();
 
-function _getOrCreate(projectCode) {
-    if (!cache.has(projectCode)) {
-        cache.set(projectCode, { workers: [], lastUpdated: null, seeded: false });
-    }
-    return cache.get(projectCode);
+function _getOrCreate(code) {
+  if (!cache.has(code)) cache.set(code, { workers: [], lastUpdated: null, seeded: false });
+  return cache.get(code);
 }
-
-const formatLog = (log) => ({
-    ...log,
-    _id: log.id,
-    project_id: log.siteId,
-    time_in: log.timeIn,
-    time_out: log.timeOut,
-    user_type: log.userType,
-    car_reg: log.carReg,
-    image_url: log.imageUrl,
-    created_at: log.createdAt
-});
+const fmt = (l) => ({ ...l._doc || l, _id: l._id||l.id, id: (l._id||l.id)?.toString(),
+  time_in: l.timeIn, time_out: l.timeOut, user_type: l.userType, car_reg: l.carReg, image_url: l.imageUrl });
 
 async function seedFromDB(projectCode) {
-    try {
-        const site = await prisma.site.findUnique({ where: { code: projectCode.trim().toUpperCase() } });
-        if (!site) return null;
-
-        const today = new Date().toISOString().split('T')[0];
-        const workers = await prisma.activityLog.findMany({
-            where: {
-                siteId: site.id,
-                timeOut: null,
-                date: today
-            }
-        });
-
-        const entry = _getOrCreate(projectCode);
-        entry.workers     = workers.map(formatLog);
-        entry.lastUpdated = new Date();
-        entry.seeded      = true;
-
-        console.log(`[ManifestCache] Seeded ${projectCode}: ${workers.length} active workers`);
-        return entry;
-    } catch (err) {
-        console.error(`[ManifestCache] Seed error for ${projectCode}:`, err);
-        return null;
-    }
-}
-
-async function getManifest(projectCode) {
+  try {
     const code = projectCode.trim().toUpperCase();
-    const entry = cache.get(code);
-
-    if (!entry || !entry.seeded) {
-        const fresh = await seedFromDB(code);
-        return fresh;
-    }
+    const site = await Site.findOne({ code });
+    if (!site) return null;
+    const today = new Date().toISOString().split('T')[0];
+    const workers = await ActivityLog.find({ siteId: site._id, timeOut: null, date: today }).lean();
+    const entry = _getOrCreate(code);
+    entry.workers = workers.map(fmt); entry.lastUpdated = new Date(); entry.seeded = true;
     return entry;
+  } catch (err) { console.error('[ManifestCache] seed error:', err); return null; }
 }
-
-function addWorker(projectCode, logObject) {
-    const code  = projectCode.trim().toUpperCase();
-    const entry = _getOrCreate(code);
-    const worker = logObject.id ? formatLog(logObject) : logObject; // format if it's a prisma obj
-
-    const alreadyPresent = entry.workers.some(w => w.id === worker.id);
-    if (!alreadyPresent) {
-        entry.workers.push(worker);
-    }
-    entry.lastUpdated = new Date();
+async function getManifest(projectCode) {
+  const code = projectCode.trim().toUpperCase();
+  const entry = cache.get(code);
+  if (!entry || !entry.seeded) return seedFromDB(code);
+  return entry;
 }
-
+function addWorker(projectCode, log) {
+  const code = projectCode.trim().toUpperCase();
+  const entry = _getOrCreate(code);
+  const id = (log._id||log.id)?.toString();
+  if (!entry.workers.some(w => (w._id||w.id)?.toString() === id)) entry.workers.push(fmt(log));
+  entry.lastUpdated = new Date();
+}
 function removeWorker(projectCode, logId) {
-    const code  = projectCode.trim().toUpperCase();
-    const entry = cache.get(code);
-    if (!entry) return;
-
-    entry.workers = entry.workers.filter(w =>
-        w.id !== logId && w._id !== logId
-    );
-    entry.lastUpdated = new Date();
+  const code = projectCode.trim().toUpperCase();
+  const entry = cache.get(code);
+  if (!entry) return;
+  entry.workers = entry.workers.filter(w => (w._id||w.id)?.toString() !== logId?.toString());
+  entry.lastUpdated = new Date();
 }
-
 async function restoreWorker(projectCode, logId) {
-    const code  = projectCode.trim().toUpperCase();
-    const entry = _getOrCreate(code);
-    const log   = await prisma.activityLog.findUnique({ where: { id: logId } });
-    if (!log) return;
-
-    const alreadyPresent = entry.workers.some(w => w.id === logId);
-    if (!alreadyPresent) {
-        entry.workers.push(formatLog(log));
-        entry.lastUpdated = new Date();
-    }
+  const code = projectCode.trim().toUpperCase();
+  const entry = _getOrCreate(code);
+  const log = await ActivityLog.findById(logId).lean();
+  if (!log) return;
+  if (!entry.workers.some(w => (w._id||w.id)?.toString() === logId?.toString())) {
+    entry.workers.push(fmt(log)); entry.lastUpdated = new Date();
+  }
 }
-
-function invalidate(projectCode) {
-    cache.delete(projectCode.trim().toUpperCase());
-}
-
+function invalidate(projectCode) { cache.delete(projectCode.trim().toUpperCase()); }
 function stats() {
-    const result = {};
-    for (const [code, entry] of cache.entries()) {
-        result[code] = {
-            worker_count: entry.workers.length,
-            last_updated: entry.lastUpdated,
-            seeded: entry.seeded
-        };
-    }
-    return result;
+  const r = {};
+  for (const [code, e] of cache.entries()) r[code] = { worker_count: e.workers.length, last_updated: e.lastUpdated, seeded: e.seeded };
+  return r;
 }
-
 module.exports = { seedFromDB, getManifest, addWorker, removeWorker, restoreWorker, invalidate, stats };

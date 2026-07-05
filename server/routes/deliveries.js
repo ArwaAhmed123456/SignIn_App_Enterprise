@@ -1,100 +1,39 @@
-const express = require('express');
-const router = express.Router();
-const prisma = require('../prismaClient');
+const express  = require('express');
+const router   = express.Router();
+const Site     = require('../models/Site');
+const Member   = require('../models/Member');
 
-// Levenshtein distance for fuzzy matching
-function getLevenshteinDistance(a, b) {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-    
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-            }
-        }
-    }
-    return matrix[b.length][a.length];
+function levenshtein(a, b) {
+  const m = []; for (let i=0;i<=b.length;i++) m[i]=[i]; for (let j=0;j<=a.length;j++) m[0][j]=j;
+  for (let i=1;i<=b.length;i++) for (let j=1;j<=a.length;j++)
+    m[i][j] = b[i-1]===a[j-1] ? m[i-1][j-1] : Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+  return m[b.length][a.length];
+}
+function matchScore(text, q) {
+  const t=text.toLowerCase(), s=q.toLowerCase();
+  if (t.includes(s)) return 100;
+  const ws=t.split(/\s+/), qs=s.split(/\s+/);
+  let total=0;
+  for (const sw of qs) {
+    let best=0;
+    for (const w of ws) { const d=levenshtein(w,sw); const sc=Math.max(0,100-(d/Math.max(w.length,sw.length)*100)); if(sc>best) best=sc; }
+    total+=best;
+  }
+  return total/qs.length;
 }
 
-// Convert Levenshtein distance to a 0-100 score
-function calculateMatchScore(text, searchStr) {
-    const textLower = text.toLowerCase();
-    const searchLower = searchStr.toLowerCase();
-    
-    // Exact match
-    if (textLower.includes(searchLower)) return 100;
-
-    // Fuzzy match
-    const words = textLower.split(/\s+/);
-    const searchWords = searchLower.split(/\s+/);
-    
-    let totalScore = 0;
-    for (const searchWord of searchWords) {
-        let bestWordScore = 0;
-        for (const word of words) {
-            const distance = getLevenshteinDistance(word, searchWord);
-            const maxLength = Math.max(word.length, searchWord.length);
-            const wordScore = maxLength === 0 ? 100 : Math.max(0, 100 - (distance / maxLength * 100));
-            if (wordScore > bestWordScore) {
-                bestWordScore = wordScore;
-            }
-        }
-        totalScore += bestWordScore;
-    }
-    
-    return totalScore / searchWords.length;
-}
-
-// ── POST /api/deliveries/ocr-match ──────────────────────────────────
 router.post('/ocr-match', async (req, res) => {
-    const { raw_text, project_code } = req.body;
-    if (!raw_text || !project_code) {
-        return res.status(400).json({ error: 'raw_text and project_code required' });
-    }
-
-    try {
-        const site = await prisma.site.findUnique({ where: { code: project_code.trim().toUpperCase() } });
-        if (!site) return res.status(404).json({ error: 'Project not found' });
-
-        // Get all personnel for this site
-        const members = await prisma.member.findMany({
-            where: { siteId: site.id },
-            select: { id: true, firstName: true, email: true, role: true }
-        });
-
-        // Run fuzzy match against all names
-        const matches = members.map(member => {
-            const score = calculateMatchScore(raw_text, member.firstName);
-            return {
-                id: member.id,
-                name: member.firstName,
-                email: member.email,
-                role: member.role,
-                score: Math.round(score)
-            };
-        }).filter(m => m.score > 40); // Filter out garbage matches
-
-        // Sort by highest score first, return top 3
-        matches.sort((a, b) => b.score - a.score);
-        
-        res.json({
-            success: true,
-            matches: matches.slice(0, 3)
-        });
-    } catch (err) {
-        console.error('[OCR Match Error]', err);
-        res.status(500).json({ error: 'Server error' });
-    }
+  const { raw_text, project_code } = req.body;
+  if (!raw_text || !project_code) return res.status(400).json({ error: 'raw_text and project_code required' });
+  try {
+    const site = await Site.findOne({ code: project_code.trim().toUpperCase() });
+    if (!site) return res.status(404).json({ error: 'Project not found' });
+    const members = await Member.find({ siteId: site._id }, 'firstName email role').lean();
+    const matches = members.map(m => ({ id: m._id, name: m.firstName, email: m.email, role: m.role,
+      score: Math.round(matchScore(raw_text, m.firstName)) }))
+      .filter(m => m.score > 40).sort((a,b) => b.score-a.score).slice(0,3);
+    res.json({ success: true, matches });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;
