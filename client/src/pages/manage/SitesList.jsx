@@ -8,6 +8,7 @@ import {
 import QRCode from 'react-qr-code';
 import api from '../../api';
 import * as XLSX from 'xlsx';
+import SiteSettings from './SiteSettings';
 
 const fmtDate = (iso) => {
   if (!iso) return '—';
@@ -270,7 +271,7 @@ const SitesList = () => {
   const [showAdd, setShowAdd]       = useState(false);
   const [editSite, setEditSite]     = useState(null);
   const [deleteSite, setDeleteSite] = useState(null);
-  const [kioskSite, setKioskSite]   = useState(null);
+  const [openSite, setOpenSite]     = useState(null); // opens SiteSettings
 
   const fetchSites = async () => {
     setLoading(true);
@@ -285,6 +286,17 @@ const SitesList = () => {
   };
 
   useEffect(() => { fetchSites(); }, []);
+
+  // ── Site settings view ───────────────────────────────────────────────────
+  if (openSite) {
+    return (
+      <SiteSettings
+        site={openSite}
+        onBack={() => { setOpenSite(null); fetchSites(); }}
+        onSaved={fetchSites}
+      />
+    );
+  }
 
   return (
     <div className="max-w-4xl">
@@ -322,7 +334,7 @@ const SitesList = () => {
           {sites.map(site => (
             <div key={site.id}
               className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 group cursor-pointer"
-              onClick={() => setKioskSite(site)}>
+              onClick={() => setOpenSite(site)}>
               <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                 <MapPin size={18} className="text-slate-400" />
               </div>
@@ -330,8 +342,8 @@ const SitesList = () => {
                 <p className="font-semibold text-slate-800">{site.name}</p>
                 <p className="text-xs text-slate-400 mt-0.5 font-mono">{site.code}</p>
               </div>
-              <span className="text-sm text-slate-500 hidden group-hover:flex items-center gap-1.5 transition-all">
-                → Add device or poster
+              <span className="text-sm text-slate-500 items-center gap-1.5 hidden group-hover:flex">
+                → Devices &amp; posters
               </span>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={e => e.stopPropagation()}>
@@ -353,7 +365,6 @@ const SitesList = () => {
       {showAdd    && <SiteModal onClose={() => setShowAdd(false)} onSaved={fetchSites} />}
       {editSite   && <SiteModal site={editSite} onClose={() => setEditSite(null)} onSaved={fetchSites} />}
       {deleteSite && <DeleteModal site={deleteSite} onClose={() => setDeleteSite(null)} onDeleted={fetchSites} />}
-      {kioskSite  && <KioskUrlCard site={kioskSite} onClose={() => setKioskSite(null)} />}
     </div>
   );
 };
