@@ -103,11 +103,32 @@ const PublicVisitorCheckIn = () => {
   // Camera helpers
   const startCamera = async () => {
     setCameraError('');
+    // Camera requires HTTPS in production
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+      setCameraError('Camera requires HTTPS. You can continue without a photo.');
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError('Camera not supported on this browser. You can continue without a photo.');
+      return;
+    }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.play(); }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'user' },  // front camera
+          width: { ideal: 640 },
+          height: { ideal: 640 },
+        }
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', '');       // iOS Safari
+        videoRef.current.setAttribute('webkit-playsinline', ''); // older iOS
+        videoRef.current.muted = true;
+        await videoRef.current.play().catch(() => {});
+      }
       setCameraActive(true);
-    } catch {
+    } catch (err) {
       setCameraError('Camera access denied. You can continue without a photo.');
     }
   };
@@ -138,12 +159,13 @@ const PublicVisitorCheckIn = () => {
     setSubmitError('');
     try {
       const res = await publicApi.post('/visits/public', {
-        site_id:  siteId,
-        name:     name.trim(),
-        group:    selectedGroup?.name || 'Visitor',
-        trade:    company.trim() || undefined,
-        car_reg:  carReg.trim()  || undefined,
-        reason:   visiting.trim() || undefined,
+        site_id:      siteId,
+        name:         name.trim(),
+        group:        selectedGroup?.name || 'Visitor',
+        trade:        company.trim()  || undefined,
+        car_reg:      carReg.trim()   || undefined,
+        reason:       visiting.trim() || undefined,
+        photo_base64: photoDataUrl    || undefined,  // send captured photo
       });
       setVisitId(res.data?.visit?.id || null);
       stopCamera();
@@ -333,7 +355,11 @@ const PublicVisitorCheckIn = () => {
               {photoDataUrl ? (
                 <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
               ) : cameraActive ? (
-                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" onClick={takePhoto} />
+                <video ref={videoRef} autoPlay playsInline muted
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={takePhoto}
+                  style={{ transform: 'scaleX(-1)' }}
+                />
               ) : (
                 <button onClick={startCamera} className="flex flex-col items-center gap-3 text-slate-400">
                   <Camera size={48} strokeWidth={1.2} />

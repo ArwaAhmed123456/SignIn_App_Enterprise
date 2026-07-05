@@ -439,6 +439,8 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
   const [showAddNotice, setShowAddNotice]   = useState(false);
   const [showAddPoster, setShowAddPoster]   = useState(false);
   const [showEvacModal, setShowEvacModal]   = useState(false);
+  const [showConnectDevice, setShowConnectDevice] = useState(false);
+  const [deviceCode] = useState(() => Math.floor(1000000 + Math.random() * 9000000).toString());
   const [posters, setPosters]       = useState([]);
   const [saving, setSaving]         = useState(false);
 
@@ -662,7 +664,7 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div><h2 className="text-base font-bold text-slate-800">Devices</h2><p className="text-xs text-slate-500 mt-0.5">Manage which devices are linked to this site</p></div>
-              <button className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white">Connect new device</button>
+              <button onClick={() => setShowConnectDevice(true)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white">Connect new device</button>
             </div>
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
               <table className="w-full text-sm"><thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase"><tr><th className="px-4 py-3 text-left">Device name</th><th className="px-4 py-3 text-left">App version</th><th className="px-4 py-3 text-left">OS version</th><th className="px-4 py-3 text-left">Checked in</th></tr></thead>
@@ -779,8 +781,30 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
       {showAddField === 'signin' && <AddFieldModal title="Add sign in field" groups={groups} onClose={() => setShowAddField(null)} onSave={f => setSignInFields(s => [...s, f])} />}
       {showAddField === 'signout' && <AddFieldModal title="Add sign out field" groups={groups} onClose={() => setShowAddField(null)} onSave={f => setSignOutFields(s => [...s, f])} />}
       {showAddNotice && <AddNoticeModal groups={groups} onClose={() => setShowAddNotice(false)} onSave={n => setNotices(s => [...s, n])} />}
-      {showAddPoster && <AddPosterModal site={currentSite} groups={groups} onClose={() => setShowAddPoster(false)} />}
+      {showAddPoster && <AddPosterModal site={currentSite} groups={groups} onClose={() => setShowAddPoster(false)} onSave={p => setPosters(s => [...s, { ...p, id: Date.now(), createdAt: new Date().toISOString() }])} />}
       {showEvacModal && <EvacPointModal groups={groups} onClose={() => setShowEvacModal(false)} onSave={p => setEvacPoints(s => [...s, p])} />}
+      {showConnectDevice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="text-lg font-bold text-slate-800">Enter code to connect</h2>
+              <button onClick={() => setShowConnectDevice(false)} className="text-slate-400 hover:text-slate-700 rounded-full p-1 hover:bg-slate-100"><X size={18} /></button>
+            </div>
+            <div className="px-6 py-8 text-center">
+              <p className="text-sm text-slate-600 mb-6">Download the Sign In App Visitor Management app from the Apple or Google Play store and enter your authorisation code</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl px-6 py-5 mb-2 inline-block">
+                <p className="text-4xl font-bold text-slate-800 tracking-[0.3em]">{deviceCode}</p>
+                <p className="text-xs text-slate-400 mt-2 flex items-center justify-center gap-1.5">
+                  <RefreshCw size={11} className="animate-spin" /> Waiting for device…
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end px-6 py-4 border-t border-slate-100">
+              <button onClick={() => setShowConnectDevice(false)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">

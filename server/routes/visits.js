@@ -4,6 +4,8 @@ const jwt         = require('jsonwebtoken');
 const ActivityLog = require('../models/ActivityLog');
 const Site        = require('../models/Site');
 const Member      = require('../models/Member');
+const path        = require('path');
+const fs          = require('fs');
 const { addWorker } = require('../services/manifestCache');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
@@ -21,6 +23,83 @@ const fmt = (l) => ({
   reason: l.reason, image_url: l.imageUrl, member_id: l.memberId, created_at: l.createdAt,
 });
 
+const nowStr = () => { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
+
+// Save base64 photo to disk and return URL
+const savePhoto = (base64Data, siteCode) => {
+  try {
+    if (!base64Data || !base64Data.startsWith('data:image')) return null;
+    const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) return null;
+    const ext = matches[1];
+    const data = matches[2];
+    const dir = path.join(__dirname, '..', 'uploads', siteCode || 'visitors');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const filename = `visitor-${Date.now()}.${ext}`;
+    fs.writeFileSync(path.join(dir, filename), Buffer.from(data, 'base64'));
+    return `/uploads/${siteCode || 'visitors'}/${filename}`;
+  } catch { return null; }
+};
+
+// ─── PUBLIC route (no auth) — called by QR visitor check-in page ─────────────
+router.post('/public', async (req, res) => {
+  const { site_id, name, group, trade, car_reg, reason, photo_base64 } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  try {
+    // Find site
+    const site = await Site.findById(site_id).lean();
+    if (!site) return res.status(400).json({ error: 'Site not found' });
+
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = nowStr();
+
+    // Save photo if provided
+    const imageUrl = photo_base64 ? savePhoto(photo_base64, site.code) : null;
+
+    const log = await ActivityLog.create({
+      siteId: site._id, name: name.trim(),
+      userType: group || 'Visitor',
+      trade: trade || '', carReg: car_reg || '', reason: reason || '',
+      date: dateStr, timeIn: timeStr, checkIn: now,
+      imageUrl,
+    });
+
+    // Emit socket event so Activity page updates live
+    const io = req.app.get('io');
+    if (io) io.emit('newAttendance', { name: name.trim(), date: dateStr });
+
+    addWorker(site.code, log);
+
+    res.status(201).json({ success: true, visit: { id: log._id, name: log.name } });
+  } catch (err) {
+    console.error('Public sign-in error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ─── PUBLIC sign-out (no auth) ────────────────────────────────────────────────
+router.post('/public/:id/sign-out', async (req, res) => {
+  try {
+    const log = await ActivityLog.findById(req.params.id);
+    if (!log) return res.status(404).json({ error: 'Visit not found' });
+    const now = new Date();
+    let hours = null;
+    if (log.timeIn && log.date) {
+      const start = new Date(`${log.date}T${log.timeIn}`);
+      let ms = now - start;
+      if (ms < 0) ms += 86400000;
+      hours = parseFloat((ms / 3600000).toFixed(2));
+    }
+    log.timeOut = nowStr(); log.checkOut = now; log.hours = hours;
+    await log.save();
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Public sign-out error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 const resolveFirst = async (siteId) => {
   if (siteId && siteId !== 'all') return siteId;
   if (siteId === 'all') return null;
@@ -28,7 +107,6 @@ const resolveFirst = async (siteId) => {
   return s?._id || null;
 };
 
-const nowStr = () => { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
 
 // GET /api/visits/stats
 router.get('/stats', verifyAdmin, async (req, res) => {
