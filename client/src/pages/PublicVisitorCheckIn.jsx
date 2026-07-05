@@ -102,15 +102,18 @@ const PublicVisitorCheckIn = () => {
 
   // When cameraActive becomes true, the video element is now in the DOM — attach stream
   const streamRef = useRef(null);
-  useEffect(() => {
-    if (cameraActive && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-      videoRef.current.setAttribute('playsinline', '');
-      videoRef.current.setAttribute('webkit-playsinline', '');
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
+
+  // Ref callback — fires the instant the <video> element mounts into the DOM
+  const videoRefCallback = (el) => {
+    videoRef.current = el;
+    if (el && streamRef.current) {
+      el.srcObject = streamRef.current;
+      el.setAttribute('playsinline', 'true');
+      el.setAttribute('webkit-playsinline', 'true');
+      el.muted = true;
+      el.play().catch(e => console.warn('Video play error:', e));
     }
-  }, [cameraActive]);
+  };
 
   // Camera helpers
   const startCamera = async () => {
@@ -120,23 +123,33 @@ const PublicVisitorCheckIn = () => {
       return;
     }
     try {
+      // Stop any existing stream first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: 'user' },
-          width: { ideal: 640 },
-          height: { ideal: 640 },
-        }
+        video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 640 } },
+        audio: false,
       });
       streamRef.current = stream;
-      setCameraActive(true); // triggers useEffect above which attaches stream to video element
+      // If video element is already mounted, attach immediately
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(e => console.warn('Video play:', e));
+      }
+      setCameraActive(true);
     } catch (err) {
-      console.error('Camera error:', err);
+      console.error('Camera error:', err.name, err.message);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setCameraError('Camera permission denied. Please allow camera access and try again.');
+        setCameraError('Camera permission denied. Tap the lock icon in your browser address bar and allow camera, then try again.');
       } else if (err.name === 'NotFoundError') {
         setCameraError('No camera found on this device.');
       } else {
-        setCameraError('Could not start camera. You can continue without a photo.');
+        setCameraError(`Could not start camera (${err.name}). You can continue without a photo.`);
       }
     }
   };
@@ -369,7 +382,7 @@ const PublicVisitorCheckIn = () => {
               {photoDataUrl ? (
                 <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
               ) : cameraActive ? (
-                <video ref={videoRef} autoPlay playsInline muted
+                <video ref={videoRefCallback} autoPlay playsInline muted
                   className="w-full h-full object-cover cursor-pointer"
                   onClick={takePhoto}
                   style={{ transform: 'scaleX(-1)' }}
