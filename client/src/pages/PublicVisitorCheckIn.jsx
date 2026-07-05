@@ -100,14 +100,21 @@ const PublicVisitorCheckIn = () => {
     load();
   }, [siteId]);
 
+  // When cameraActive becomes true, the video element is now in the DOM — attach stream
+  const streamRef = useRef(null);
+  useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.setAttribute('playsinline', '');
+      videoRef.current.setAttribute('webkit-playsinline', '');
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [cameraActive]);
+
   // Camera helpers
   const startCamera = async () => {
     setCameraError('');
-    // Camera requires HTTPS in production
-    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
-      setCameraError('Camera requires HTTPS. You can continue without a photo.');
-      return;
-    }
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraError('Camera not supported on this browser. You can continue without a photo.');
       return;
@@ -115,29 +122,31 @@ const PublicVisitorCheckIn = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: { ideal: 'user' },  // front camera
+          facingMode: { ideal: 'user' },
           width: { ideal: 640 },
           height: { ideal: 640 },
         }
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', '');       // iOS Safari
-        videoRef.current.setAttribute('webkit-playsinline', ''); // older iOS
-        videoRef.current.muted = true;
-        await videoRef.current.play().catch(() => {});
-      }
-      setCameraActive(true);
+      streamRef.current = stream;
+      setCameraActive(true); // triggers useEffect above which attaches stream to video element
     } catch (err) {
-      setCameraError('Camera access denied. You can continue without a photo.');
+      console.error('Camera error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraError('Camera permission denied. Please allow camera access and try again.');
+      } else if (err.name === 'NotFoundError') {
+        setCameraError('No camera found on this device.');
+      } else {
+        setCameraError('Could not start camera. You can continue without a photo.');
+      }
     }
   };
 
   const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(t => t.stop());
-      videoRef.current.srcObject = null;
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
     }
+    if (videoRef.current) videoRef.current.srcObject = null;
     setCameraActive(false);
   };
 
@@ -145,9 +154,14 @@ const PublicVisitorCheckIn = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const v = videoRef.current;
     const c = canvasRef.current;
-    c.width = v.videoWidth; c.height = v.videoHeight;
-    c.getContext('2d').drawImage(v, 0, 0);
-    setPhotoDataUrl(c.toDataURL('image/jpeg', 0.8));
+    c.width  = v.videoWidth  || 640;
+    c.height = v.videoHeight || 640;
+    const ctx = c.getContext('2d');
+    // Mirror horizontally to match the mirrored video preview
+    ctx.translate(c.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(v, 0, 0);
+    setPhotoDataUrl(c.toDataURL('image/jpeg', 0.85));
     stopCamera();
   };
 
