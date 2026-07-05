@@ -507,7 +507,7 @@ const QrRfidTab = ({ member }) => {
           <button onClick={handleAssignRfid}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
               rfidSaved
-                ? 'bg-green-100 text-green-700 border border-green-200'
+                ? 'bg-blue-50 text-[#2b4594] border border-blue-200'
                 : 'border border-slate-300 text-slate-700 hover:bg-slate-50'
             }`}>
             {rfidSaved ? '✓ Saved' : 'Assign'}
@@ -823,12 +823,12 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-slate-800">Mobile pairing status</p>
-                  <p className={`text-xs mt-0.5 font-semibold ${member?.mobile_paired ? 'text-green-600' : 'text-slate-400'}`}>
+                  <p className={`text-xs mt-0.5 font-semibold ${member?.mobile_paired ? 'text-[#2b4594]' : 'text-slate-400'}`}>
                     {member?.mobile_paired ? '✓ Device paired' : 'Not paired'}
                   </p>
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                  member?.mobile_paired ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'
+                  member?.mobile_paired ? 'bg-blue-50 text-[#2b4594]' : 'bg-slate-200 text-slate-600'
                 }`}>
                   {member?.mobile_paired ? 'Active' : 'Inactive'}
                 </span>

@@ -1038,10 +1038,10 @@ const PreRegTab = ({ siteId, siteName, groups, onVisitsChanged }) => {
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
                       item.status === 'Arrived'
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-blue-100 text-[#2b4594]'
                         : item.status === 'Cancelled'
                           ? 'bg-red-100 text-red-700'
-                          : 'bg-blue-100 text-[#2b4594]'
+                          : 'bg-slate-100 text-slate-600'
                     }`}
                   >
                     {item.status}
@@ -1202,7 +1202,7 @@ const DeliveriesTab = ({ siteId, siteName }) => {
                   {d.createdAt ? new Date(d.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '--'}
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${d.collected ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-[#2b4594]'}`}>
+                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${d.collected ? 'bg-blue-100 text-[#2b4594]' : 'bg-slate-100 text-slate-600'}`}>
                     {d.collected ? 'Collected' : 'Awaiting collection'}
                   </span>
                 </td>
