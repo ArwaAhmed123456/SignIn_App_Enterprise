@@ -9,7 +9,6 @@ import {
 import QRCode from 'react-qr-code';
 import api from '../../api';
 import * as XLSX from 'xlsx';
-import SiteSettings from './SiteSettings';
 
 const fmtDate = (iso) => {
   if (!iso) return '—';
