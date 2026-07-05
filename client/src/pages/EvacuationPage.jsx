@@ -294,7 +294,7 @@ const EvacuationPage = () => {
                 <div className="relative w-14 h-14">
                   <svg viewBox="0 0 36 36" className="w-14 h-14 -rotate-90">
                     <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" strokeWidth="3.2" />
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#76c043" strokeWidth="3.2"
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#2b4594" strokeWidth="3.2"
                       strokeDasharray={`${pct} ${100 - pct}`} strokeLinecap="round" />
                   </svg>
                   <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-700">{pct}%</span>
@@ -396,7 +396,7 @@ const EvacuationPage = () => {
               <div className="grid gap-4 xl:grid-cols-2">
                 <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-2">
-                    <BellRing size={16} className="text-[#76c043]" />
+                    <BellRing size={16} className="text-[#2b4594]" />
                     <h4 className="font-semibold text-slate-800">Notifications</h4>
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
@@ -415,7 +415,7 @@ const EvacuationPage = () => {
 
                 <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-2">
-                    <FileText size={16} className="text-[#76c043]" />
+                    <FileText size={16} className="text-[#2b4594]" />
                     <h4 className="font-semibold text-slate-800">Leave report</h4>
                   </div>
                   <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">
@@ -496,7 +496,7 @@ const EvacuationPage = () => {
                 type="button"
                 onClick={handleSaveLeaveReport}
                 disabled={savingLeaveReport}
-                className="rounded-lg bg-[#76c043] px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-[#69b235] disabled:opacity-60"
+                className="rounded-lg bg-[#2b4594] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e326e] disabled:opacity-60"
               >
                 {savingLeaveReport ? 'Saving...' : 'Save report'}
               </button>

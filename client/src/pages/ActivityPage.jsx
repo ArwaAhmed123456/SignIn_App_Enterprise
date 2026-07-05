@@ -1105,6 +1105,183 @@ const PreRegTab = ({ siteId, siteName, groups, onVisitsChanged }) => {
   );
 };
 
+// ── Deliveries Tab ───────────────────────────────────────────────────────────
+const DeliveriesTab = ({ siteId, siteName }) => {
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ recipient: '', sender: '', carrier: '', notes: '' });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { if (siteId) fetchDeliveries(); }, [siteId]);
+
+  const fetchDeliveries = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/deliveries', { params: { site_id: siteId } });
+      setDeliveries(res.data || []);
+    } catch { setDeliveries([]); }
+    finally { setLoading(false); }
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!form.recipient.trim()) return;
+    setSaving(true);
+    try {
+      await api.post('/deliveries', { site_id: siteId, ...form });
+      toast.success('Delivery recorded');
+      setShowModal(false);
+      setForm({ recipient: '', sender: '', carrier: '', notes: '' });
+      fetchDeliveries();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to record delivery');
+    } finally { setSaving(false); }
+  };
+
+  const handleCollect = async (id) => {
+    try {
+      await api.post(`/deliveries/${id}/collect`);
+      toast.success('Marked as collected');
+      fetchDeliveries();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to update delivery');
+    }
+  };
+
+  const filtered = deliveries.filter(d =>
+    !search || d.recipient?.toLowerCase().includes(search.toLowerCase()) ||
+    d.sender?.toLowerCase().includes(search.toLowerCase()) ||
+    d.carrier?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative min-w-[260px] flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search deliveries..."
+              className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+            />
+          </div>
+          <div className="flex-1" />
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="rounded-lg bg-[#2b4594] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e326e]"
+          >
+            Log delivery
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr>
+              <th className="px-4 py-3">Recipient</th>
+              <th className="px-4 py-3">Sender</th>
+              <th className="px-4 py-3">Carrier</th>
+              <th className="px-4 py-3">Received</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {filtered.map(d => (
+              <tr key={d._id || d.id} className="hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium text-slate-800">{d.recipient}</td>
+                <td className="px-4 py-3 text-slate-600">{d.sender || '--'}</td>
+                <td className="px-4 py-3 text-slate-600">{d.carrier || '--'}</td>
+                <td className="px-4 py-3 text-slate-600">
+                  {d.createdAt ? new Date(d.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '--'}
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${d.collected ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-[#2b4594]'}`}>
+                    {d.collected ? 'Collected' : 'Awaiting collection'}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {!d.collected && (
+                    <button
+                      type="button"
+                      onClick={() => handleCollect(d._id || d.id)}
+                      className="inline-flex items-center gap-1 rounded-lg bg-[#2b4594] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1e326e]"
+                    >
+                      <CheckCircle2 size={13} /> Collect
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {!loading && filtered.length === 0 && (
+          <div className="flex flex-col items-center gap-3 py-16 text-slate-400">
+            <p className="text-lg font-semibold text-slate-600">No deliveries recorded</p>
+            <p className="text-sm">Log a delivery to track parcels and packages for {siteName || 'this site'}.</p>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="mt-1 rounded-lg bg-[#2b4594] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e326e]"
+            >
+              Log delivery
+            </button>
+          </div>
+        )}
+        {loading && <div className="py-12 text-center text-sm text-slate-500">Loading deliveries...</div>}
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h2 className="text-xl font-semibold text-slate-800">Log a delivery</h2>
+              <button type="button" onClick={() => setShowModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-100"><X size={16} /></button>
+            </div>
+            <form onSubmit={handleCreate} className="space-y-4 p-6">
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Recipient *</label>
+                <input value={form.recipient} onChange={e => setForm(f => ({ ...f, recipient: e.target.value }))} required
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Sender</label>
+                <input value={form.sender} onChange={e => setForm(f => ({ ...f, sender: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Carrier</label>
+                <input value={form.carrier} onChange={e => setForm(f => ({ ...f, carrier: e.target.value }))} placeholder="e.g. Royal Mail, DHL"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Notes</label>
+                <textarea rows={2} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                  className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowModal(false)}
+                  className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+                <button type="submit" disabled={saving}
+                  className="rounded-lg bg-[#2b4594] px-5 py-2 text-sm font-semibold text-white hover:bg-[#1e326e] disabled:opacity-60">
+                  {saving ? 'Saving...' : 'Log delivery'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ActivityPage = () => {
   const initialRange = getDateRange('today');
   const [activeTab, setActiveTab] = useState('visits');
@@ -1462,8 +1639,8 @@ const ActivityPage = () => {
         {/* ── No sites yet banner ─────────────────────────────────── */}
         {sites.length === 0 && (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex flex-col items-center gap-4 text-center">
-            <div className="w-14 h-14 rounded-full bg-[#76c043]/10 flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#76c043" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <div className="w-14 h-14 rounded-full bg-[#2b4594]/10 flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2b4594" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
               </svg>
             </div>
@@ -1474,7 +1651,7 @@ const ActivityPage = () => {
               </p>
             </div>
             <a href="/admin/manage/sites"
-              className="px-5 py-2 bg-[#76c043] hover:bg-[#5fa832] text-white rounded-lg text-sm font-semibold transition-colors">
+              className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold transition-colors">
               Create a site
             </a>
           </div>
@@ -1664,7 +1841,7 @@ const ActivityPage = () => {
                         }}
                         className="block w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50"
                       >
-                        Export filtered visits
+                        Export All
                       </button>
                       <button
                         type="button"
@@ -1892,6 +2069,10 @@ const ActivityPage = () => {
               loadVisitStats(selectedSiteId);
             }}
           />
+        )}
+
+        {activeTab === 'deliveries' && (
+          <DeliveriesTab siteId={selectedSiteId} siteName={siteName} />
         )}
       </div>
 

@@ -62,7 +62,7 @@ const AdminLayout = () => {
               <NavLink key={to} to={to}
                 className={({ isActive }) =>
                   `px-5 h-full flex items-center text-[15px] font-semibold transition-colors border-b-2 ${
-                    isActive ? 'border-[#76c043] text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800'
+                    isActive ? 'border-[#2b4594] text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`
                 }
               >{label}</NavLink>
@@ -72,7 +72,7 @@ const AdminLayout = () => {
             <div className="relative h-full flex items-center" ref={manageRef}>
               <button onClick={() => setManageOpen(o => !o)}
                 className={`px-5 h-full flex items-center text-[15px] font-semibold transition-colors border-b-2 gap-1 ${
-                  isManageActive ? 'border-[#76c043] text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800'
+                  isManageActive ? 'border-[#2b4594] text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800'
                 }`}>
                 Manage
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="mt-0.5 text-slate-400">
