@@ -4,8 +4,10 @@ const bcrypt   = require('bcryptjs');
 const Admin    = require('../models/Admin');
 
 async function run() {
-  await mongoose.connect(process.env.MONGO_URI);
-  console.log('MongoDB connected');
+  await mongoose.connect(process.env.MONGO_URI, {
+    dbName: 'Tripod_SignIn_App'
+  });
+  console.log('MongoDB connected to Tripod_SignIn_App');
 
   const password = 'Admin@1234';
   const hashed   = await bcrypt.hash(password, 10);
