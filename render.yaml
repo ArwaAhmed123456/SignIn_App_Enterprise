@@ -2,6 +2,7 @@ services:
   - type: web
     name: Tripod_SignIn_App
     runtime: node
+    rootDir: .
     buildCommand: cd client && npm install && npm run build && cd ../server && npm install
     startCommand: cd server && node index.js
     envVars:
