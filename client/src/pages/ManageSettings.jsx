@@ -1,8 +1,12 @@
 import React from 'react';
 import { NavLink, Routes, Route, Navigate } from 'react-router-dom';
 import { MapPin, Users, Bell, ShieldCheck, Code, Settings as SettingsIcon } from 'lucide-react';
-import VisitorGroupsList from './manage/VisitorGroupsList';
-import SitesList from './manage/SitesList';
+import VisitorGroupsList    from './manage/VisitorGroupsList';
+import SitesList            from './manage/SitesList';
+import AdvancedNotifications from './manage/AdvancedNotifications';
+import SafetyCheck          from './manage/SafetyCheck';
+import ClientAPI            from './manage/ClientAPI';
+import AccountManagement    from './manage/AccountManagement';
 
 const navItems = [
   { id: 'sites',         label: 'Sites',                  icon: MapPin,         path: '/admin/manage/sites' },
@@ -58,11 +62,13 @@ const ManageSettings = () => (
       <div className="max-w-5xl mx-auto p-8">
         <Routes>
           <Route index element={<Navigate to="sites" replace />} />
-          <Route path="sites" element={<SitesList />} />
+          <Route path="sites"          element={<SitesList />} />
           <Route path="visitor-groups" element={<VisitorGroupsList />} />
-          <Route path="*" element={
-            <div className="text-slate-500 text-sm py-4">Feature coming soon.</div>
-          } />
+          <Route path="notifications"  element={<AdvancedNotifications />} />
+          <Route path="safety"         element={<SafetyCheck />} />
+          <Route path="api"            element={<ClientAPI />} />
+          <Route path="account"        element={<AccountManagement />} />
+          <Route path="*" element={<Navigate to="sites" replace />} />
         </Routes>
       </div>
     </div>
