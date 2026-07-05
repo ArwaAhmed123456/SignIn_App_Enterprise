@@ -132,13 +132,12 @@ const KioskUrlCard = ({ site, onClose }) => {
   // Fall back to LAN IP detection so it works on local WiFi too.
   const getBaseUrl = () => {
     if (import.meta.env.VITE_APP_URL) return import.meta.env.VITE_APP_URL.replace(/\/$/, '');
-    const host = window.location.hostname;
-    const port = window.location.port;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      // Try to use LAN IP so phone can scan — falls back to localhost if unknown
-      return `http://192.168.100.173:${port || 5173}`;
+    // In production the app is served from the same origin
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return window.location.origin;
     }
-    return window.location.origin;
+    // Local dev fallback — use LAN IP so phone can reach it
+    return `http://192.168.100.173:${window.location.port || 5173}`;
   };
   const url = `${getBaseUrl()}/checkin/${site.id}`;
   const [copied, setCopied] = useState(false);
