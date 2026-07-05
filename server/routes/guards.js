@@ -107,13 +107,20 @@ router.post('/members', verifyAdmin, async (req, res) => {
       const s = await Site.findOne().sort({ createdAt: 1 });
       resolvedSiteId = s?._id;
     }
+
+    // Only use visitor_group_id if it's a valid ObjectId — otherwise ignore it
+    const mongoose = require('mongoose');
+    const safeGroupId = visitor_group_id && mongoose.isValidObjectId(visitor_group_id)
+      ? visitor_group_id
+      : null;
+
     const member = await Member.create({
       firstName: first_name, lastName: last_name||null,
       email: email||null, phone: phone||null,
       role: role||'Employee', status: status||'Current',
       startDate: start_date ? new Date(start_date) : null,
       endDate:   end_date   ? new Date(end_date)   : null,
-      visitorGroupId: visitor_group_id||null,
+      visitorGroupId: safeGroupId,
       siteId: resolvedSiteId,
     });
 
@@ -144,7 +151,10 @@ router.put('/members/:id', verifyAdmin, async (req, res) => {
   if (status           !== undefined) updates.status         = status;
   if (start_date       !== undefined) updates.startDate      = start_date ? new Date(start_date) : null;
   if (end_date         !== undefined) updates.endDate        = end_date   ? new Date(end_date)   : null;
-  if (visitor_group_id !== undefined) updates.visitorGroupId = visitor_group_id;
+  if (visitor_group_id !== undefined) {
+    const mongoose = require('mongoose');
+    updates.visitorGroupId = visitor_group_id && mongoose.isValidObjectId(visitor_group_id) ? visitor_group_id : null;
+  }
   try {
     const member = await Member.findByIdAndUpdate(req.params.id, updates, { new: true }).lean();
     if (!member) return res.status(404).json({ error: 'Member not found' });

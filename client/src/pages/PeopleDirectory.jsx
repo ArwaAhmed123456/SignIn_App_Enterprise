@@ -246,8 +246,6 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
                   <option value="">Select group…</option>
                   {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                  <option value="Employees">Employees</option>
-                  <option value="Contractors">Contractors</option>
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
