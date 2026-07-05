@@ -262,23 +262,40 @@ const AddNoticeModal = ({ groups, onClose, onSave }) => {
 };
 
 // ── Add poster modal ──────────────────────────────────────────────────────────
-const AddPosterModal = ({ site, groups, onClose }) => {
+const AddPosterModal = ({ site, groups, onClose, onSave }) => {
+  // Use real groups from API, or fall back to defaults if none loaded yet
+  const groupList = groups && groups.length > 0
+    ? groups
+    : [
+        { id: 'employees', name: 'Employees' },
+        { id: 'visitors',  name: 'Visitors'  },
+        { id: 'deliveries',name: 'Deliveries'},
+      ];
+
   const [name, setName]         = useState('');
   const [instructions, setInst] = useState('');
-  const [selGroups, setSelGroups] = useState(groups.map(g => g.id));
+  const [selGroups, setSelGroups] = useState(groupList.map(g => g.id)); // all selected by default
+  const [dropOpen, setDropOpen] = useState(false);
   const [advOpen, setAdvOpen]   = useState(false);
+  const [nameError, setNameError] = useState('');
+
   const toggleGroup = (id) => setSelGroups(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
-  const allSel = groups.every(g => selGroups.includes(g.id));
+  const allSel = groupList.length > 0 && groupList.every(g => selGroups.includes(g.id));
+  const toggleAll = () => setSelGroups(allSel ? [] : groupList.map(g => g.id));
+
+  const displayLabel = allSel ? 'All groups'
+    : selGroups.length === 0 ? 'No groups selected'
+    : groupList.filter(g => selGroups.includes(g.id)).map(g => g.name).join(', ');
 
   const getBaseUrl = () => {
     if (import.meta.env.VITE_APP_URL) return import.meta.env.VITE_APP_URL.replace(/\/$/, '');
-    if (window.location.hostname !== 'localhost') return window.location.origin;
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return window.location.origin;
     return `http://192.168.100.173:${window.location.port || 5173}`;
   };
   const qrUrl = `${getBaseUrl()}/checkin/${site.id}`;
   const qrRef = useRef(null);
 
-  const downloadPoster = () => {
+  const downloadQR = () => {
     const svg = qrRef.current?.querySelector('svg');
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -291,6 +308,13 @@ const AddPosterModal = ({ site, groups, onClose }) => {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
 
+  const handleAdd = () => {
+    if (!name.trim()) { setNameError('Poster name is required'); return; }
+    const selectedNames = groupList.filter(g => selGroups.includes(g.id)).map(g => g.name);
+    onSave({ name: name.trim(), instructions, groups: selectedNames });
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -299,62 +323,93 @@ const AddPosterModal = ({ site, groups, onClose }) => {
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 rounded-full p-1 hover:bg-slate-100"><X size={18} /></button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+          {/* Name */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1"><span className="text-red-500">* </span>Name of poster</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="E.g. where the poster will be located" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+            <input value={name} onChange={e => { setName(e.target.value); setNameError(''); }}
+              placeholder="E.g. Reception entrance, Main gate…"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594] ${nameError ? 'border-red-400' : 'border-slate-300'}`} />
+            {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
           </div>
+
+          {/* Instructions */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1"><span className="text-red-500">* </span>Instructions</label>
-            <textarea rows={3} value={instructions} onChange={e => setInst(e.target.value)} placeholder="E.g. what to do once signed in" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-[#2b4594]" />
+            <textarea rows={3} value={instructions} onChange={e => setInst(e.target.value)}
+              placeholder="E.g. what to do once signed in"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-[#2b4594]" />
           </div>
+
+          {/* Groups dropdown */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Available to groups</label>
-            <div className="border border-slate-300 rounded-lg overflow-hidden">
-              <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-sm text-slate-600">
-                <span>All groups</span><ChevronDown size={14} />
-              </div>
-              <div className="p-2 space-y-1">
-                <label className="flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-slate-50 rounded">
-                  <input type="checkbox" checked={allSel} onChange={() => setSelGroups(allSel ? [] : groups.map(g => g.id))} className="w-4 h-4 accent-[#2b4594]" /> Select all
-                </label>
-                {groups.map(g => (
-                  <label key={g.id} className="flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-slate-50 rounded">
-                    <input type="checkbox" checked={selGroups.includes(g.id)} onChange={() => toggleGroup(g.id)} className="w-4 h-4 accent-[#2b4594]" /> {g.name}
+            <div className="relative">
+              <button type="button" onClick={() => setDropOpen(o => !o)}
+                className="w-full flex items-center justify-between border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white hover:bg-slate-50 text-left">
+                <span className={selGroups.length === 0 ? 'text-slate-400' : 'text-slate-700'}>{displayLabel}</span>
+                <ChevronDown size={14} className="text-slate-400 flex-shrink-0" />
+              </button>
+              {dropOpen && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden">
+                  {/* Select all */}
+                  <label className="flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-sm border-b border-slate-100">
+                    <input type="checkbox" checked={allSel} onChange={toggleAll} className="w-4 h-4 accent-[#2b4594]" />
+                    <span className="font-semibold text-slate-700">Select all</span>
                   </label>
-                ))}
-              </div>
+                  {groupList.map(g => (
+                    <label key={g.id} className="flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-sm">
+                      <input type="checkbox" checked={selGroups.includes(g.id)} onChange={() => toggleGroup(g.id)} className="w-4 h-4 accent-[#2b4594]" />
+                      <span className="text-slate-700">{g.name}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          <button onClick={() => setAdvOpen(o => !o)} className="flex items-center justify-between w-full bg-slate-50 rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200">
+
+          {/* Advanced settings */}
+          <button type="button" onClick={() => setAdvOpen(o => !o)}
+            className="flex items-center justify-between w-full bg-slate-50 rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200">
             Advanced settings <span>{advOpen ? '−' : '+'}</span>
           </button>
           {advOpen && (
             <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
               <input type="checkbox" className="w-4 h-4 accent-[#2b4594] mt-0.5" />
-              <div><p className="font-semibold">Hide host list (if enabled for group)</p><p className="text-xs text-slate-400">Protects privacy of hosts when scanning a static QR code</p></div>
+              <div>
+                <p className="font-semibold">Hide host list (if enabled for group)</p>
+                <p className="text-xs text-slate-400">Protects privacy of hosts when scanning a static QR code</p>
+              </div>
             </label>
           )}
-          {name && (
-            <div>
+
+          {/* Live QR preview — shows as soon as name is typed */}
+          {name.trim() && (
+            <div className="pt-2">
               <p className="text-sm font-semibold text-slate-700 mb-2">QR Preview</p>
-              <div ref={qrRef} className="flex justify-center p-3 bg-white border border-slate-200 rounded-lg w-fit">
-                <QRCode value={qrUrl} size={120} bgColor="#ffffff" fgColor="#1e293b" level="M" />
+              <div ref={qrRef} className="flex justify-center p-3 bg-white border border-slate-200 rounded-xl w-fit mx-auto">
+                <QRCode value={qrUrl} size={140} bgColor="#ffffff" fgColor="#1e293b" level="H" />
               </div>
-              <button onClick={downloadPoster} className="mt-2 inline-flex items-center gap-2 text-sm text-[#2b4594] hover:underline font-semibold"><Download size={14} /> Download QR</button>
+              <p className="text-xs text-slate-400 text-center mt-2 font-mono break-all">{qrUrl}</p>
+              <div className="flex justify-center mt-2">
+                <button type="button" onClick={downloadQR}
+                  className="inline-flex items-center gap-2 text-sm text-[#2b4594] hover:underline font-semibold">
+                  <Download size={14} /> Download QR PNG
+                </button>
+              </div>
             </div>
           )}
         </div>
+
+        {/* Footer */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
-          <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button onClick={() => {
-            if (!name.trim()) return;
-            onSave({
-              name: name.trim(),
-              instructions,
-              groups: selGroups.map(id => groups.find(g => g.id === id)?.name || id),
-            });
-            onClose();
-          }} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">Add poster</button>
+          <button type="button" onClick={onClose}
+            className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            Cancel
+          </button>
+          <button type="button" onClick={handleAdd}
+            className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
+            Add poster
+          </button>
         </div>
       </div>
     </div>
