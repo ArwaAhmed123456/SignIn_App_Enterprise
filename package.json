@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Sign In App Enterprise - Visitor Management System",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "scripts": {
     "build": "cd client && npm install && npm run build",
