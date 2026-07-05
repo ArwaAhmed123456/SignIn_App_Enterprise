@@ -1,26 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
-const prisma = require('../prismaClient');
+const express  = require('express');
+const router   = express.Router();
+const jwt      = require('jsonwebtoken');
+const crypto   = require('crypto');
+const bcrypt   = require('bcryptjs');
+const Admin    = require('../models/Admin');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
-// Middleware to check if user is Super Admin
+// ─── Middleware ───────────────────────────────────────────────────────────────
 const verifySuperAdmin = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) return res.status(401).json({ error: 'No token provided' });
-
     try {
-        const token = authHeader.split(' ')[1];
+        const token   = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, JWT_SECRET);
-
-        const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-        if (!admin || admin.role !== 'superadmin') {
+        const admin   = await Admin.findById(decoded.id);
+        if (!admin || admin.role !== 'superadmin')
             return res.status(403).json({ error: 'Access denied. Super Admin only.' });
-        }
-
         req.user = decoded;
         next();
     } catch (err) {
@@ -28,40 +24,54 @@ const verifySuperAdmin = async (req, res, next) => {
     }
 };
 
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+    try {
+        const token   = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch {
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+};
+
+// ─── Login ────────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-
-    if (!email || !password) {
+    if (!email || !password)
         return res.status(400).json({ error: 'Email and password required' });
-    }
 
     try {
-        const admin = await prisma.admin.findUnique({
-            where: { email: email.toLowerCase() }
-        });
-        
-        if (!admin) {
+        const admin = await Admin.findOne({ email: email.toLowerCase() });
+        if (!admin)
             return res.status(401).json({ error: 'Invalid credentials' });
-        }
 
         const valid = await bcrypt.compare(password, admin.password);
-        if (!valid) {
+        if (!valid)
             return res.status(401).json({ error: 'Invalid credentials' });
-        }
 
         const token = jwt.sign(
-            { id: admin.id, email: admin.email, role: admin.role, firstName: admin.firstName || '', lastName: admin.lastName || '' },
+            {
+                id:        admin._id,
+                email:     admin.email,
+                role:      admin.role,
+                firstName: admin.first_name || '',
+                lastName:  admin.last_name  || '',
+            },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
+
         res.json({
             token,
             user: {
                 email:        admin.email,
                 role:         admin.role,
-                firstName:    admin.firstName    || '',
-                lastName:     admin.lastName     || '',
-                organization: admin.organization || '',
+                firstName:    admin.first_name    || '',
+                lastName:     admin.last_name     || '',
+                organization: admin.organization  || '',
             }
         });
     } catch (err) {
@@ -70,37 +80,26 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// ─── Signup (superadmin only) ─────────────────────────────────────────────────
 router.post('/signup', verifySuperAdmin, async (req, res) => {
     const { email, password, first_name, last_name, phone, organization } = req.body;
-
-    if (!email || !password || !first_name || !last_name) {
+    if (!email || !password || !first_name || !last_name)
         return res.status(400).json({ error: 'Email, password, first name, and last name are required' });
-    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email))
         return res.status(400).json({ error: 'Invalid email format' });
-    }
 
     try {
-        const existing = await prisma.admin.findUnique({ where: { email: email.toLowerCase() } });
-        if (existing) {
-            return res.status(400).json({ error: 'Email already exists' });
-        }
+        const existing = await Admin.findOne({ email: email.toLowerCase() });
+        if (existing) return res.status(400).json({ error: 'Email already exists' });
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await prisma.admin.create({
-            data: {
-                email: email.toLowerCase(),
-                password: hashedPassword,
-                firstName: first_name,
-                lastName: last_name,
-                phone,
-                organization
-            }
+        const hashed = await bcrypt.hash(password, 10);
+        await Admin.create({
+            email: email.toLowerCase(),
+            password: hashed,
+            first_name, last_name, phone, organization,
         });
-        
         res.status(201).json({ message: 'Admin account created successfully' });
     } catch (err) {
         console.error('Signup error:', err);
@@ -108,62 +107,47 @@ router.post('/signup', verifySuperAdmin, async (req, res) => {
     }
 });
 
+// ─── Forgot password ──────────────────────────────────────────────────────────
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     try {
-        const admin = await prisma.admin.findUnique({ where: { email: email.toLowerCase() } });
-        if (!admin) {
-            return res.json({ message: 'If that email exists, a reset link has been sent.' });
-        }
+        const admin = await Admin.findOne({ email: email.toLowerCase() });
+        if (!admin) return res.json({ message: 'If that email exists, a reset link has been sent.' });
 
-        const token = crypto.randomBytes(20).toString('hex');
-        const expires = new Date(Date.now() + 3600000); // 1 hour
+        const token   = crypto.randomBytes(20).toString('hex');
+        const expires = new Date(Date.now() + 3600000);
 
-        await prisma.admin.update({
-            where: { id: admin.id },
-            data: {
-                resetToken: token,
-                resetExpires: expires
-            }
-        });
+        admin.reset_token   = token;
+        admin.reset_expires = expires;
+        await admin.save({ validateBeforeSave: false });
 
         const { sendPasswordResetEmail } = require('../services/emailService');
         await sendPasswordResetEmail(email, token);
 
         res.json({
-            message: 'If that email exists, a reset link has been sent.',
-            mockToken: process.env.NODE_ENV === 'development' ? token : undefined
+            message:    'If that email exists, a reset link has been sent.',
+            mockToken:  process.env.NODE_ENV === 'development' ? token : undefined,
         });
-    } catch (error) {
-        console.error('Password reset email error:', error);
-        return res.status(500).json({ error: 'Failed to send reset email' });
+    } catch (err) {
+        console.error('Password reset error:', err);
+        res.status(500).json({ error: 'Failed to send reset email' });
     }
 });
 
+// ─── Reset password ───────────────────────────────────────────────────────────
 router.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
     try {
-        const admin = await prisma.admin.findFirst({
-            where: {
-                resetToken: token,
-                resetExpires: { gt: new Date() }
-            }
+        const admin = await Admin.findOne({
+            reset_token:   token,
+            reset_expires: { $gt: new Date() },
         });
+        if (!admin) return res.status(400).json({ error: 'Invalid or expired token' });
 
-        if (!admin) {
-            return res.status(400).json({ error: 'Invalid or expired token' });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        await prisma.admin.update({
-            where: { id: admin.id },
-            data: {
-                password: hashedPassword,
-                resetToken: null,
-                resetExpires: null
-            }
-        });
+        admin.password      = await bcrypt.hash(newPassword, 10);
+        admin.reset_token   = undefined;
+        admin.reset_expires = undefined;
+        await admin.save({ validateBeforeSave: false });
 
         res.json({ message: 'Password reset successful' });
     } catch (err) {
@@ -172,64 +156,51 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-// Super Admin only routes
+// ─── Change password ──────────────────────────────────────────────────────────
+router.post('/change-password', verifyToken, async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword)
+        return res.status(400).json({ error: 'Both passwords required' });
+    if (newPassword.length < 8)
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+
+    try {
+        const admin = await Admin.findById(req.user.id);
+        if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+        const valid = await bcrypt.compare(currentPassword, admin.password);
+        if (!valid) return res.status(400).json({ error: 'Current password is incorrect' });
+
+        admin.password = await bcrypt.hash(newPassword, 10);
+        await admin.save({ validateBeforeSave: false });
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ─── List admins ──────────────────────────────────────────────────────────────
 router.get('/admins', verifySuperAdmin, async (req, res) => {
     try {
-        const admins = await prisma.admin.findMany({
-            select: {
-                id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-                phone: true,
-                organization: true,
-                role: true,
-                createdAt: true
-            }
-        });
+        const admins = await Admin.find({}, '-password -reset_token -reset_expires');
         res.json(admins);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
 });
 
+// ─── Delete admin ─────────────────────────────────────────────────────────────
 router.delete('/admins/:id', verifySuperAdmin, async (req, res) => {
     try {
-        const admin = await prisma.admin.findUnique({ where: { id: req.params.id } });
+        const admin = await Admin.findById(req.params.id);
         if (!admin) return res.status(404).json({ error: 'Admin not found' });
-
-        if (admin.role === 'superadmin') {
+        if (admin.role === 'superadmin')
             return res.status(400).json({ error: 'Cannot delete superadmin' });
-        }
-
-        await prisma.admin.delete({ where: { id: req.params.id } });
+        await Admin.findByIdAndDelete(req.params.id);
         res.json({ message: 'Admin deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Authenticated admin changes their own password
-router.post('/change-password', async (req, res) => {
-    const auth = req.headers['authorization'];
-    if (!auth) return res.status(401).json({ error: 'No token' });
-    try {
-        const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
-        const { currentPassword, newPassword } = req.body;
-        if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Both passwords required' });
-        if (newPassword.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
-
-        const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-        if (!admin) return res.status(404).json({ error: 'Admin not found' });
-
-        const valid = await bcrypt.compare(currentPassword, admin.password);
-        if (!valid) return res.status(400).json({ error: 'Current password is incorrect' });
-
-        const hashed = await bcrypt.hash(newPassword, 10);
-        await prisma.admin.update({ where: { id: decoded.id }, data: { password: hashed } });
-        res.json({ message: 'Password changed successfully' });
-    } catch (err) {
-        res.status(401).json({ error: 'Unauthorized' });
     }
 });
 
