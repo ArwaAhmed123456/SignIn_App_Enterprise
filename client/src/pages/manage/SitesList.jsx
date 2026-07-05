@@ -822,11 +822,12 @@ const NewReportForm = ({ siteName, onClose, onSave }) => {
 // ── Main SitesList page ───────────────────────────────────────────────────────
 const SitesList = () => {
   const [sites, setSites]           = useState([]);
+  const [groups, setGroups]         = useState([]);
   const [loading, setLoading]       = useState(true);
   const [showAdd, setShowAdd]       = useState(false);
   const [editSite, setEditSite]     = useState(null);
   const [deleteSite, setDeleteSite] = useState(null);
-  const [openSite, setOpenSite]     = useState(null); // opens SiteSettings
+  const [openSite, setOpenSite]     = useState(null);
 
   const fetchSites = async () => {
     setLoading(true);
@@ -834,7 +835,6 @@ const SitesList = () => {
       const res = await api.get('/projects');
       const list = res.data || [];
       setSites(list);
-      // Load groups for first site
       if (list.length > 0) {
         const gr = await api.get(`/visitor-groups?project_id=${list[0].id}`);
         setGroups(gr.data || []);
@@ -843,15 +843,22 @@ const SitesList = () => {
     finally { setLoading(false); }
   };
 
+  const fetchGroupsForSite = async (siteId) => {
+    try {
+      const gr = await api.get(`/visitor-groups?project_id=${siteId}`);
+      setGroups(gr.data || []);
+    } catch { setGroups([]); }
+  };
+
   useEffect(() => { fetchSites(); }, []);
 
-  // ── Site settings view ───────────────────────────────────────────────────
   if (openSite) {
     return (
       <SiteSettings
         site={openSite}
+        groups={groups}
         onBack={() => { setOpenSite(null); fetchSites(); }}
-        onSaved={fetchSites}
+        onDeleted={() => { setOpenSite(null); fetchSites(); }}
       />
     );
   }
@@ -886,7 +893,7 @@ const SitesList = () => {
           {sites.map(site => (
             <div key={site.id}
               className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 group cursor-pointer"
-              onClick={() => setOpenSite(site)}>
+              onClick={() => { fetchGroupsForSite(site.id); setOpenSite(site); }}>
               <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                 {site.name?.toLowerCase().includes('remote') ? <Globe size={18} className="text-slate-400" /> : <MapPin size={18} className="text-slate-400" />}
               </div>
