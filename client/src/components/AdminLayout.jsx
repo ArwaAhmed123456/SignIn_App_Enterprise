@@ -46,7 +46,14 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
 
-      {/* Nav Bar */}
+      {/* Trial banner */}
+      <div className="bg-[#2b4594] text-white text-xs font-semibold flex items-center justify-center gap-3 py-1.5 px-4">
+        <span className="bg-white text-[#2b4594] rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide">CORE</span>
+        <span>You have 12 days remaining in your trial</span>
+        <a href="#" className="underline font-bold hover:text-blue-200">Buy now</a>
+      </div>
+
+      {/* Main Navigation Bar */}
       <div className="bg-white border-b border-slate-200 h-[72px] flex items-center justify-between px-6 shadow-sm z-10">
         <div className="flex items-center h-full">
           <div className="flex items-center justify-center mr-8">

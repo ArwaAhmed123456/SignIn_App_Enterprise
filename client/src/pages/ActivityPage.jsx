@@ -1314,6 +1314,8 @@ const ActivityPage = () => {
   const [sortDir, setSortDir] = useState('desc');
   const [visibleCols, setVisibleCols] = useState([
     'Name',
+    'Photo',
+    'Site',
     'Group',
     'Signed in',
     'Signed out',
@@ -1576,7 +1578,28 @@ const ActivityPage = () => {
           Name
         </button>
       ),
-      render: (visit) => <span className="font-medium text-slate-800">{visit.name}</span>,
+      render: (visit) => (
+        <div className="flex items-center gap-2">
+          {visibleCols.includes('Photo') && (
+            <div className="w-7 h-7 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center text-[10px] font-bold text-slate-600">
+              {visit.image_url
+                ? <img src={visit.image_url} alt="" className="w-full h-full object-cover" />
+                : (visit.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+              }
+            </div>
+          )}
+          <span className="font-medium text-slate-800">{visit.name}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'Photo',
+      header: <span>Photo</span>,
+      render: (visit) => visit.image_url
+        ? <img src={visit.image_url} alt={visit.name} className="w-8 h-8 rounded-full object-cover" />
+        : <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
+            {(visit.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+          </div>,
     },
     {
       key: 'Site',
@@ -1628,7 +1651,27 @@ const ActivityPage = () => {
       header: <span>Notes</span>,
       render: (visit) => visit.reason || '--',
     },
+    // PERSONAL FIELDS
+    {
+      key: 'Email',
+      header: <span>Email</span>,
+      render: (visit) => visit.email || '--',
+    },
+    {
+      key: 'Mobile',
+      header: <span>Mobile</span>,
+      render: (visit) => visit.phone || '--',
+    },
+    {
+      key: 'Role',
+      header: <span>Role</span>,
+      render: (visit) => visit.role || '--',
+    },
   ];
+
+  // Separate columns into sections for the settings panel
+  const VISIT_DETAIL_COLS = ['Name', 'Photo', 'Site', 'Group', 'Signed in', 'Signed out', 'Duration', 'Notes'];
+  const PERSONAL_FIELD_COLS = ['Email', 'Mobile', 'Role'];
 
   return (
     <div className="h-full overflow-auto bg-slate-50">
@@ -1944,20 +1987,34 @@ const ActivityPage = () => {
                         </button>
 
                         {showColSettings && (
-                          <div className="absolute right-0 top-full z-30 mt-2 w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
-                            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">VISIT DETAILS</p>
-                            {visitColumns.map((column) => (
-                              <label key={column.key} className="flex items-center gap-2 py-1 text-sm text-slate-700">
+                          <div className="absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-3 shadow-xl max-h-80 overflow-y-auto">
+                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">VISIT DETAILS</p>
+                            {visitColumns.filter(c => VISIT_DETAIL_COLS.includes(c.key)).map((column) => (
+                              <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
                                 <input
                                   type="checkbox"
                                   checked={visibleCols.includes(column.key)}
-                                  onChange={() =>
-                                    setVisibleCols((current) =>
-                                      current.includes(column.key)
-                                        ? current.filter((item) => item !== column.key)
-                                        : [...current, column.key]
-                                    )
-                                  }
+                                  onChange={() => setVisibleCols((current) =>
+                                    current.includes(column.key)
+                                      ? current.filter((item) => item !== column.key)
+                                      : [...current, column.key]
+                                  )}
+                                  className="h-4 w-4 accent-[#76c043]"
+                                />
+                                {column.key}
+                              </label>
+                            ))}
+                            <p className="mt-3 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">PERSONAL FIELDS</p>
+                            {visitColumns.filter(c => PERSONAL_FIELD_COLS.includes(c.key)).map((column) => (
+                              <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
+                                <input
+                                  type="checkbox"
+                                  checked={visibleCols.includes(column.key)}
+                                  onChange={() => setVisibleCols((current) =>
+                                    current.includes(column.key)
+                                      ? current.filter((item) => item !== column.key)
+                                      : [...current, column.key]
+                                  )}
                                   className="h-4 w-4 accent-[#2b4594]"
                                 />
                                 {column.key}
