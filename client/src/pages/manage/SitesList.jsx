@@ -442,6 +442,7 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
   const [showConnectDevice, setShowConnectDevice] = useState(false);
   const [deviceCode] = useState(() => Math.floor(1000000 + Math.random() * 9000000).toString());
   const [posters, setPosters]       = useState([]);
+  const [viewQrPoster, setViewQrPoster] = useState(null); // poster whose QR to show
   const [saving, setSaving]         = useState(false);
 
   const siteRef = useRef(null);
@@ -697,7 +698,18 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
                     <td className="px-4 py-3 font-medium text-slate-800">{p.name}</td>
                     <td className="px-4 py-3 text-slate-500 text-xs">{p.groups?.join(', ')}</td>
                     <td className="px-4 py-3 text-slate-500">{fmtDate(p.createdAt)}</td>
-                    <td className="px-4 py-3"><button className="inline-flex items-center gap-1.5 text-sm text-[#2b4594] hover:underline font-semibold"><Download size={13}/> Poster</button></td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => setViewQrPoster(p)}
+                          className="inline-flex items-center gap-1.5 text-sm text-[#2b4594] hover:underline font-semibold">
+                          <QrCode size={13}/> QR code
+                        </button>
+                        <button onClick={() => setViewQrPoster(p)}
+                          className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:underline font-semibold">
+                          <Download size={13}/> Poster
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}</tbody></table>
               </div>
@@ -783,6 +795,63 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
       {showAddNotice && <AddNoticeModal groups={groups} onClose={() => setShowAddNotice(false)} onSave={n => setNotices(s => [...s, n])} />}
       {showAddPoster && <AddPosterModal site={currentSite} groups={groups} onClose={() => setShowAddPoster(false)} onSave={p => setPosters(s => [...s, { ...p, id: Date.now(), createdAt: new Date().toISOString() }])} />}
       {showEvacModal && <EvacPointModal groups={groups} onClose={() => setShowEvacModal(false)} onSave={p => setEvacPoints(s => [...s, p])} />}
+
+      {/* ── QR Poster viewer modal ──────────────────────────── */}
+      {viewQrPoster && (() => {
+        const getBaseUrl = () => {
+          if (import.meta.env.VITE_APP_URL) return import.meta.env.VITE_APP_URL.replace(/\/$/, '');
+          if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return window.location.origin;
+          return `http://192.168.100.173:${window.location.port || 5173}`;
+        };
+        const qrUrl = `${getBaseUrl()}/checkin/${currentSite.id}`;
+        const qrRef = { current: null };
+        const downloadQR = () => {
+          const container = document.getElementById('poster-qr-container');
+          const svg = container?.querySelector('svg');
+          if (!svg) return;
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 400;
+          const ctx = canvas.getContext('2d'); const img = new Image();
+          img.onload = () => {
+            ctx.fillStyle = '#fff'; ctx.fillRect(0,0,400,400); ctx.drawImage(img,0,0,400,400);
+            const a = document.createElement('a');
+            a.download = `${viewQrPoster.name}-qr.png`; a.href = canvas.toDataURL('image/png'); a.click();
+          };
+          img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        };
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h2 className="text-lg font-bold text-slate-800">QR code — {viewQrPoster.name}</h2>
+                <button onClick={() => setViewQrPoster(null)} className="text-slate-400 hover:text-slate-700 rounded-full p-1 hover:bg-slate-100"><X size={18} /></button>
+              </div>
+              <div className="px-6 py-5 flex flex-col items-center gap-4">
+                <div id="poster-qr-container" className="p-4 bg-white border border-slate-200 rounded-xl">
+                  <QRCode value={qrUrl} size={200} bgColor="#ffffff" fgColor="#1e293b" level="H" />
+                </div>
+                <div className="bg-slate-50 border border-slate-100 rounded-lg px-4 py-2 w-full text-center">
+                  <p className="text-xs font-mono text-slate-500 break-all">{qrUrl}</p>
+                </div>
+                <p className="text-xs text-slate-400 text-center">
+                  Scan this QR code with a phone to open the visitor sign-in form for <strong>{currentSite.name}</strong>
+                </p>
+                <div className="flex gap-3 w-full">
+                  <button onClick={downloadQR}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
+                    <Download size={14} /> Download QR
+                  </button>
+                  <a href={qrUrl} target="_blank" rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <ExternalLink size={14} /> Open page
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {showConnectDevice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
