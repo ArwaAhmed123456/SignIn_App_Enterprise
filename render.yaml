@@ -1,8 +1,7 @@
 services:
   - type: web
-    name: signinapp-enterprise
+    name: Tripod_SignIn_App
     runtime: node
-    rootDir: .
     buildCommand: cd client && npm install && npm run build && cd ../server && npm install
     startCommand: cd server && node index.js
     envVars:
@@ -10,15 +9,17 @@ services:
         value: production
       - key: PORT
         value: 5000
-      - key: JWT_SECRET
-        generateValue: true
+      - key: VITE_APP_URL
+        value: https://tripod-signin-app.onrender.com
       - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: EMAIL_SERVICE
         sync: false
       - key: EMAIL_USER
         sync: false
       - key: EMAIL_PASSWORD
         sync: false
       - key: EMAIL_FROM
-        sync: false
-      - key: VITE_APP_URL
         sync: false
