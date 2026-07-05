@@ -138,7 +138,7 @@ const AdminLogin = () => {
                             <button type="button" onClick={() => setView('forgot')} className="text-sm text-secondary hover:text-primary font-bold">Forgot Password?</button>
                         </div>
                         {error && <p className="text-red-500 text-sm font-medium text-center bg-red-50 py-2 rounded-lg">{error}</p>}
-                        {message && <p className="text-green-600 text-sm font-medium text-center bg-green-50 py-2 rounded-lg">{message}</p>}
+                        {message && <p className="text-[#2b4594] text-sm font-medium text-center bg-blue-50 py-2 rounded-lg">{message}</p>}
                         <button
                             type="submit"
                             className="w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-secondary transform hover:-translate-y-0.5 transition"
@@ -164,7 +164,7 @@ const AdminLogin = () => {
                         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                         {message && (
                             <div className="space-y-3">
-                                <p className="text-green-600 text-sm text-center whitespace-pre-wrap">{message}</p>
+                                <p className="text-[#2b4594] text-sm text-center whitespace-pre-wrap">{message}</p>
                                 {token && (
                                     <button type="button" onClick={() => setView('reset')} className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm font-bold">
                                         DEMO: Continue to Reset
@@ -205,7 +205,7 @@ const AdminLogin = () => {
                         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                         <button
                             type="submit"
-                            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                            className="w-full bg-[#2b4594] text-white py-3 rounded-lg font-semibold hover:bg-[#1e326e] transition"
                         >
                             Reset Password
                         </button>

@@ -168,7 +168,7 @@ const ExportModal = ({ dateFrom, dateTo, group, siteId, onClose }) => {
             Cancel
           </button>
           <button onClick={handleExport} disabled={exporting}
-            className="px-5 py-2 bg-[#76c043] hover:bg-[#5fa832] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
+            className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
             {exporting ? 'Exporting…' : 'Export'}
           </button>
         </div>
@@ -193,7 +193,7 @@ const AttendancePage = () => {
   const [siteName, setSiteName]     = useState('All sites');
   const [siteOpen, setSiteOpen]     = useState(false);
   const [groups, setGroups]         = useState([]);
-  const [group, setGroup]           = useState('Employees');
+  const [group, setGroup]           = useState('All');
   const siteRef = useRef(null);
 
   useEffect(() => {
@@ -260,7 +260,7 @@ const AttendancePage = () => {
 
         {/* Tab — green underline only here */}
         <div className="flex border-b border-slate-200">
-          <button className="flex items-center gap-1.5 px-4 pb-3 pt-1 text-sm font-semibold border-b-2 border-[#76c043] text-slate-900">
+          <button className="flex items-center gap-1.5 px-4 pb-3 pt-1 text-sm font-semibold border-b-2 border-[#2b4594] text-slate-900">
             <Clock size={15} className="opacity-70" /> Timesheets
           </button>
         </div>

@@ -105,7 +105,7 @@ const VisitorGroupsList = () => {
 
       {/* New group inline form */}
       {showNewGroup && (
-        <form onSubmit={handleNewGroup} className="mb-4 p-4 bg-white border border-[#76c043] rounded-lg shadow-sm space-y-3">
+        <form onSubmit={handleNewGroup} className="mb-4 p-4 bg-white border border-[#2b4594] rounded-lg shadow-sm space-y-3">
           <div className="flex items-center gap-3">
             <input
               autoFocus
@@ -113,18 +113,18 @@ const VisitorGroupsList = () => {
               placeholder="Group name…"
               value={newGroupName}
               onChange={(e) => { setNewGroupName(e.target.value); setCreateError(''); }}
-              className="flex-1 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#76c043] focus:ring-1 focus:ring-[#76c043]"
+              className="flex-1 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
             />
             <select
               value={newGroupType}
               onChange={(e) => setNewGroupType(e.target.value)}
-              className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#76c043]">
+              className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
               <option value="Standard">Standard</option>
               <option value="Repeat">Repeat</option>
               <option value="Delivery">Delivery</option>
             </select>
             <button type="submit" disabled={saving}
-              className="px-4 py-2 bg-[#76c043] hover:bg-[#5fa832] disabled:opacity-60 text-white rounded-md text-sm font-semibold transition-colors">
+              className="px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-md text-sm font-semibold transition-colors">
               {saving ? 'Creating…' : 'Create'}
             </button>
             <button type="button" onClick={() => { setShowNewGroup(false); setNewGroupName(''); setCreateError(''); }}
