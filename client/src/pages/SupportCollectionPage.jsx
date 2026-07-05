@@ -32,7 +32,7 @@ const SupportCollectionPage = () => {
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#76c043] text-[#76c043]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]">
               <Icon size={24} />
             </div>
             <div>
@@ -62,7 +62,7 @@ const SupportCollectionPage = () => {
                   <Clock3 size={14} />
                   {article.readTime}
                 </span>
-                <ChevronRight size={18} className="text-[#76c043]" />
+                <ChevronRight size={18} className="text-[#2b4594]" />
               </div>
             </Link>
           ))}

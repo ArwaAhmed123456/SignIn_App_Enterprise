@@ -29,7 +29,7 @@ const CopyPill = ({ value }) => {
   return (
     <button onClick={copy} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
       {value}
-      {copied ? <Check size={11} className="text-[#76c043]" /> : <Copy size={11} className="opacity-60" />}
+      {copied ? <Check size={11} className="text-[#2b4594]" /> : <Copy size={11} className="opacity-60" />}
     </button>
   );
 };
@@ -91,7 +91,7 @@ const SiteModal = ({ site, onClose, onSaved }) => {
         </form>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
           <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button onClick={handleSubmit} disabled={saving} className="px-5 py-2 bg-[#76c043] hover:bg-[#5fa832] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">{saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create site'}</button>
+          <button onClick={handleSubmit} disabled={saving} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">{saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create site'}</button>
         </div>
       </div>
     </div>
@@ -168,7 +168,7 @@ const KioskUrlCard = ({ site, onClose }) => {
           <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs font-mono text-slate-700 break-all">{url}</div>
           <div className="flex gap-2">
             <button onClick={copy} className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
-              {copied ? <><Check size={14} className="text-[#76c043]" /> Copied!</> : <><Copy size={14} /> Copy URL</>}
+              {copied ? <><Check size={14} className="text-[#2b4594]" /> Copied!</> : <><Copy size={14} /> Copy URL</>}
             </button>
             <button onClick={downloadQR} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
               <Download size={14} /> Download QR
@@ -208,7 +208,7 @@ const NewReportModal = ({ siteName, onClose }) => {
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
           <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button onClick={onClose} className="px-5 py-2 bg-[#76c043] hover:bg-[#5fa832] text-white rounded-lg text-sm font-semibold">Add report</button>
+          <button onClick={onClose} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">Add report</button>
         </div>
       </div>
     </div>
@@ -256,7 +256,7 @@ const EvacPointModal = ({ onClose }) => {
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
           <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button onClick={onClose} className="px-5 py-2 bg-[#76c043] hover:bg-[#5fa832] text-white rounded-lg text-sm font-semibold">Save</button>
+          <button onClick={onClose} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">Save</button>
         </div>
       </div>
     </div>

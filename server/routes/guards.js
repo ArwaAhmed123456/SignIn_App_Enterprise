@@ -116,6 +116,18 @@ router.post('/members', verifyAdmin, async (req, res) => {
       visitorGroupId: visitor_group_id||null,
       siteId: resolvedSiteId,
     });
+
+    // Send welcome email if requested and member has an email
+    if (req.body.send_welcome && email) {
+      try {
+        const { sendWelcomeEmail } = require('../services/emailService');
+        const site = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
+        await sendWelcomeEmail({ email, name: first_name, siteName: site?.name || 'Sign In App' });
+      } catch (emailErr) {
+        console.warn('Welcome email failed:', emailErr.message);
+      }
+    }
+
     res.status(201).json({ success: true, member: await fmtMember(member.toObject()) });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });

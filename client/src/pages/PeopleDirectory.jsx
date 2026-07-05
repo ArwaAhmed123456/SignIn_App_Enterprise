@@ -59,7 +59,7 @@ const TabBar = ({ active, onChange }) => (
       <button key={t.id} onClick={() => onChange(t.id)}
         className={`inline-flex items-center gap-1.5 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
           active === t.id
-            ? 'border-[#76c043] text-slate-900'
+            ? 'border-[#2b4594] text-slate-900'
             : 'border-transparent text-slate-500 hover:text-slate-800'
         }`}>
         {t.icon}{t.label}
@@ -208,6 +208,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         end_date: form.end_date || undefined,
         visitor_group_id: form.group || undefined,
         status: 'Current',
+        send_welcome: form.send_welcome && !!form.email,
       });
       onSaved();
       onClose();
@@ -397,7 +398,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
           )}
           <div className="flex justify-end">
             <button onClick={handleSave} disabled={saving}
-              className="px-6 py-2 rounded-lg bg-[#76c043] hover:bg-[#5fa832] disabled:opacity-60 text-white text-sm font-semibold">
+              className="px-6 py-2 rounded-lg bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white text-sm font-semibold">
               {saving ? 'Adding…' : 'Add member'}
             </button>
           </div>
@@ -874,7 +875,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
           <div className="flex items-center justify-end gap-3">
             <button onClick={onClose} className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-white">Cancel</button>
             <button onClick={handleSave} disabled={saving}
-              className="px-5 py-2 rounded-lg bg-[#76c043] hover:bg-[#5fa832] disabled:opacity-60 text-white text-sm font-semibold">
+              className="px-5 py-2 rounded-lg bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white text-sm font-semibold">
               {saving ? 'Saving…' : 'Save'}
             </button>
           </div>
@@ -1073,7 +1074,7 @@ const PeopleDirectory = () => {
 
             {/* Add member */}
             <button onClick={() => setShowAdd(true)}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-[#76c043] hover:bg-[#5fa832] text-white text-sm font-semibold">
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-[#2b4594] hover:bg-[#1e326e] text-white text-sm font-semibold">
               Add member <ChevronDown size={14} />
             </button>
           </div>

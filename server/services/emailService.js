@@ -310,11 +310,45 @@ const sendMobileInviteEmail = async (guard, plainToken) => {
     }
 };
 
+// ===============================
+// Send welcome email to new member
+// ===============================
+const sendWelcomeEmail = async ({ email, name, siteName }) => {
+    const mailOptions = {
+        from: process.env.EMAIL_FROM || `"Attendance Pro" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `Welcome to ${siteName || 'Sign In App'}`,
+        html: `
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:40px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #e2e8f0;">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="background:#2b4594;color:#fff;width:56px;height:56px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;margin-bottom:16px;">AP</div>
+      <h1 style="color:#0f172a;margin:0;font-size:22px;">Welcome, ${name || 'there'}!</h1>
+    </div>
+    <p style="color:#475569;margin:0 0 12px;">You have been added as a member at <strong>${siteName || 'our site'}</strong>.</p>
+    <p style="color:#475569;margin:0 0 24px;">You can now sign in and out using the mobile sign-in page provided by your site manager.</p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:16px;margin:0 0 24px;font-size:14px;color:#2b4594;">
+      <strong>Getting started:</strong> Ask your site manager for the site code and visit the sign-in page on your mobile device.
+    </div>
+    <p style="color:#94a3b8;font-size:13px;margin:0;">If you have any questions, contact your site manager directly.</p>
+  </div>
+</div>`
+    };
+    try {
+        await transporter.sendMail(mailOptions);
+        return { success: true };
+    } catch (error) {
+        console.error('Welcome email error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     generateResetToken,
     sendPasswordResetEmail,
     sendContactEmail,
     sendMobileInviteEmail,
-    sendPreRegistrationInviteEmail
+    sendPreRegistrationInviteEmail,
+    sendWelcomeEmail,
 };
 

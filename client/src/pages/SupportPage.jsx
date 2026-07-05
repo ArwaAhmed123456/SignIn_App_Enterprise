@@ -102,7 +102,7 @@ const SupportPage = () => {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search for articles..."
-                className="w-full rounded-2xl border border-slate-200 bg-white py-5 pl-16 pr-6 text-xl text-slate-700 outline-none focus:border-[#76c043] focus:ring-2 focus:ring-[#cfeab8]"
+                className="w-full rounded-2xl border border-slate-200 bg-white py-5 pl-16 pr-6 text-xl text-slate-700 outline-none focus:border-[#2b4594] focus:ring-2 focus:ring-[#cfeab8]"
               />
             </form>
 
@@ -120,7 +120,7 @@ const SupportPage = () => {
 
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           <div className="flex min-h-[260px] flex-col rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#76c043] text-[#76c043]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]">
               <FileText size={32} strokeWidth={1.6} />
             </div>
             <h2 className="mt-6 text-2xl font-semibold text-slate-900">User guide</h2>
@@ -135,7 +135,7 @@ const SupportPage = () => {
           </div>
 
           <div className="flex min-h-[260px] flex-col rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#76c043] text-[#76c043]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]">
               <MessageCircle size={32} strokeWidth={1.6} />
             </div>
             <h2 className="mt-6 text-2xl font-semibold text-slate-900">Online chat</h2>
@@ -151,7 +151,7 @@ const SupportPage = () => {
           </div>
 
           <div className="flex min-h-[260px] flex-col rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#76c043] text-[#76c043]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]">
               <Mail size={32} strokeWidth={1.6} />
             </div>
             <h2 className="mt-6 text-2xl font-semibold text-slate-900">Email us</h2>
@@ -165,7 +165,7 @@ const SupportPage = () => {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.7fr_1fr]">
           <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="flex items-center gap-4 border-b border-slate-100 px-8 py-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#76c043] text-[#76c043]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]">
                 <PlayCircle size={20} />
               </div>
               <div>
@@ -187,7 +187,7 @@ const SupportPage = () => {
                     <p className="text-xl font-medium text-slate-800">{article.title}</p>
                     <p className="mt-1 text-sm text-slate-500">{article.summary}</p>
                   </div>
-                  <span className="text-2xl text-[#76c043]">›</span>
+                  <span className="text-2xl text-[#2b4594]">›</span>
                 </Link>
               ))}
 
@@ -211,7 +211,7 @@ const SupportPage = () => {
                       to={`/admin/support/collections/${collection.slug}`}
                       className="flex items-start gap-3 rounded-2xl border border-slate-200 px-4 py-3 transition-colors hover:border-[#b8df9f] hover:bg-[#f8fcf4]"
                     >
-                      <div className="mt-0.5 text-[#76c043]">
+                      <div className="mt-0.5 text-[#2b4594]">
                         <Icon size={18} />
                       </div>
                       <div>
@@ -235,19 +235,19 @@ const SupportPage = () => {
                   value={emailForm.email}
                   onChange={(event) => setEmailForm((current) => ({ ...current, email: event.target.value }))}
                   placeholder="Your email"
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#76c043] focus:ring-2 focus:ring-[#cfeab8]"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#2b4594] focus:ring-2 focus:ring-[#cfeab8]"
                 />
                 <textarea
                   rows={5}
                   value={emailForm.query}
                   onChange={(event) => setEmailForm((current) => ({ ...current, query: event.target.value }))}
                   placeholder="How can we help?"
-                  className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#76c043] focus:ring-2 focus:ring-[#cfeab8]"
+                  className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#2b4594] focus:ring-2 focus:ring-[#cfeab8]"
                 />
                 <button
                   type="submit"
                   disabled={sendingEmail}
-                  className="w-full rounded-xl bg-[#76c043] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#69b235] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#69b235] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {sendingEmail ? 'Sending...' : 'Send support request'}
                 </button>
@@ -279,7 +279,7 @@ const SupportPage = () => {
 
         {showChat && (
           <div className="fixed bottom-20 right-6 z-50 flex w-80 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center justify-between bg-[#76c043] px-4 py-3">
+            <div className="flex items-center justify-between bg-[#2b4594] px-4 py-3">
               <span className="text-sm font-semibold text-slate-900">Support Chat</span>
               <button type="button" onClick={() => setShowChat(false)} className="text-slate-700 hover:text-slate-900">
                 <X size={16} />
@@ -304,9 +304,9 @@ const SupportPage = () => {
                 value={chatMsg}
                 onChange={(event) => setChatMsg(event.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#76c043]"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594]"
               />
-              <button type="submit" className="rounded-lg bg-[#76c043] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#69b235]">
+              <button type="submit" className="rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#69b235]">
                 Send
               </button>
             </form>

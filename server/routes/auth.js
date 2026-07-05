@@ -122,7 +122,7 @@ router.post('/forgot-password', async (req, res) => {
         await admin.save({ validateBeforeSave: false });
 
         const { sendPasswordResetEmail } = require('../services/emailService');
-        await sendPasswordResetEmail(email, token);
+        await sendPasswordResetEmail(email, 'Admin Portal', token);
 
         res.json({
             message:    'If that email exists, a reset link has been sent.',
@@ -180,7 +180,40 @@ router.post('/change-password', verifyToken, async (req, res) => {
     }
 });
 
-// ─── List admins ──────────────────────────────────────────────────────────────
+// ─── Invite portal user (creates account with temp password) ─────────────────
+router.post('/invite', verifyToken, async (req, res) => {
+    const { email, role } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    try {
+        const existing = await Admin.findOne({ email: email.toLowerCase() });
+        if (existing) return res.status(400).json({ error: 'An account with this email already exists' });
+        const tempPassword = crypto.randomBytes(8).toString('hex');
+        const hashed = await bcrypt.hash(tempPassword, 10);
+        const newAdmin = await Admin.create({
+            email: email.toLowerCase(),
+            password: hashed,
+            first_name: email.split('@')[0],
+            last_name: '',
+            role: role || 'admin',
+        });
+        // Send invite email
+        try {
+            const { sendPasswordResetEmail } = require('../services/emailService');
+            await sendPasswordResetEmail(email, 'Portal Invitation', tempPassword);
+        } catch (emailErr) {
+            console.warn('Could not send invite email:', emailErr.message);
+        }
+        res.status(201).json({
+            message: 'Invite sent',
+            user: { id: newAdmin._id, email: newAdmin.email, role: newAdmin.role, status: 'invited' }
+        });
+    } catch (err) {
+        console.error('Invite error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ─── List admins ───────────────────────────────────────────────────────────────
 router.get('/admins', verifySuperAdmin, async (req, res) => {
     try {
         const admins = await Admin.find({}, '-password -reset_token -reset_expires');
