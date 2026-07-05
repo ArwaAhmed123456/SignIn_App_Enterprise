@@ -89,16 +89,15 @@ io.on('connection', (socket) => {
 });
 
 const manifestCache = require('./services/manifestCache');
-const Project = require('./models/Project');
+const Site = require('./models/Site');
 
 server.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   
-  // Phase 2: Seed the evacuation manifest cache on startup
   try {
-    const projects = await Project.find().lean();
-    for (const p of projects) {
-        await manifestCache.seedFromDB(p.code);
+    const sites = await Site.find().lean();
+    for (const s of sites) {
+      await manifestCache.seedFromDB(s.code);
     }
   } catch (err) {
     console.error('Failed to seed manifest cache:', err);
