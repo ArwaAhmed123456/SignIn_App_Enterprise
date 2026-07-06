@@ -655,7 +655,23 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
   const [showConnectDevice, setShowConnectDevice] = useState(false);
   const [deviceCode] = useState(() => Math.floor(1000000 + Math.random() * 9000000).toString());
   const [posters, setPosters]       = useState([]);
-  const [viewQrPoster, setViewQrPoster] = useState(null); // poster whose QR to show
+  const [postersLoading, setPostersLoading] = useState(false);
+  const [viewQrPoster, setViewQrPoster] = useState(null);
+
+  // Load posters from API when tab is shown or site changes
+  const fetchPosters = async (siteId) => {
+    if (!siteId) return;
+    setPostersLoading(true);
+    try {
+      const res = await api.get(`/posters?site_id=${siteId}`);
+      setPosters(res.data || []);
+    } catch { setPosters([]); }
+    finally { setPostersLoading(false); }
+  };
+
+  useEffect(() => {
+    if (tab === 'Devices & QR posters') fetchPosters(currentSite.id);
+  }, [tab, currentSite.id]);
   const [saving, setSaving]         = useState(false);
 
   const siteRef = useRef(null);
@@ -946,6 +962,13 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
                           className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:underline font-semibold">
                           <Download size={13}/> Poster
                         </button>
+                        <button onClick={async () => {
+                          if (!confirm(`Delete "${p.name}"?`)) return;
+                          try { await api.delete(`/posters/${p.id || p._id}`); } catch {}
+                          setPosters(s => s.filter(x => (x.id || x._id) !== (p.id || p._id)));
+                        }} className="p-1.5 rounded hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors">
+                          <Trash2 size={13}/>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1031,7 +1054,21 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
       {showAddField === 'signin' && <AddFieldModal title="Add sign in field" groups={groups} onClose={() => setShowAddField(null)} onSave={f => setSignInFields(s => [...s, f])} />}
       {showAddField === 'signout' && <AddFieldModal title="Add sign out field" groups={groups} onClose={() => setShowAddField(null)} onSave={f => setSignOutFields(s => [...s, f])} />}
       {showAddNotice && <AddNoticeModal groups={groups} onClose={() => setShowAddNotice(false)} onSave={n => setNotices(s => [...s, n])} />}
-      {showAddPoster && <AddPosterModal site={currentSite} groups={groups} onClose={() => setShowAddPoster(false)} onSave={p => setPosters(s => [...s, { ...p, id: Date.now(), createdAt: new Date().toISOString() }])} />}
+      {showAddPoster && <AddPosterModal site={currentSite} groups={groups} onClose={() => setShowAddPoster(false)} onSave={async p => {
+        try {
+          const res = await api.post('/posters', {
+            site_id:      currentSite.id,
+            name:         p.name,
+            instructions: p.instructions || '',
+            groups:       p.groups || [],
+            hideHostList: p.hideHostList || false,
+          });
+          setPosters(s => [res.data, ...s]);
+        } catch {
+          // fallback: add locally if API fails
+          setPosters(s => [...s, { ...p, id: Date.now(), createdAt: new Date().toISOString() }]);
+        }
+      }} />}
       {showEvacModal && <EvacPointModal groups={groups} onClose={() => setShowEvacModal(false)} onSave={p => setEvacPoints(s => [...s, p])} />}
 
       {/* ── QR Poster viewer modal ──────────────────────────── */}
@@ -1160,6 +1197,10 @@ const SitesList = () => {
   const [deleteSite, setDeleteSite] = useState(null);
   const [openSite, setOpenSite]     = useState(null);
 
+  // Get role from localStorage
+  const adminRole = localStorage.getItem('adminRole') || 'admin';
+  const isSuperAdmin = adminRole === 'superadmin';
+
   const fetchSites = async () => {
     setLoading(true);
     try {
@@ -1201,9 +1242,11 @@ const SitesList = () => {
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Sites</h1>
           <p className="text-slate-500 text-sm">Configure how visitors should sign in and out of each site, including branding, custom fields and devices</p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white shadow-sm">
-          New site
-        </button>
+        {isSuperAdmin && (
+          <button onClick={() => setShowAdd(true)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white shadow-sm">
+            New site
+          </button>
+        )}
       </div>
 
       {loading ? (

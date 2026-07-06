@@ -61,6 +61,7 @@ app.use('/api/visits', visitsRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/pre-registrations', preRegistrationsRoutes);
 app.use('/api/evacuation', evacuationRoutes);
+app.use('/api/posters', require('./routes/posters'));
 
 // Catch-all handler for React SPA (must be last)
 app.use((req, res) => {

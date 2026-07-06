@@ -128,10 +128,25 @@ const PublicVisitorCheckIn = () => {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
       }
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 640 } },
-        audio: false,
-      });
+      // iOS Safari requires exact 'user' for front camera, ideal doesn't work on some iPhones
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: 'user' } },
+          audio: false,
+        });
+      } catch {
+        // Fallback: try ideal (works on Android + desktop)
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 640 } },
+            audio: false,
+          });
+        } catch {
+          // Last fallback: any camera
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        }
+      }
       streamRef.current = stream;
       // If video element is already mounted, attach immediately
       if (videoRef.current) {

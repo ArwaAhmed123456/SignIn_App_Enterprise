@@ -14,6 +14,17 @@ const verifyToken = (req, res, next) => {
   catch { res.status(401).json({ error: 'Unauthorized' }); }
 };
 
+// Only superadmin can create/delete sites
+const verifySuperAdmin = (req, res, next) => {
+  const auth = req.headers['authorization'];
+  if (!auth) return res.status(403).json({ error: 'No token provided' });
+  try {
+    req.user = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Superadmin access required' });
+    next();
+  } catch { res.status(401).json({ error: 'Unauthorized' }); }
+};
+
 const fmt = (s) => ({ id: s._id, _id: s._id, name: s.name, code: s.code, admin_email: s.adminEmail, created_at: s.createdAt });
 
 router.get('/ping', (req, res) => res.json({ status: 'ok' }));
@@ -33,7 +44,7 @@ router.get('/', verifyToken, async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifySuperAdmin, async (req, res) => {
   const { name, code, password, admin_email } = req.body;
   if (!name || !code || !password || !admin_email)
     return res.status(400).json({ error: 'Name, code, password and admin email are required' });
@@ -57,7 +68,7 @@ router.put('/:id', verifyToken, async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifySuperAdmin, async (req, res) => {
   try {
     const site = await Site.findById(req.params.id);
     if (!site) return res.status(404).json({ error: 'Not found' });
