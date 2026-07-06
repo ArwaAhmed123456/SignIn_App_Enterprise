@@ -39,7 +39,14 @@ router.get('/:id/public', async (req, res) => {
 
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const sites = await Site.find().sort({ createdAt: -1 });
+    let sites;
+    if (req.user.role === 'superadmin') {
+      // Superadmin sees ALL sites
+      sites = await Site.find().sort({ createdAt: -1 });
+    } else {
+      // Admin only sees their own site(s) — matched by their email
+      sites = await Site.find({ adminEmail: req.user.email }).sort({ createdAt: -1 });
+    }
     res.json(sites.map(fmt));
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
