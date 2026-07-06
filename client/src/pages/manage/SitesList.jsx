@@ -1045,9 +1045,9 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
       )}
     </div>
   );
-};
+}
 
-const NewReportForm = function({ siteName, onClose, onSave }) {
+function NewReportForm({ siteName, onClose, onSave }) {
   const [time, setTime] = useState(() => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; });
   const [recipients, setRecipients] = useState('');
   return (
@@ -1068,7 +1068,7 @@ const NewReportForm = function({ siteName, onClose, onSave }) {
       </div>
     </div>
   );
-};
+}
 
 // ── Main SitesList page ───────────────────────────────────────────────────────
 function SitesList() {

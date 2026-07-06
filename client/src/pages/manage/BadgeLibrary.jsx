@@ -20,32 +20,34 @@ export const BADGE_TEMPLATES = {
   ],
 };
 
-const BadgePreview = ({ template }) => (
-  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white p-2 flex flex-col items-center gap-1.5 h-36 justify-between">
-    <div className="flex-1 w-full bg-slate-50 rounded flex items-center justify-center relative">
-      <div className="text-slate-300 text-center px-2">
-        <div className="w-8 h-8 rounded-full bg-slate-200 mx-auto mb-1 flex items-center justify-center text-[10px] text-slate-400">▼</div>
-        <p className="text-[9px] text-slate-400 font-mono">&#123;Visitor name&#125;</p>
-        <p className="text-[8px] text-slate-400 font-mono">&#123;GROUP&#125;</p>
-        {template.id.includes('qr') && (
-          <div className="mt-1 w-6 h-6 border border-slate-300 mx-auto">
-            <QrCode size={20} className="text-slate-300" />
+function BadgePreview({ template }) {
+  return (
+    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white p-2 flex flex-col items-center gap-1.5 h-36 justify-between">
+      <div className="flex-1 w-full bg-slate-50 rounded flex items-center justify-center relative">
+        <div className="text-slate-300 text-center px-2">
+          <div className="w-8 h-8 rounded-full bg-slate-200 mx-auto mb-1 flex items-center justify-center text-[10px] text-slate-400">▼</div>
+          <p className="text-[9px] text-slate-400 font-mono">&#123;Visitor name&#125;</p>
+          <p className="text-[8px] text-slate-400 font-mono">&#123;GROUP&#125;</p>
+          {template.id.includes('qr') && (
+            <div className="mt-1 w-6 h-6 border border-slate-300 mx-auto">
+              <QrCode size={20} className="text-slate-300" />
+            </div>
+          )}
+        </div>
+        {template.selected && (
+          <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#76c043] flex items-center justify-center">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+              <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
         )}
       </div>
-      {template.selected && (
-        <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#76c043] flex items-center justify-center">
-          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      )}
+      <p className="text-[10px] text-slate-500 text-center leading-tight">{template.name}</p>
     </div>
-    <p className="text-[10px] text-slate-500 text-center leading-tight">{template.name}</p>
-  </div>
-);
+  );
+}
 
-export const BadgeLibraryModal = ({ onClose, onSelect }) => {
+export function BadgeLibraryModal({ onClose, onSelect }) {
   const [activeSize, setActiveSize] = useState('54mm');
   const [selectedId, setSelectedId] = useState('54-std-photo');
 
@@ -92,9 +94,9 @@ export const BadgeLibraryModal = ({ onClose, onSelect }) => {
       </div>
     </div>
   );
-};
+}
 
-export const PrintBadgeSection = () => {
+export function PrintBadgeSection() {
   const [showBadgeLibrary, setShowBadgeLibrary] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState('54mm - Standard With Photo');
 
@@ -144,4 +146,4 @@ export const PrintBadgeSection = () => {
       )}
     </div>
   );
-};
+}
