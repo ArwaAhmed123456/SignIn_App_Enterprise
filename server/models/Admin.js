@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const adminSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -14,9 +13,7 @@ const adminSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
-adminSchema.pre('save', async function () {
-    if (!this.isModified('password')) return;
-    this.password = await bcrypt.hash(this.password, 10);
-});
+// NOTE: No pre-save password hashing here.
+// auth.js already calls bcrypt.hash() before saving, so hashing here would double-hash.
 
 module.exports = mongoose.model('Admin', adminSchema);
