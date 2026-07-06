@@ -19,7 +19,7 @@
       "bundleIdentifier": "com.hayat123a.attendancemobileapp",
       "buildNumber": "1.0.0",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app does not use the camera",
+        "NSCameraUsageDescription": "Camera is used to take your visitor photo for identity verification on site.",
         "NSMicrophoneUsageDescription": "This app uses the microphone for voice commands"
       }
     },
@@ -51,9 +51,9 @@
       ]
     ],
     "extra": {
-      "apiUrl": "https://attendence-app-uzvt.onrender.com/api",
-      "webAppUrl": "https://attendence-app-uzvt.onrender.com",
-      "privacyPolicyUrl": "https://attendence-app-uzvt.onrender.com/privacy-policy.html",
+      "apiUrl": "https://tripod-signin-app.onrender.com/api",
+      "webAppUrl": "https://tripod-signin-app.onrender.com",
+      "privacyPolicyUrl": "https://tripod-signin-app.onrender.com/privacy-policy.html",
       "router": {},
       "eas": {
         "projectId": "a5884a7e-57e6-4f24-85c3-d0dff5d1179a"
