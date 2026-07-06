@@ -10,6 +10,9 @@ import QRCode from 'react-qr-code';
 import api from '../../api';
 import * as XLSX from 'xlsx';
 
+const BLUE      = '#2b4594';
+const BLUE_DARK = '#1e326e';
+
 const fmtDate = (iso) => {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
