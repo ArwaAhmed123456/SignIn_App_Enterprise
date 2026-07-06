@@ -129,7 +129,30 @@ router.post('/members', verifyAdmin, async (req, res) => {
       try {
         const { sendWelcomeEmail } = require('../services/emailService');
         const site = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
-        await sendWelcomeEmail({ email, name: first_name, siteName: site?.name || 'Sign In App' });
+        const group = safeGroupId ? await VisitorGroup.findById(safeGroupId).lean() : null;
+
+        // Auto-generate companion code (12 digits)
+        let companionCode = null;
+        const plainToken = Array.from({ length: 12 }, () => Math.floor(Math.random() * 10)).join('');
+        const hash   = await bcrypt.hash(plainToken, 10);
+        const expiry = new Date(Date.now() + 72 * 3600000); // 72 hours
+
+        // Store token on member
+        await Member.findByIdAndUpdate(member._id, {
+          mobileTokenHash:   hash,
+          mobileTokenExpiry: expiry,
+          permissions: JSON.stringify({ can_mobile_sign_in: true }),
+        });
+        companionCode = plainToken;
+
+        await sendWelcomeEmail({
+          email,
+          name:          first_name,
+          groupName:     group?.name || role || 'Employees',
+          siteName:      site?.name  || 'our site',
+          orgName:       process.env.ORG_NAME || site?.name || 'Tripod Services',
+          companionCode,
+        });
       } catch (emailErr) {
         console.warn('Welcome email failed:', emailErr.message);
       }
