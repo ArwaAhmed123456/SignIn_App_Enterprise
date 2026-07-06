@@ -15,14 +15,14 @@ services:
       - key: VITE_APP_URL
         value: https://tripod-signin-app.onrender.com
       - key: MONGO_URI
-        sync: false
+        value: mongodb+srv://arwa95025:arwa95025@cluster0.xalem4o.mongodb.net/Tripod_SignIn_App?retryWrites=true&w=majority
       - key: JWT_SECRET
-        sync: false
+        value: e7b92c4a16904f839218391294801235123985712123
       - key: EMAIL_SERVICE
-        sync: false
+        value: gmail
       - key: EMAIL_USER
-        sync: false
+        value: aryaanamalik994@gmail.com
       - key: EMAIL_PASSWORD
-        sync: false
+        value: xxskqwogpozdzrhz
       - key: EMAIL_FROM
-        sync: false
+        value: "Attendance Pro <aryaanamalik994@gmail.com>"
