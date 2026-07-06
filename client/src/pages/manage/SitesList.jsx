@@ -507,23 +507,24 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
   const [showGroupModal, setShowGroupModal] = useState(false);
 
   // Pre-populate sign in & out flow with defaults
-  const DEFAULT_SIGN_IN_FIELDS = [
+  // Using factory functions to avoid Rollup TDZ (temporal dead zone) bug with const inside component
+  const getDefaultSignInFields = () => [
     { label: 'Company',            type: 'Text',        required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
     { label: 'Visiting',           type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
     { label: 'Car Reg',            type: 'Uppercase',   required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
     { label: 'Package recipient',  type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
     { label: 'Number of packages', type: 'Number',      required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
   ];
-  const DEFAULT_NOTICES = [
+  const getDefaultNotices = () => [
     { title: 'Health & Safety', content: '', action: 'No action required', groupId: groups.find(g=>g.name==='Visitors')?.id || 'visitors' },
   ];
-  const DEFAULT_SIGN_OUT_FIELDS = [
+  const getDefaultSignOutFields = () => [
     { label: 'Retrieved', type: 'Signature', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
   ];
 
-  const [signInFields,  setSignInFields]  = useState(DEFAULT_SIGN_IN_FIELDS);
-  const [signOutFields, setSignOutFields] = useState(DEFAULT_SIGN_OUT_FIELDS);
-  const [notices,       setNotices]       = useState(DEFAULT_NOTICES);
+  const [signInFields,  setSignInFields]  = useState(() => getDefaultSignInFields());
+  const [signOutFields, setSignOutFields] = useState(() => getDefaultSignOutFields());
+  const [notices,       setNotices]       = useState(() => getDefaultNotices());
   const [capturePhoto, setCapturePhoto] = useState(true);
   const [evacPoints, setEvacPoints] = useState([]);
   const [reports, setReports]       = useState([]);
