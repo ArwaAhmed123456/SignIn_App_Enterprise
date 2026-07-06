@@ -494,6 +494,27 @@ function EvacPointModal({ groups, onClose, onSave }) {
   );
 };
 
+// ── Default field/notice arrays — module-level so they are never affected by TDZ ──
+function makeDefaultSignInFields(groups) {
+  return [
+    { label: 'Company',            type: 'Text',        required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
+    { label: 'Visiting',           type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
+    { label: 'Car Reg',            type: 'Uppercase',   required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
+    { label: 'Package recipient',  type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
+    { label: 'Number of packages', type: 'Number',      required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
+  ];
+}
+function makeDefaultNotices(groups) {
+  return [
+    { title: 'Health & Safety', content: '', action: 'No action required', groupId: groups.find(g=>g.name==='Visitors')?.id || 'visitors' },
+  ];
+}
+function makeDefaultSignOutFields(groups) {
+  return [
+    { label: 'Retrieved', type: 'Signature', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
+  ];
+}
+
 // ── Site settings view (tabbed) ───────────────────────────────────────────────
 function SiteSettings({ site, groups, onBack, onDeleted }) {
   const TABS = ['Details','Sign in & out flow','Devices & QR posters','Evacuation setup','On-site report','Privacy'];
@@ -506,32 +527,16 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [mobileSignIn, setMobileSignIn] = useState(false);
   const [showGroupModal, setShowGroupModal] = useState(false);
 
-  // Pre-populate sign in & out flow with defaults
-  // Using factory functions to avoid Rollup TDZ (temporal dead zone) bug with const inside component
-  const getDefaultSignInFields = () => [
-    { label: 'Company',            type: 'Text',        required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
-    { label: 'Visiting',           type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
-    { label: 'Car Reg',            type: 'Uppercase',   required: false, groupId: groups.find(g=>g.name==='Visitors')?.id   || 'visitors'   },
-    { label: 'Package recipient',  type: 'Notify list', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
-    { label: 'Number of packages', type: 'Number',      required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
-  ];
-  const getDefaultNotices = () => [
-    { title: 'Health & Safety', content: '', action: 'No action required', groupId: groups.find(g=>g.name==='Visitors')?.id || 'visitors' },
-  ];
-  const getDefaultSignOutFields = () => [
-    { label: 'Retrieved', type: 'Signature', required: false, groupId: groups.find(g=>g.name==='Deliveries')?.id || 'deliveries' },
-  ];
-
-  const [signInFields,  setSignInFields]  = useState(() => getDefaultSignInFields());
-  const [signOutFields, setSignOutFields] = useState(() => getDefaultSignOutFields());
-  const [notices,       setNotices]       = useState(() => getDefaultNotices());
+  const [signInFields,  setSignInFields]  = useState(() => makeDefaultSignInFields(groups));
+  const [signOutFields, setSignOutFields] = useState(() => makeDefaultSignOutFields(groups));
+  const [notices,       setNotices]       = useState(() => makeDefaultNotices(groups));
   const [capturePhoto, setCapturePhoto] = useState(true);
   const [evacPoints, setEvacPoints] = useState([]);
   const [reports, setReports]       = useState([]);
   const [showReportModal, setShowReportModal] = useState(false);
   const [privacyAutocomplete, setPrivacyAC] = useState(true);
   const [privacyHideList, setPrivacyHL]     = useState(false);
-  const [showAddField, setShowAddField]     = useState(null); // 'signin'|'signout'
+  const [showAddField, setShowAddField]     = useState(null);
   const [showAddNotice, setShowAddNotice]   = useState(false);
   const [showAddPoster, setShowAddPoster]   = useState(false);
   const [showEvacModal, setShowEvacModal]   = useState(false);
@@ -540,8 +545,16 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [posters, setPosters]       = useState([]);
   const [postersLoading, setPostersLoading] = useState(false);
   const [viewQrPoster, setViewQrPoster] = useState(null);
+  const siteRef = useRef(null);
+  const [sitePickerOpen, setSitePickerOpen] = useState(false);
+  const [allSites, setAllSites] = useState([site]);
+  const [currentSite, setCurrentSite] = useState(site);
+  const [saving, setSaving] = useState(false);
 
-  // Load posters from API when tab is shown or site changes
+  useEffect(() => {
+    api.get('/projects').then(r => setAllSites(r.data || [site])).catch(() => {});
+  }, []);
+
   const fetchPosters = async (siteId) => {
     if (!siteId) return;
     setPostersLoading(true);
@@ -555,16 +568,6 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   useEffect(() => {
     if (tab === 'Devices & QR posters') fetchPosters(currentSite.id);
   }, [tab, currentSite.id]);
-  const [saving, setSaving]         = useState(false);
-
-  const siteRef = useRef(null);
-  const [sitePickerOpen, setSitePickerOpen] = useState(false);
-  const [allSites, setAllSites] = useState([site]);
-  const [currentSite, setCurrentSite] = useState(site);
-
-  useEffect(() => {
-    api.get('/projects').then(r => setAllSites(r.data || [site])).catch(() => {});
-  }, []);
 
   const handleSaveDetails = async () => {
     setSaving(true);

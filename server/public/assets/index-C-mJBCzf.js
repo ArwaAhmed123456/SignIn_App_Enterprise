@@ -33153,7 +33153,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-BBftHMAn.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CPp6JTZf.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -72907,6 +72907,25 @@ function EvacPointModal({ groups, onClose, onSave }) {
     ] })
   ] }) });
 }
+function makeDefaultSignInFields(groups) {
+  return [
+    { label: "Company", type: "Text", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
+    { label: "Visiting", type: "Notify list", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
+    { label: "Car Reg", type: "Uppercase", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
+    { label: "Package recipient", type: "Notify list", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" },
+    { label: "Number of packages", type: "Number", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" }
+  ];
+}
+function makeDefaultNotices(groups) {
+  return [
+    { title: "Health & Safety", content: "", action: "No action required", groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" }
+  ];
+}
+function makeDefaultSignOutFields(groups) {
+  return [
+    { label: "Retrieved", type: "Signature", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" }
+  ];
+}
 function SiteSettings({ site, groups, onBack, onDeleted }) {
   const TABS2 = ["Details", "Sign in & out flow", "Devices & QR posters", "Evacuation setup", "On-site report", "Privacy"];
   const [tab, setTab] = reactExports.useState("Details");
@@ -72917,22 +72936,9 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [visibleGroups, setVisible] = reactExports.useState(groups.map((g2) => g2.id));
   const [mobileSignIn, setMobileSignIn] = reactExports.useState(false);
   const [showGroupModal, setShowGroupModal] = reactExports.useState(false);
-  const getDefaultSignInFields = () => [
-    { label: "Company", type: "Text", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
-    { label: "Visiting", type: "Notify list", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
-    { label: "Car Reg", type: "Uppercase", required: false, groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" },
-    { label: "Package recipient", type: "Notify list", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" },
-    { label: "Number of packages", type: "Number", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" }
-  ];
-  const getDefaultNotices = () => [
-    { title: "Health & Safety", content: "", action: "No action required", groupId: groups.find((g2) => g2.name === "Visitors")?.id || "visitors" }
-  ];
-  const getDefaultSignOutFields = () => [
-    { label: "Retrieved", type: "Signature", required: false, groupId: groups.find((g2) => g2.name === "Deliveries")?.id || "deliveries" }
-  ];
-  const [signInFields, setSignInFields] = reactExports.useState(() => getDefaultSignInFields());
-  const [signOutFields, setSignOutFields] = reactExports.useState(() => getDefaultSignOutFields());
-  const [notices, setNotices] = reactExports.useState(() => getDefaultNotices());
+  const [signInFields, setSignInFields] = reactExports.useState(() => makeDefaultSignInFields(groups));
+  const [signOutFields, setSignOutFields] = reactExports.useState(() => makeDefaultSignOutFields(groups));
+  const [notices, setNotices] = reactExports.useState(() => makeDefaultNotices(groups));
   const [capturePhoto, setCapturePhoto] = reactExports.useState(true);
   const [evacPoints, setEvacPoints] = reactExports.useState([]);
   const [reports, setReports] = reactExports.useState([]);
@@ -72948,6 +72954,15 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [posters, setPosters] = reactExports.useState([]);
   const [postersLoading, setPostersLoading] = reactExports.useState(false);
   const [viewQrPoster, setViewQrPoster] = reactExports.useState(null);
+  const siteRef = reactExports.useRef(null);
+  const [sitePickerOpen, setSitePickerOpen] = reactExports.useState(false);
+  const [allSites, setAllSites] = reactExports.useState([site]);
+  const [currentSite, setCurrentSite] = reactExports.useState(site);
+  const [saving, setSaving] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    api.get("/projects").then((r) => setAllSites(r.data || [site])).catch(() => {
+    });
+  }, []);
   const fetchPosters = async (siteId) => {
     if (!siteId) return;
     setPostersLoading(true);
@@ -72963,15 +72978,6 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   reactExports.useEffect(() => {
     if (tab === "Devices & QR posters") fetchPosters(currentSite.id);
   }, [tab, currentSite.id]);
-  const [saving, setSaving] = reactExports.useState(false);
-  const siteRef = reactExports.useRef(null);
-  const [sitePickerOpen, setSitePickerOpen] = reactExports.useState(false);
-  const [allSites, setAllSites] = reactExports.useState([site]);
-  const [currentSite, setCurrentSite] = reactExports.useState(site);
-  reactExports.useEffect(() => {
-    api.get("/projects").then((r) => setAllSites(r.data || [site])).catch(() => {
-    });
-  }, []);
   const handleSaveDetails = async () => {
     setSaving(true);
     try {
