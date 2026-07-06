@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => {
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MiB — allow large unminified bundle
+      },
       manifest: {
         name: 'Sign In App Enterprise',
         short_name: 'SignIn',
@@ -42,7 +45,8 @@ export default defineConfig(({ mode }) => {
   },
   build: {
     outDir: '../server/public',
-    emptyOutDir: true
+    emptyOutDir: true,
+    minify: false,  // Disable minification — prevents Rollup TDZ reordering bug
   }
   }
 })
