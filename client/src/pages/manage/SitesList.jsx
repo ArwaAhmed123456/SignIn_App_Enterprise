@@ -36,7 +36,7 @@ const Btn = ({ children, onClick, variant = 'outline', disabled, className = '' 
 };
 
 // ── Site create modal ─────────────────────────────────────────────────────────
-const SiteModal = ({ site, onClose, onSaved }) => {
+function SiteModal({ site, onClose, onSaved }) {
   const isEdit = !!site;
   const [form, setForm] = useState({
     name: site?.name || '', code: site?.code || generateCode(),
@@ -105,7 +105,7 @@ const SiteModal = ({ site, onClose, onSaved }) => {
 };
 
 // ── Group visibility modal ────────────────────────────────────────────────────
-const GroupVisibilityModal = ({ groups, visible, onClose, onSave }) => {
+function GroupVisibilityModal({ groups, visible, onClose, onSave }) {
   const [selected, setSelected] = useState(visible && visible.length > 0 ? visible : groups.map(g => g.id));
   const allChecked = groups.length > 0 && groups.every(g => selected.includes(g.id));
   const toggle = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
@@ -153,7 +153,7 @@ const GroupVisibilityModal = ({ groups, visible, onClose, onSave }) => {
 };
 
 // ── Add sign in / notice field modal ──────────────────────────────────────────
-const AddFieldModal = ({ title, groups, onClose, onSave }) => {
+function AddFieldModal({ title, groups, onClose, onSave }) {
   const FIELD_TYPES = ['Text','Number','Uppercase','Notify list','Signature','Checkbox'];
   const [fieldType, setFieldType] = useState('Text');
   const [label, setLabel]         = useState('');
@@ -197,7 +197,7 @@ const AddFieldModal = ({ title, groups, onClose, onSave }) => {
 };
 
 // ── Add notice modal ──────────────────────────────────────────────────────────
-const AddNoticeModal = ({ groups, onClose, onSave }) => {
+function AddNoticeModal({ groups, onClose, onSave }) {
   const ACTIONS = ['No action required','Optional - Checkbox that can be optionally ticked','Agreement required - Checkbox that must be ticked','Agreement required - Signature must be provided'];
   const LANGS = ['Albanian (Kiosk only)','Bulgarian (Kiosk only)','Catalan','Chinese Simplified (Kiosk only)','Chinese Traditional (Hong Kong) (Kiosk only)','Croatian','Czech','Danish','Dutch','Estonian','Finnish','French','German','Greek','Hungarian','Indonesian','Italian','Japanese','Korean','Latvian','Lithuanian','Malay','Norwegian','Polish','Portuguese','Romanian','Russian','Serbian','Slovak','Slovenian','Spanish','Swedish','Turkish','Ukrainian','Vietnamese'];
   const [title, setTitle]       = useState('');
@@ -277,7 +277,7 @@ const AddNoticeModal = ({ groups, onClose, onSave }) => {
 };
 
 // ── Add poster modal ──────────────────────────────────────────────────────────
-const AddPosterModal = ({ site, groups, onClose, onSave }) => {
+function AddPosterModal({ site, groups, onClose, onSave }) {
   // Use real groups from API, or fall back to defaults if none loaded yet
   const groupList = groups && groups.length > 0
     ? groups
@@ -432,7 +432,7 @@ const AddPosterModal = ({ site, groups, onClose, onSave }) => {
 };
 
 // ── Evacuation point modal ────────────────────────────────────────────────────
-const EvacPointModal = ({ groups, onClose, onSave }) => {
+function EvacPointModal({ groups, onClose, onSave }) {
   const [name, setName]           = useState('');
   const [identifier, setIdent]    = useState('');
   const [selGroups, setSelGroups] = useState([]);
@@ -495,7 +495,7 @@ const EvacPointModal = ({ groups, onClose, onSave }) => {
 };
 
 // ── Site settings view (tabbed) ───────────────────────────────────────────────
-const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
+function SiteSettings({ site, groups, onBack, onDeleted }) {
   const TABS = ['Details','Sign in & out flow','Devices & QR posters','Evacuation setup','On-site report','Privacy'];
   const [tab, setTab]               = useState('Details');
   const [siteName, setSiteName]     = useState(site.name);
@@ -1047,7 +1047,7 @@ const SiteSettings = ({ site, groups, onBack, onDeleted }) => {
   );
 };
 
-const NewReportForm = ({ siteName, onClose, onSave }) => {
+const NewReportForm = function({ siteName, onClose, onSave }) {
   const [time, setTime] = useState(() => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; });
   const [recipients, setRecipients] = useState('');
   return (
@@ -1071,7 +1071,7 @@ const NewReportForm = ({ siteName, onClose, onSave }) => {
 };
 
 // ── Main SitesList page ───────────────────────────────────────────────────────
-const SitesList = () => {
+function SitesList() {
   const [sites, setSites]           = useState([]);
   const [groups, setGroups]         = useState([]);
   const [loading, setLoading]       = useState(true);
