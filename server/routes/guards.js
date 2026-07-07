@@ -108,11 +108,9 @@ router.post('/members', verifyAdmin, async (req, res) => {
       resolvedSiteId = s?._id;
     }
 
-    // Only use visitor_group_id if it's a valid ObjectId — otherwise ignore it
     const mongoose = require('mongoose');
     const safeGroupId = visitor_group_id && mongoose.isValidObjectId(visitor_group_id)
-      ? visitor_group_id
-      : null;
+      ? visitor_group_id : null;
 
     const member = await Member.create({
       firstName: first_name, lastName: last_name||null,
@@ -124,48 +122,57 @@ router.post('/members', verifyAdmin, async (req, res) => {
       siteId: resolvedSiteId,
     });
 
-    // Send welcome email AFTER responding — non-blocking (fixes slow add)
-    // Respond to client immediately
-    res.status(201).json({ success: true, member: await fmtMember(member.toObject()) });
+    // Send welcome email synchronously so errors are visible
+    let emailResult = null;
+    const shouldSendEmail = (req.body.send_welcome || req.body.include_companion) && email;
+    if (shouldSendEmail) {
+      try {
+        const { sendWelcomeEmail } = require('../services/emailService');
+        const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
+        const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
 
-    // Fire-and-forget email in background
-    if ((req.body.send_welcome || req.body.include_companion) && email) {
-      setImmediate(async () => {
-        try {
-          const { sendWelcomeEmail } = require('../services/emailService');
-          const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean()                : null;
-          const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean()           : null;
-
-          // Generate companion code if companion invite requested
-          let companionCode = null;
-          if (req.body.include_companion) {
-            const plainToken = Array.from({ length: 12 }, () =>
-              'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
-            ).join('');
-            const hash   = await bcrypt.hash(plainToken, 10);
-            const expiry = new Date(Date.now() + 72 * 3600000);
-            await Member.findByIdAndUpdate(member._id, {
-              mobileTokenHash:   hash,
-              mobileTokenExpiry: expiry,
-              permissions: JSON.stringify({ can_mobile_sign_in: true }),
-            });
-            companionCode = plainToken;
-          }
-
-          await sendWelcomeEmail({
-            email,
-            name:          first_name,
-            groupName:     group?.name || role || 'Employees',
-            siteName:      site?.name  || 'our site',
-            orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
-            companionCode, // null if companion not requested — email still sends without it
+        let companionCode = null;
+        if (req.body.include_companion) {
+          const plainToken = Array.from({ length: 12 }, () =>
+            'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+          ).join('');
+          const hash   = await bcrypt.hash(plainToken, 10);
+          const expiry = new Date(Date.now() + 72 * 3600000);
+          await Member.findByIdAndUpdate(member._id, {
+            mobileTokenHash:   hash,
+            mobileTokenExpiry: expiry,
+            permissions: JSON.stringify({ can_mobile_sign_in: true }),
           });
-          console.log(`✓ Welcome email sent to ${email}`);
-        } catch (emailErr) {
-          console.warn('Welcome email failed:', emailErr.message);
+          companionCode = plainToken;
         }
-      });
+
+        const result = await sendWelcomeEmail({
+          email,
+          name:          first_name,
+          groupName:     group?.name || role || 'Employees',
+          siteName:      site?.name  || 'our site',
+          orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
+          companionCode,
+        });
+
+        emailResult = result;
+        if (result.success) {
+          console.log(`✓ Welcome email sent to ${email}`);
+        } else {
+          console.error(`✗ Welcome email FAILED to ${email}:`, result.error);
+        }
+      } catch (emailErr) {
+        console.error('Welcome email exception:', emailErr.message);
+        emailResult = { success: false, error: emailErr.message };
+      }
     }
+
+    res.status(201).json({
+      success: true,
+      member: await fmtMember(member.toObject()),
+      email_sent: shouldSendEmail ? (emailResult?.success || false) : null,
+      email_error: emailResult?.error || null,
+    });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
@@ -308,6 +315,27 @@ router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
   } catch (err) {
     console.error('send-welcome error:', err);
     res.status(500).json({ error: 'Failed to send email: ' + err.message });
+  }
+});
+
+// GET /api/guards/test-email?to=youremail@gmail.com
+// Quick test — hit this URL when logged in to verify email is working
+router.get('/test-email', verifyAdmin, async (req, res) => {
+  const to = req.query.to || req.user?.email;
+  if (!to) return res.status(400).json({ error: 'Provide ?to=email' });
+  try {
+    const { sendWelcomeEmail } = require('../services/emailService');
+    const result = await sendWelcomeEmail({
+      email: to,
+      name: 'Test User',
+      groupName: 'Employees',
+      siteName: 'Test Site',
+      orgName: 'Sign In App',
+      companionCode: 'ABCD1234EFGH',
+    });
+    res.json({ success: result.success, error: result.error || null, to });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
