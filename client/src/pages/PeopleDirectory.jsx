@@ -283,9 +283,18 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
-                  <input value={form.role} onChange={e => set('role', e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Role / Job title</label>
+                  <select value={form.role} onChange={e => set('role', e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                    <option value="">Select role…</option>
+                    <option value="Employee">Employee</option>
+                    <option value="Guard">Guard (Security Guard)</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Visitor">Visitor</option>
+                    <option value="Contractor">Contractor</option>
+                    <option value="Delivery">Delivery</option>
+                  </select>
+                  <p className="text-xs text-slate-400 mt-1">Guard/Manager roles unlock mobile app features</p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>

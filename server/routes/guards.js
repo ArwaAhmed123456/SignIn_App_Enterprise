@@ -3,11 +3,21 @@ const router   = express.Router();
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const Member   = require('../models/Member');
-const Site     = require('../models/Site');
+const Project  = require('../models/Project'); // sites are stored in Project collection
 const VisitorGroup = require('../models/VisitorGroup');
 const { sendMobileInviteEmail } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
+
+// Derive mobile role from job title/role string
+const deriveMobileRole = (role) => {
+  if (!role) return 'employee';
+  const r = role.toLowerCase();
+  if (r.includes('guard') || r.includes('security')) return 'guard';
+  if (r.includes('manager') || r.includes('supervisor')) return 'manager';
+  if (r.includes('admin')) return 'admin';
+  return 'employee';
+};
 
 const verifyAdmin = (req, res, next) => {
   const auth = req.headers['authorization'];
@@ -21,17 +31,28 @@ const verifyAdmin = (req, res, next) => {
 };
 
 const fmtMember = async (m) => {
-  const site  = m.siteId  ? await Site.findById(m.siteId).lean()  : null;
+  // siteId references Project (not Site) — this is the fix for "ID showing instead of name"
+  const site  = m.siteId ? await Project.findById(m.siteId).lean() : null;
   const group = m.visitorGroupId ? await VisitorGroup.findById(m.visitorGroupId).lean() : null;
   return {
-    id: m._id, name: `${m.firstName} ${m.lastName||''}`.trim(),
-    first_name: m.firstName, last_name: m.lastName,
-    email: m.email, phone: m.phone, status: m.status, role: m.role,
-    start_date: m.startDate, end_date: m.endDate,
-    visitor_group: group?.name ?? null, visitor_group_id: m.visitorGroupId,
-    site: site?.name ?? null, site_id: m.siteId,
-    mobile_paired: m.mobilePaired, created_at: m.createdAt,
-    initials: `${m.firstName?.[0]||''}${m.lastName?.[0]||''}`.toUpperCase(),
+    id:              m._id,
+    name:            `${m.firstName} ${m.lastName||''}`.trim(),
+    first_name:      m.firstName,
+    last_name:       m.lastName,
+    email:           m.email,
+    phone:           m.phone,
+    status:          m.status,
+    role:            m.role,
+    mobileRole:      m.mobileRole || 'employee',
+    start_date:      m.startDate,
+    end_date:        m.endDate,
+    visitor_group:   group?.name ?? null,
+    visitor_group_id:m.visitorGroupId,
+    site:            m.siteName || site?.name || null,
+    site_id:         m.siteId,
+    mobile_paired:   m.mobilePaired,
+    created_at:      m.createdAt,
+    initials:        `${m.firstName?.[0]||''}${m.lastName?.[0]||''}`.toUpperCase(),
   };
 };
 
@@ -103,9 +124,12 @@ router.post('/members', verifyAdmin, async (req, res) => {
       if (existing) return res.status(400).json({ error: 'Email already exists' });
     }
     let resolvedSiteId = site_id;
+    let resolvedSite = null;
     if (!resolvedSiteId) {
-      const s = await Site.findOne().sort({ createdAt: 1 });
-      resolvedSiteId = s?._id;
+      resolvedSite = await Project.findOne().sort({ createdAt: 1 });
+      resolvedSiteId = resolvedSite?._id;
+    } else {
+      resolvedSite = await Project.findById(resolvedSiteId).lean();
     }
 
     const mongoose = require('mongoose');
@@ -113,14 +137,18 @@ router.post('/members', verifyAdmin, async (req, res) => {
       ? visitor_group_id : null;
 
     const member = await Member.create({
-      firstName: first_name, lastName: last_name||null,
-      email: email||null, phone: phone||null,
-      role: role||'Employee', mobileRole: mobileRole||'employee',
-      status: status||'Current',
-      startDate: start_date ? new Date(start_date) : null,
-      endDate:   end_date   ? new Date(end_date)   : null,
+      firstName:      first_name,
+      lastName:       last_name||null,
+      email:          email||null,
+      phone:          phone||null,
+      role:           role||'Employee',
+      mobileRole:     mobileRole || deriveMobileRole(role),
+      status:         status||'Current',
+      startDate:      start_date ? new Date(start_date) : null,
+      endDate:        end_date   ? new Date(end_date)   : null,
       visitorGroupId: safeGroupId,
-      siteId: resolvedSiteId,
+      siteId:         resolvedSiteId,
+      siteName:       resolvedSite?.name || null,
     });
 
     // Send welcome email asynchronously to avoid blocking
@@ -130,7 +158,7 @@ router.post('/members', verifyAdmin, async (req, res) => {
       setImmediate(async () => {
         try {
           const { sendWelcomeEmail } = require('../services/emailService');
-          const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
+          const site  = resolvedSiteId ? await Project.findById(resolvedSiteId).lean() : null;
           const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
 
           let companionCode = null;
@@ -264,17 +292,19 @@ router.post('/activate-mobile', async (req, res) => {
       { id: matched._id, email: matched.email, name: matched.firstName, role: finalRole, project_id: matched.siteId, device_id },
       JWT_SECRET, { expiresIn: '30d' }
     );
+    // Look up site name from Project collection
+    const siteDoc = matched.siteId ? await Project.findById(matched.siteId).lean() : null;
     res.json({
       success: true,
       jwt_token: mobileJwt,
       guard: {
-        id: matched._id,
-        name: matched.firstName,
-        email: matched.email,
-        role: finalRole,
-        group: matched.visitorGroupId ? 'member' : finalRole,
-        project_id: matched.siteId,
-        organization: matched.siteId ? (await Site.findById(matched.siteId).lean())?.name : '',
+        id:           matched._id,
+        name:         matched.firstName,
+        email:        matched.email,
+        role:         finalRole,
+        group:        matched.visitorGroupId ? 'member' : finalRole,
+        project_id:   matched.siteId,
+        organization: siteDoc?.name || matched.siteName || '',
       }
     });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
@@ -316,8 +346,8 @@ router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
     const targetEmail = (req.body.email || member.email || '').trim();
     if (!targetEmail) return res.status(400).json({ error: 'No email address for this member' });
 
-    const site  = member.siteId         ? await Site.findById(member.siteId).lean()                : null;
-    const group = member.visitorGroupId  ? await VisitorGroup.findById(member.visitorGroupId).lean() : null;
+    const site  = member.siteId ? await Project.findById(member.siteId).lean() : null;
+    const group = member.visitorGroupId ? await VisitorGroup.findById(member.visitorGroupId).lean() : null;
 
     // Generate a 12-digit companion code
     const plainToken = Array.from({ length: 12 }, () =>

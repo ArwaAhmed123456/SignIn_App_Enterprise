@@ -125,8 +125,8 @@ router.post('/forgot-password', async (req, res) => {
         await sendPasswordResetEmail(email, 'Admin Portal', token);
 
         res.json({
-            message:    'If that email exists, a reset link has been sent.',
-            mockToken:  process.env.NODE_ENV === 'development' ? token : undefined,
+            message:   'If that email exists, a reset link has been sent.',
+            mockToken: process.env.NODE_ENV === 'development' ? token : undefined,
         });
     } catch (err) {
         console.error('Password reset error:', err);
@@ -180,32 +180,41 @@ router.post('/change-password', verifyToken, async (req, res) => {
     }
 });
 
-// ─── Invite portal user (creates account with temp password) ─────────────────
+// ─── Invite / create portal user (superadmin only) ────────────────────────────
+// Returns the generated password so superadmin can share credentials manually
 router.post('/invite', verifySuperAdmin, async (req, res) => {
-    const { email, role } = req.body;
+    const { email, role, first_name, last_name, organization } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
     try {
         const existing = await Admin.findOne({ email: email.toLowerCase() });
         if (existing) return res.status(400).json({ error: 'An account with this email already exists' });
-        const tempPassword = crypto.randomBytes(8).toString('hex');
+
+        // Generate a readable password
+        const words        = ['Solar','Gate','Guard','Site','Access','Tripod','Horton','Rayleigh','Secure'];
+        const word         = words[Math.floor(Math.random() * words.length)];
+        const num          = Math.floor(100 + Math.random() * 900);
+        const tempPassword = `${word}@${num}!`;
+
         const hashed = await bcrypt.hash(tempPassword, 10);
         const newAdmin = await Admin.create({
-            email: email.toLowerCase(),
-            password: hashed,
-            first_name: email.split('@')[0],
-            last_name: '',
-            role: role || 'admin',
+            email:        email.toLowerCase(),
+            password:     hashed,
+            first_name:   first_name || email.split('@')[0],
+            last_name:    last_name  || '',
+            organization: organization || '',
+            role:         role || 'admin',
         });
-        // Send invite email
-        try {
-            const { sendPasswordResetEmail } = require('../services/emailService');
-            await sendPasswordResetEmail(email, 'Portal Invitation', tempPassword);
-        } catch (emailErr) {
-            console.warn('Could not send invite email:', emailErr.message);
-        }
+
+        // Return password in response — superadmin shares it manually
         res.status(201).json({
-            message: 'Invite sent',
-            user: { id: newAdmin._id, email: newAdmin.email, role: newAdmin.role, status: 'invited' }
+            message:  'Account created successfully',
+            password: tempPassword,
+            user: {
+                id:     newAdmin._id,
+                email:  newAdmin.email,
+                role:   newAdmin.role,
+                status: 'active',
+            }
         });
     } catch (err) {
         console.error('Invite error:', err);
