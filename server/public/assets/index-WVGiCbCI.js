@@ -17383,23 +17383,23 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$W = [
+const __iconNode$X = [
   ["rect", { width: "20", height: "5", x: "2", y: "3", rx: "1", key: "1wp1u1" }],
   ["path", { d: "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8", key: "1s80jp" }],
   ["path", { d: "M10 12h4", key: "a56b0p" }]
 ];
-const Archive = createLucideIcon("archive", __iconNode$W);
-const __iconNode$V = [
+const Archive = createLucideIcon("archive", __iconNode$X);
+const __iconNode$W = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$V);
-const __iconNode$U = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$W);
+const __iconNode$V = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$U);
-const __iconNode$T = [
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$V);
+const __iconNode$U = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17410,8 +17410,8 @@ const __iconNode$T = [
   ],
   ["circle", { cx: "18", cy: "8", r: "3", key: "1g0gzu" }]
 ];
-const BellDot = createLucideIcon("bell-dot", __iconNode$T);
-const __iconNode$S = [
+const BellDot = createLucideIcon("bell-dot", __iconNode$U);
+const __iconNode$T = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   ["path", { d: "M22 8c0-2.3-.8-4.3-2-6", key: "5bb3ad" }],
   [
@@ -17423,8 +17423,8 @@ const __iconNode$S = [
   ],
   ["path", { d: "M4 2C2.8 3.7 2 5.7 2 8", key: "tap9e0" }]
 ];
-const BellRing = createLucideIcon("bell-ring", __iconNode$S);
-const __iconNode$R = [
+const BellRing = createLucideIcon("bell-ring", __iconNode$T);
+const __iconNode$S = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17434,8 +17434,8 @@ const __iconNode$R = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$R);
-const __iconNode$Q = [
+const Bell = createLucideIcon("bell", __iconNode$S);
+const __iconNode$R = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
     "path",
@@ -17445,8 +17445,8 @@ const __iconNode$Q = [
     }
   ]
 ];
-const BookOpen = createLucideIcon("book-open", __iconNode$Q);
-const __iconNode$P = [
+const BookOpen = createLucideIcon("book-open", __iconNode$R);
+const __iconNode$Q = [
   ["path", { d: "M10 12h4", key: "a56b0p" }],
   ["path", { d: "M10 8h4", key: "1sr2af" }],
   ["path", { d: "M14 21v-3a2 2 0 0 0-4 0v3", key: "1rgiei" }],
@@ -17459,8 +17459,8 @@ const __iconNode$P = [
   ],
   ["path", { d: "M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16", key: "16ra0t" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$P);
-const __iconNode$O = [
+const Building2 = createLucideIcon("building-2", __iconNode$Q);
+const __iconNode$P = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
@@ -17472,15 +17472,15 @@ const __iconNode$O = [
   ["path", { d: "M12 18h.01", key: "mhygvu" }],
   ["path", { d: "M16 18h.01", key: "kzsmim" }]
 ];
-const CalendarDays = createLucideIcon("calendar-days", __iconNode$O);
-const __iconNode$N = [
+const CalendarDays = createLucideIcon("calendar-days", __iconNode$P);
+const __iconNode$O = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
   ["path", { d: "M3 10h18", key: "8toen8" }]
 ];
-const Calendar = createLucideIcon("calendar", __iconNode$N);
-const __iconNode$M = [
+const Calendar = createLucideIcon("calendar", __iconNode$O);
+const __iconNode$N = [
   [
     "path",
     {
@@ -17490,25 +17490,25 @@ const __iconNode$M = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$M);
-const __iconNode$L = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$L);
-const __iconNode$K = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$K);
-const __iconNode$J = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$J);
-const __iconNode$I = [
+const Camera = createLucideIcon("camera", __iconNode$N);
+const __iconNode$M = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$M);
+const __iconNode$L = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$L);
+const __iconNode$K = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$K);
+const __iconNode$J = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$I);
-const __iconNode$H = [
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$J);
+const __iconNode$I = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$H);
-const __iconNode$G = [
+const CircleCheck = createLucideIcon("circle-check", __iconNode$I);
+const __iconNode$H = [
   [
     "path",
     {
@@ -17518,63 +17518,63 @@ const __iconNode$G = [
   ],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$G);
-const __iconNode$F = [
+const CirclePlay = createLucideIcon("circle-play", __iconNode$H);
+const __iconNode$G = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$F);
-const __iconNode$E = [
+const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$G);
+const __iconNode$F = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }],
   ["path", { d: "M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662", key: "154egf" }]
 ];
-const CircleUser = createLucideIcon("circle-user", __iconNode$E);
-const __iconNode$D = [
+const CircleUser = createLucideIcon("circle-user", __iconNode$F);
+const __iconNode$E = [
   ["path", { d: "M12 6v6h4", key: "135r8i" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock3 = createLucideIcon("clock-3", __iconNode$D);
-const __iconNode$C = [
+const Clock3 = createLucideIcon("clock-3", __iconNode$E);
+const __iconNode$D = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$C);
-const __iconNode$B = [
+const Clock = createLucideIcon("clock", __iconNode$D);
+const __iconNode$C = [
   ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
   ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
 ];
-const Code = createLucideIcon("code", __iconNode$B);
-const __iconNode$A = [
+const Code = createLucideIcon("code", __iconNode$C);
+const __iconNode$B = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ];
-const Copy = createLucideIcon("copy", __iconNode$A);
-const __iconNode$z = [
+const Copy = createLucideIcon("copy", __iconNode$B);
+const __iconNode$A = [
   ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
   ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
 ];
-const CreditCard = createLucideIcon("credit-card", __iconNode$z);
-const __iconNode$y = [
+const CreditCard = createLucideIcon("credit-card", __iconNode$A);
+const __iconNode$z = [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const Download = createLucideIcon("download", __iconNode$y);
-const __iconNode$x = [
+const Download = createLucideIcon("download", __iconNode$z);
+const __iconNode$y = [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "19", cy: "12", r: "1", key: "1wjl8i" }],
   ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }]
 ];
-const Ellipsis = createLucideIcon("ellipsis", __iconNode$x);
-const __iconNode$w = [
+const Ellipsis = createLucideIcon("ellipsis", __iconNode$y);
+const __iconNode$x = [
   ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
   ["path", { d: "M10 14 21 3", key: "gplh6r" }],
   ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
 ];
-const ExternalLink = createLucideIcon("external-link", __iconNode$w);
-const __iconNode$v = [
+const ExternalLink = createLucideIcon("external-link", __iconNode$x);
+const __iconNode$w = [
   [
     "path",
     {
@@ -17592,8 +17592,8 @@ const __iconNode$v = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$v);
-const __iconNode$u = [
+const EyeOff = createLucideIcon("eye-off", __iconNode$w);
+const __iconNode$v = [
   [
     "path",
     {
@@ -17603,8 +17603,8 @@ const __iconNode$u = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$u);
-const __iconNode$t = [
+const Eye = createLucideIcon("eye", __iconNode$v);
+const __iconNode$u = [
   [
     "path",
     {
@@ -17617,8 +17617,8 @@ const __iconNode$t = [
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ];
-const FileText = createLucideIcon("file-text", __iconNode$t);
-const __iconNode$s = [
+const FileText = createLucideIcon("file-text", __iconNode$u);
+const __iconNode$t = [
   [
     "path",
     {
@@ -17627,14 +17627,14 @@ const __iconNode$s = [
     }
   ]
 ];
-const Funnel = createLucideIcon("funnel", __iconNode$s);
-const __iconNode$r = [
+const Funnel = createLucideIcon("funnel", __iconNode$t);
+const __iconNode$s = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$r);
-const __iconNode$q = [
+const Globe = createLucideIcon("globe", __iconNode$s);
+const __iconNode$r = [
   ["circle", { cx: "9", cy: "12", r: "1", key: "1vctgf" }],
   ["circle", { cx: "9", cy: "5", r: "1", key: "hp0tcf" }],
   ["circle", { cx: "9", cy: "19", r: "1", key: "fkjjf6" }],
@@ -17642,25 +17642,25 @@ const __iconNode$q = [
   ["circle", { cx: "15", cy: "5", r: "1", key: "19l28e" }],
   ["circle", { cx: "15", cy: "19", r: "1", key: "f4zoj3" }]
 ];
-const GripVertical = createLucideIcon("grip-vertical", __iconNode$q);
-const __iconNode$p = [
+const GripVertical = createLucideIcon("grip-vertical", __iconNode$r);
+const __iconNode$q = [
   ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
   ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
 ];
-const History = createLucideIcon("history", __iconNode$p);
-const __iconNode$o = [
+const History = createLucideIcon("history", __iconNode$q);
+const __iconNode$p = [
   ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
   ["path", { d: "M21 12H9", key: "dn1m92" }],
   ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
 ];
-const LogOut = createLucideIcon("log-out", __iconNode$o);
-const __iconNode$n = [
+const LogOut = createLucideIcon("log-out", __iconNode$p);
+const __iconNode$o = [
   ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
   ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
 ];
-const Mail = createLucideIcon("mail", __iconNode$n);
-const __iconNode$m = [
+const Mail = createLucideIcon("mail", __iconNode$o);
+const __iconNode$n = [
   [
     "path",
     {
@@ -17670,7 +17670,13 @@ const __iconNode$m = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$m);
+const MapPin = createLucideIcon("map-pin", __iconNode$n);
+const __iconNode$m = [
+  ["path", { d: "M4 5h16", key: "1tepv9" }],
+  ["path", { d: "M4 12h16", key: "1lakjw" }],
+  ["path", { d: "M4 19h16", key: "1djgab" }]
+];
+const Menu = createLucideIcon("menu", __iconNode$m);
 const __iconNode$l = [
   [
     "path",
@@ -33153,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-D_4qniQh.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CgPUbHww.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66253,11 +66259,15 @@ const AdminLayout = () => {
   const [profileOpen, setProfileOpen] = reactExports.useState(false);
   const [supportOpen, setSupportOpen] = reactExports.useState(false);
   const [manageOpen, setManageOpen] = reactExports.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = reactExports.useState(false);
   const profileRef = reactExports.useRef(null);
   const supportRef = reactExports.useRef(null);
   const manageRef = reactExports.useRef(null);
   const isManageActive = location2.pathname.startsWith("/admin/manage");
   const isSupportActive = location2.pathname.startsWith("/admin/support");
+  reactExports.useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location2.pathname]);
   const firstName = localStorage.getItem("adminFirstName") || "";
   const lastName = localStorage.getItem("adminLastName") || "";
   const adminEmail = localStorage.getItem("admin_remember_email") || "";
@@ -66265,11 +66275,7 @@ const AdminLayout = () => {
   const fullName = firstName || lastName ? `${firstName} ${lastName}`.trim() : adminEmail.split("@")[0] || "Admin";
   const initials2 = fullName.split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) || "AD";
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminRole");
-    localStorage.removeItem("adminFirstName");
-    localStorage.removeItem("adminLastName");
-    localStorage.removeItem("adminOrg");
+    ["adminToken", "adminRole", "adminFirstName", "adminLastName", "adminOrg"].forEach((k2) => localStorage.removeItem(k2));
     navigate("/admin/login");
   };
   reactExports.useEffect(() => {
@@ -66281,44 +66287,57 @@ const AdminLayout = () => {
     document.addEventListener("mousedown", h2);
     return () => document.removeEventListener("mousedown", h2);
   }, []);
+  const navLinks = [
+    { to: "/admin/activity", label: "Activity" },
+    { to: "/admin/people", label: "People" },
+    { to: "/admin/attendance", label: "Attendance" }
+  ];
+  const manageItems = [
+    { to: "/admin/manage/sites", icon: MapPin, label: "Sites", desc: "Site setup, branding, sign in flows and devices" },
+    { to: "/admin/manage/visitor-groups", icon: Users, label: "Visitor groups", desc: "Manage visitor types, data privacy and configurations" },
+    { to: "/admin/manage/notifications", icon: Bell, label: "Advanced notifications", desc: "Send custom notifications to specific recipients" },
+    { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" },
+    { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
+    { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
+  ];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-[#f8fafc] flex flex-col font-sans", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white border-b border-slate-200 h-[72px] flex items-center justify-between px-6 shadow-sm z-10", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center h-full", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center mr-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod", className: "h-8 w-auto object-contain" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "flex h-full", children: [
-          [
-            { to: "/admin/activity", label: "Activity" },
-            { to: "/admin/people", label: "People" },
-            { to: "/admin/attendance", label: "Attendance" }
-          ].map(({ to, label }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "bg-white border-b border-slate-200 shadow-sm z-30 sticky top-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-[60px] lg:h-[72px] px-4 lg:px-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: "/Tipod_Final_Logo_high_pixel.png",
+            alt: "Tripod",
+            className: "h-7 lg:h-8 w-auto object-contain"
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "hidden lg:flex h-full items-center ml-6", children: [
+          navLinks.map(({ to, label }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             NavLink,
             {
               to,
-              className: ({ isActive }) => `px-5 h-full flex items-center text-[15px] font-semibold transition-colors border-b-2 ${isActive ? "border-[#2b4594] text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`,
+              className: ({ isActive }) => `px-4 h-[72px] flex items-center text-[15px] font-semibold transition-colors border-b-2 ${isActive ? "border-[#2b4594] text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`,
               children: label
             },
             to
           )),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative h-full flex items-center", ref: manageRef, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative h-[72px] flex items-center", ref: manageRef, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
                 onClick: () => setManageOpen((o2) => !o2),
-                className: `px-5 h-full flex items-center text-[15px] font-semibold transition-colors border-b-2 gap-1 ${isManageActive ? "border-[#2b4594] text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`,
+                className: `px-4 h-[72px] flex items-center text-[15px] font-semibold transition-colors border-b-2 gap-1 ${isManageActive ? "border-[#2b4594] text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`,
                 children: [
                   "Manage",
                   /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", className: "mt-0.5 text-slate-400", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 4.5L6 7.5L9 4.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) })
                 ]
               }
             ),
-            manageOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute left-0 top-full mt-0 w-[480px] bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden", children: [
+            manageOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute left-0 top-full w-[480px] bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-0 p-5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1 pr-4 border-r border-slate-100", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 pb-1", children: "Manage settings" }),
-                  [
-                    { to: "/admin/manage/sites", icon: MapPin, label: "Sites", desc: "Site setup, branding, sign in flows and devices" },
-                    { to: "/admin/manage/visitor-groups", icon: Users, label: "Visitor groups", desc: "Manage visitor types, data privacy and configurations" }
-                  ].map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  manageItems.slice(0, 2).map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Link,
                     {
                       to,
@@ -66337,10 +66356,7 @@ const AdminLayout = () => {
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1 pl-4", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 pb-1", children: "Visitors" }),
-                  [
-                    { to: "/admin/manage/notifications", icon: Bell, label: "Advanced notifications", desc: "Send custom notifications to specific recipients" },
-                    { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" }
-                  ].map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  manageItems.slice(2, 4).map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Link,
                     {
                       to,
@@ -66357,10 +66373,7 @@ const AdminLayout = () => {
                     to
                   )),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 pt-3 pb-1", children: "Account" }),
-                  [
-                    { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
-                    { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
-                  ].map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  manageItems.slice(4).map(({ to, icon: Icon2, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Link,
                     {
                       to,
@@ -66389,122 +66402,181 @@ const AdminLayout = () => {
               ) })
             ] })
           ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden lg:flex items-center gap-5 h-full ml-auto", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            NavLink,
+            {
+              to: "/admin/evacuation",
+              className: ({ isActive }) => `flex flex-col items-center justify-center gap-0.5 transition-colors ${isActive ? "text-red-600" : "text-slate-500 hover:text-slate-800"}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18, strokeWidth: 1.75 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Evacuation" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: supportRef, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: () => setSupportOpen((o2) => !o2),
+                className: `flex flex-col items-center justify-center gap-0.5 transition-colors ${isSupportActive ? "text-slate-900" : "text-slate-500 hover:text-slate-800"}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleQuestionMark, { size: 18, strokeWidth: 1.75 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Support" })
+                ]
+              }
+            ),
+            supportOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/admin/support/whats-new", onClick: () => setSupportOpen(false), className: "flex items-center justify-between gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(BellDot, { size: 15, className: "text-[#2b4594]" }),
+                  " What's new"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "h-2.5 w-2.5 rounded-full bg-red-500" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/admin/support/collections/getting-started", onClick: () => setSupportOpen(false), className: "flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { size: 15, className: "text-[#2b4594]" }),
+                " Getting started"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/admin/support", onClick: () => setSupportOpen(false), className: "flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleQuestionMark, { size: 15, className: "text-[#2b4594]" }),
+                " Support"
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: profileRef, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: () => setProfileOpen((o2) => !o2),
+                className: "flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-800 transition-colors",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-[#2b4594] flex items-center justify-center text-[10px] font-bold text-white", children: initials2 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Profile" })
+                ]
+              }
+            ),
+            profileOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 bg-white border border-slate-200 rounded-lg shadow-xl z-50 w-56", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-3 border-b border-slate-100", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-800", children: fullName }),
+                organization && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: organization }),
+                !organization && adminEmail && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: adminEmail })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/admin/profile", onClick: () => setProfileOpen(false), className: "flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 15, className: "text-slate-400" }),
+                  " My profile"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: handleLogout, className: "flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 15, className: "text-slate-400" }),
+                  " Log out"
+                ] })
+              ] })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex lg:hidden items-center gap-3 ml-auto", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: profileRef, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => setProfileOpen((o2) => !o2),
+                className: "w-8 h-8 rounded-full bg-[#2b4594] flex items-center justify-center text-[11px] font-bold text-white",
+                children: initials2
+              }
+            ),
+            profileOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 bg-white border border-slate-200 rounded-lg shadow-xl z-50 w-56", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-3 border-b border-slate-100", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-800", children: fullName }),
+                organization && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: organization })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/admin/profile", onClick: () => setProfileOpen(false), className: "flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 15, className: "text-slate-400" }),
+                  " My profile"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: handleLogout, className: "flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 15, className: "text-slate-400" }),
+                  " Log out"
+                ] })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setMobileMenuOpen((o2) => !o2),
+              className: "p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors",
+              children: mobileMenuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 22 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { size: 22 })
+            }
+          )
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-5 h-full", children: [
+      mobileMenuOpen && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lg:hidden bg-white border-t border-slate-200 shadow-lg z-40", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "px-4 py-3 space-y-1", children: [
+        navLinks.map(({ to, label }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NavLink,
+          {
+            to,
+            className: ({ isActive }) => `block px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-[#2b4594]/10 text-[#2b4594]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`,
+            children: label
+          },
+          to
+        )),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => setManageOpen((o2) => !o2),
+              className: `w-full flex items-center justify-between px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isManageActive ? "bg-[#2b4594]/10 text-[#2b4594]" : "text-slate-600 hover:bg-slate-50"}`,
+              children: [
+                "Manage",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "14", height: "14", viewBox: "0 0 12 12", fill: "none", className: `transition-transform ${manageOpen ? "rotate-180" : ""}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 4.5L6 7.5L9 4.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) })
+              ]
+            }
+          ),
+          manageOpen && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 ml-4 space-y-1 border-l-2 border-slate-100 pl-3", children: manageItems.map(({ to, icon: Icon2, label }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Link,
+            {
+              to,
+              onClick: () => {
+                setManageOpen(false);
+                setMobileMenuOpen(false);
+              },
+              className: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-50",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 16, className: "text-slate-400 flex-shrink-0" }),
+                label
+              ]
+            },
+            to
+          )) })
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           NavLink,
           {
             to: "/admin/evacuation",
-            className: ({ isActive }) => `flex flex-col items-center justify-center gap-0.5 transition-colors ${isActive ? "text-red-600" : "text-slate-500 hover:text-slate-800"}`,
+            className: ({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-red-50 text-red-600" : "text-slate-600 hover:bg-slate-50"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18, strokeWidth: 1.75 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Evacuation" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18 }),
+              " Evacuation"
             ]
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: supportRef, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => setSupportOpen((o2) => !o2),
-              className: `flex flex-col items-center justify-center gap-0.5 transition-colors ${isSupportActive ? "text-slate-900" : "text-slate-500 hover:text-slate-800"}`,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleQuestionMark, { size: 18, strokeWidth: 1.75 }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Support" })
-              ]
-            }
-          ),
-          supportOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Link,
-              {
-                to: "/admin/support/whats-new",
-                onClick: () => setSupportOpen(false),
-                className: "flex items-center justify-between gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(BellDot, { size: 15, className: "text-[#2b4594]" }),
-                    " What's new"
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "h-2.5 w-2.5 rounded-full bg-red-500" })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Link,
-              {
-                to: "/admin/support/collections/getting-started",
-                onClick: () => setSupportOpen(false),
-                className: "flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { size: 15, className: "text-[#2b4594]" }),
-                  " Getting started"
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Link,
-              {
-                to: "/admin/support",
-                onClick: () => setSupportOpen(false),
-                className: "flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleQuestionMark, { size: 15, className: "text-[#2b4594]" }),
-                  " Support"
-                ]
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: profileRef, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => setProfileOpen((o2) => !o2),
-              className: "flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-800 transition-colors",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-[#2b4594] flex items-center justify-center text-[10px] font-bold text-white", children: initials2 }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Profile" })
-              ]
-            }
-          ),
-          profileOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 bg-white border border-slate-200 rounded-lg shadow-xl z-50 w-56", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-3 border-b border-slate-100", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-800", children: fullName }),
-              organization && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: organization }),
-              !organization && adminEmail && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: adminEmail })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                Link,
-                {
-                  to: "/admin/profile",
-                  onClick: () => setProfileOpen(false),
-                  className: "flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 15, className: "text-slate-400" }),
-                    " My profile"
-                  ]
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                "button",
-                {
-                  onClick: handleLogout,
-                  className: "flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 15, className: "text-slate-400" }),
-                    " Log out"
-                  ]
-                }
-              )
-            ] })
-          ] })
-        ] })
-      ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          NavLink,
+          {
+            to: "/admin/support",
+            className: ({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-[#2b4594]/10 text-[#2b4594]" : "text-slate-600 hover:bg-slate-50"}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleQuestionMark, { size: 18 }),
+              " Support"
+            ]
+          }
+        )
+      ] }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 overflow-hidden relative", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 overflow-auto relative", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed bottom-6 right-6 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-10 h-10 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-full shadow-lg flex items-center justify-center transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 18 }) }) })
     ] })
@@ -74444,7 +74516,7 @@ const navItems = [
   { id: "account", label: "Account management", icon: Settings, path: "/admin/manage/account" }
 ];
 const ManageSettings = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex bg-slate-50 overflow-hidden", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "w-56 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0", children: [
+  /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden md:flex w-52 lg:w-56 bg-white border-r border-slate-200 flex-col h-full flex-shrink-0", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 py-6 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Manage settings" }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 py-2 overflow-y-auto", children: navItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       NavLink,
@@ -74462,7 +74534,19 @@ const ManageSettings = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { cla
       id
     )) })
   ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-auto bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-5xl mx-auto p-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
+  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden w-full absolute top-0 left-0 z-10 bg-white border-b border-slate-200 overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex px-2 py-1", children: navItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    NavLink,
+    {
+      to: path,
+      className: ({ isActive }) => `flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${isActive ? "text-[#2b4594] bg-[#2b4594]/8" : "text-slate-500"}`,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 18 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px]", children: label.split(" ")[0] })
+      ]
+    },
+    id
+  )) }) }),
+  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-auto bg-slate-50 mt-0 md:mt-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pt-14 md:pt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { index: true, element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "sites", replace: true }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "sites", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SitesList, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "visitor-groups", element: /* @__PURE__ */ jsxRuntimeExports.jsx(VisitorGroupsList, {}) }),
