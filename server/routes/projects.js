@@ -7,6 +7,16 @@ const { generateResetToken, sendPasswordResetEmail } = require('../services/emai
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
+const normalizeAdminEmails = (...values) => (
+  [...new Set(
+    values
+      .flat()
+      .filter(Boolean)
+      .map((email) => String(email).trim().toLowerCase())
+      .filter(Boolean)
+  )]
+);
+
 const verifyToken = (req, res, next) => {
   const auth = req.headers['authorization'];
   if (!auth) return res.status(403).json({ error: 'No token provided' });
@@ -25,7 +35,15 @@ const verifySuperAdmin = (req, res, next) => {
   } catch { res.status(401).json({ error: 'Unauthorized' }); }
 };
 
-const fmt = (s) => ({ id: s._id, _id: s._id, name: s.name, code: s.code, admin_email: s.adminEmail, created_at: s.createdAt });
+const fmt = (s) => ({
+  id: s._id,
+  _id: s._id,
+  name: s.name,
+  code: s.code,
+  admin_email: s.adminEmail || s.adminEmails?.[0] || '',
+  admin_emails: normalizeAdminEmails(s.adminEmail, s.adminEmails || []),
+  created_at: s.createdAt,
+});
 
 router.get('/ping', (req, res) => res.json({ status: 'ok' }));
 
@@ -45,7 +63,12 @@ router.get('/', verifyToken, async (req, res) => {
       sites = await Site.find().sort({ createdAt: -1 });
     } else {
       // Admin only sees their own site(s) — matched by their email
-      sites = await Site.find({ adminEmail: req.user.email }).sort({ createdAt: -1 });
+      sites = await Site.find({
+        $or: [
+          { adminEmail: req.user.email },
+          { adminEmails: req.user.email },
+        ],
+      }).sort({ createdAt: -1 });
     }
     res.json(sites.map(fmt));
   } catch { res.status(500).json({ error: 'Server error' }); }
@@ -59,7 +82,14 @@ router.post('/', verifySuperAdmin, async (req, res) => {
     const existing = await Site.findOne({ code: code.trim().toUpperCase() });
     if (existing) return res.status(400).json({ error: 'Project code already exists' });
     const hashed = await bcrypt.hash(password, 10);
-    const site = await Site.create({ name, code: code.trim().toUpperCase(), password: hashed, adminEmail: admin_email });
+    const adminEmails = normalizeAdminEmails(admin_email);
+    const site = await Site.create({
+      name,
+      code: code.trim().toUpperCase(),
+      password: hashed,
+      adminEmail: adminEmails[0],
+      adminEmails,
+    });
     res.json(fmt(site));
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
@@ -121,11 +151,13 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const site = await Site.findOne({ code: code.trim().toUpperCase() });
     if (!site) return res.status(404).json({ error: 'Project not found' });
+    const recoveryEmail = site.adminEmail || site.adminEmails?.[0];
+    if (!recoveryEmail) return res.status(400).json({ error: 'No admin email configured for this project' });
     const resetToken  = generateResetToken();
     const expiry      = new Date(Date.now() + 15 * 60 * 1000);
     await Site.findByIdAndUpdate(site._id, { resetToken, resetTokenExpiry: expiry });
-    await sendPasswordResetEmail(site.adminEmail, site.name, resetToken);
-    res.json({ message: 'Reset code sent to your email', email: site.adminEmail });
+    await sendPasswordResetEmail(recoveryEmail, site.name, resetToken);
+    res.json({ message: 'Reset code sent to your email', email: recoveryEmail });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

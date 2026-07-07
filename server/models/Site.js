@@ -5,6 +5,7 @@ const siteSchema = new mongoose.Schema({
   code:             { type: String, required: true, unique: true, uppercase: true },
   password:         { type: String },
   adminEmail:       { type: String },
+  adminEmails:      { type: [String], default: [] },
   resetToken:       { type: String },
   resetTokenExpiry: { type: Date },
 }, { timestamps: true });
