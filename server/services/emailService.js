@@ -1,54 +1,55 @@
 /**
  * emailService.js
- * Uses Resend (resend.com) — works reliably on Render, no SMTP firewall issues.
- * Free tier: 100 emails/day, 3000/month.
- *
- * Setup:
- *  1. Sign up free at resend.com
- *  2. Create an API key
- *  3. Add RESEND_API_KEY to Render environment variables
- *  4. Optional: add your own domain in Resend for custom from address
- *     (without domain, use onboarding@resend.dev as FROM)
+ * Uses Gmail SMTP for sending emails without domain verification.
+ * Requires EMAIL_USER, EMAIL_PASSWORD, and EMAIL_SERVICE=gmail in environment.
+ * 
+ * Gmail setup:
+ *  1. Enable 2-factor authentication on your Google account
+ *  2. Generate an App Password: https://myaccount.google.com/apppasswords
+ *  3. Use the App Password as EMAIL_PASSWORD
+ *  4. Limit: 500 emails/day for free Gmail accounts
  */
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const getResend = () => {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.warn('RESEND_API_KEY not set — emails will not be sent');
+const getTransporter = () => {
+  const emailService = process.env.EMAIL_SERVICE;
+  const emailUser = process.env.EMAIL_USER;
+  const emailPassword = process.env.EMAIL_PASSWORD;
+
+  if (!emailService || !emailUser || !emailPassword) {
+    console.warn('EMAIL_SERVICE, EMAIL_USER, or EMAIL_PASSWORD not set — emails will not be sent');
     return null;
   }
-  return new Resend(apiKey);
+
+  if (emailService.toLowerCase() === 'gmail') {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailUser,
+        pass: emailPassword,
+      },
+    });
+  }
+
+  return null;
 };
 
-// From address — use Resend's default if no custom domain verified
-// To use your own domain: verify it at resend.com/domains, then set EMAIL_FROM=Sign In App <noreply@yourdomain.com>
-const FROM = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('gmail.com')
-  ? process.env.EMAIL_FROM
-  : 'Sign In App <onboarding@resend.dev>';
-
-// For testing with free Resend account - redirect all emails to account owner
-const TEST_EMAIL_OVERRIDE = process.env.TEST_EMAIL_OVERRIDE || null;
+const FROM = process.env.EMAIL_FROM || `${process.env.EMAIL_USER}`;
 
 // ── Core send function ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
-  const resend = getResend();
-  if (!resend) return { success: false, error: 'RESEND_API_KEY not configured' };
-  
-  // For testing with free Resend account, redirect to account owner email
-  const finalTo = TEST_EMAIL_OVERRIDE || to;
-  if (TEST_EMAIL_OVERRIDE && to !== TEST_EMAIL_OVERRIDE) {
-    console.log(`[TEST MODE] Redirecting email from ${to} to ${TEST_EMAIL_OVERRIDE}`);
-  }
-  
+  const transporter = getTransporter();
+  if (!transporter) return { success: false, error: 'Email service not configured' };
+
   try {
-    const { data, error } = await resend.emails.send({ from: FROM, to: finalTo, subject, html });
-    if (error) {
-      console.error('Resend error:', error);
-      return { success: false, error: error.message || JSON.stringify(error) };
-    }
-    console.log(`✓ Email sent to ${finalTo}${TEST_EMAIL_OVERRIDE ? ` (originally to: ${to})` : ''} — id: ${data?.id}`);
-    return { success: true, id: data?.id };
+    const info = await transporter.sendMail({
+      from: FROM,
+      to: to,
+      subject: subject,
+      html: html,
+    });
+    console.log(`✓ Email sent to ${to} — id: ${info.messageId}`);
+    return { success: true, id: info.messageId };
   } catch (err) {
     console.error('Email exception:', err.message);
     return { success: false, error: err.message };
