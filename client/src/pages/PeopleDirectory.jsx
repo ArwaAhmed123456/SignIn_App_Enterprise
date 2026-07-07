@@ -517,6 +517,118 @@ const QrRfidTab = ({ member }) => {
   );
 };
 
+// ─── Companion tab (inside MemberDrawer) ─────────────────────────────
+const CompanionTab = ({ member }) => {
+  const [inviteEmail, setInviteEmail] = useState(member?.email || '');
+  const [sending, setSending] = useState(false);
+  const [sentMsg, setSentMsg] = useState('');
+  const [sendErr, setSendErr] = useState('');
+  const [perms, setPerms] = useState({
+    sign_in_visitors: true,
+    run_evacuations: false,
+    view_directory: false,
+  });
+
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim()) { setSendErr('Email address is required'); return; }
+    setSending(true); setSentMsg(''); setSendErr('');
+    try {
+      await api.post(`/guards/members/${member.id}/send-welcome`, {
+        email: inviteEmail.trim(),
+        include_companion: true,
+      });
+      setSentMsg('Welcome email with companion code sent successfully!');
+    } catch (err) {
+      setSendErr(err.response?.data?.error || 'Failed to send email. Please try again.');
+    } finally { setSending(false); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm font-semibold text-slate-800 mb-1">Sign In Companion app</p>
+        <p className="text-xs text-slate-500 mb-4">
+          The Companion app lets this member sign in and out from their phone, receive host notifications, and run evacuations.
+        </p>
+      </div>
+
+      {/* Pairing status */}
+      <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 flex items-center gap-4">
+        <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
+          <User size={20} />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-slate-800">Mobile pairing status</p>
+          <p className={`text-xs mt-0.5 font-semibold ${member?.mobile_paired ? 'text-[#2b4594]' : 'text-slate-400'}`}>
+            {member?.mobile_paired ? '✓ Device paired' : 'Not paired'}
+          </p>
+        </div>
+        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+          member?.mobile_paired ? 'bg-blue-50 text-[#2b4594]' : 'bg-slate-200 text-slate-600'
+        }`}>
+          {member?.mobile_paired ? 'Active' : 'Inactive'}
+        </span>
+      </div>
+
+      {/* Send welcome / companion invite */}
+      <div>
+        <p className="text-sm font-semibold text-slate-700 mb-1">Send welcome email</p>
+        <p className="text-xs text-slate-500 mb-3">
+          Sends a welcome email with QR code + a 12-character companion app activation code (valid 72 hours).
+        </p>
+        <div className="flex gap-2 mb-2">
+          <input
+            type="email"
+            value={inviteEmail}
+            onChange={e => { setInviteEmail(e.target.value); setSendErr(''); }}
+            placeholder="Email address"
+            className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+          />
+          <button
+            onClick={handleSendInvite}
+            disabled={sending}
+            className="px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold whitespace-nowrap"
+          >
+            {sending ? 'Sending…' : 'Send invite'}
+          </button>
+        </div>
+        {sentMsg && (
+          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{sentMsg}</p>
+        )}
+        {sendErr && (
+          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{sendErr}</p>
+        )}
+      </div>
+
+      {/* App permissions */}
+      <div className="pt-2 border-t border-slate-100">
+        <p className="text-sm font-semibold text-slate-700 mb-1">App permissions</p>
+        <p className="text-xs text-slate-500 mb-3">What this member can do inside the Companion app</p>
+        <div className="space-y-2">
+          {[
+            { key: 'sign_in_visitors', label: 'Sign in & out', desc: 'Allow member to sign in/out via the companion app' },
+            { key: 'run_evacuations',  label: 'Run evacuations', desc: 'Allow member to start and manage evacuations' },
+            { key: 'view_directory',   label: 'View people directory', desc: 'Allow member to browse the people directory' },
+          ].map(({ key, label, desc }) => (
+            <label key={key} className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input
+                type="checkbox"
+                checked={perms[key]}
+                onChange={e => setPerms(p => ({ ...p, [key]: e.target.checked }))}
+                className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+              />
+              <div>
+                <p className="text-sm font-semibold text-slate-800">{label}</p>
+                <p className="text-xs text-slate-500">{desc}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Member slide-out drawer (edit) ──────────────────────────────────
 const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
   const [tab, setTab] = useState('Details');
@@ -808,61 +920,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
 
           {/* ── Companion ── */}
           {tab === 'Companion' && (
-            <div className="space-y-6">
-              <div>
-                <p className="text-sm font-semibold text-slate-800 mb-1">Sign In Companion app</p>
-                <p className="text-xs text-slate-500 mb-4">
-                  The Companion app lets this member sign in visitors from their phone, receive host notifications, and run evacuations.
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
-                  <User size={20} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-800">Mobile pairing status</p>
-                  <p className={`text-xs mt-0.5 font-semibold ${member?.mobile_paired ? 'text-[#2b4594]' : 'text-slate-400'}`}>
-                    {member?.mobile_paired ? '✓ Device paired' : 'Not paired'}
-                  </p>
-                </div>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                  member?.mobile_paired ? 'bg-blue-50 text-[#2b4594]' : 'bg-slate-200 text-slate-600'
-                }`}>
-                  {member?.mobile_paired ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-700 mb-2">Invite to Companion app</p>
-                <p className="text-xs text-slate-500 mb-3">Send an activation email with a one-time pairing code</p>
-                <div className="flex gap-2">
-                  <input type="email" defaultValue={member?.email || ''} placeholder="Email address"
-                    className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
-                  <button className="px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
-                    Send invite
-                  </button>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-slate-100">
-                <p className="text-sm font-semibold text-slate-700 mb-1">App permissions</p>
-                <p className="text-xs text-slate-500 mb-3">What this member can do inside the Companion app</p>
-                <div className="space-y-2">
-                  {[
-                    ['Sign in visitors','Allow member to sign in visitors via app'],
-                    ['Run evacuations','Allow member to start and manage evacuations'],
-                    ['View people directory','Allow member to browse the people directory'],
-                  ].map(([label, desc]) => (
-                    <label key={label} className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
-                      <input type="checkbox" defaultChecked={label === 'Sign in visitors'}
-                        className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-semibold text-slate-800">{label}</p>
-                        <p className="text-xs text-slate-500">{desc}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CompanionTab member={member} />
           )}
         </div>
         {/* footer */}

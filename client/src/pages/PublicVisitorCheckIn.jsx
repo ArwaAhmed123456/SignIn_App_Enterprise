@@ -108,8 +108,9 @@ const PublicVisitorCheckIn = () => {
     videoRef.current = el;
     if (el && streamRef.current) {
       el.srcObject = streamRef.current;
-      el.setAttribute('playsinline', 'true');
-      el.setAttribute('webkit-playsinline', 'true');
+      // iOS Safari requires these attributes set programmatically too
+      el.setAttribute('playsinline', '');
+      el.setAttribute('webkit-playsinline', '');
       el.muted = true;
       el.play().catch(e => console.warn('Video play error:', e));
     }
@@ -118,8 +119,13 @@ const PublicVisitorCheckIn = () => {
   // Camera helpers
   const startCamera = async () => {
     setCameraError('');
+    // iOS Safari requires HTTPS for camera — check
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+      setCameraError('Camera requires a secure (HTTPS) connection. Please use the secure URL.');
+      return;
+    }
     if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError('Camera not supported on this browser. You can continue without a photo.');
+      setCameraError('Camera not supported on this browser. Please use Safari on iOS or Chrome on Android.');
       return;
     }
     try {
@@ -128,41 +134,41 @@ const PublicVisitorCheckIn = () => {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
       }
-      // iOS Safari requires exact 'user' for front camera, ideal doesn't work on some iPhones
       let stream;
+      // Try 1: exact front camera (works on most iOS devices)
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { exact: 'user' } },
           audio: false,
         });
       } catch {
-        // Fallback: try ideal (works on Android + desktop)
+        // Try 2: ideal front camera (works on Android + older iOS)
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 640 } },
+            video: { facingMode: 'user' },
             audio: false,
           });
         } catch {
-          // Last fallback: any camera
+          // Try 3: any available camera
           stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         }
       }
       streamRef.current = stream;
-      // If video element is already mounted, attach immediately
+      setCameraActive(true);
+      // videoRefCallback will attach the stream when the video element mounts
+      // But if it's already mounted, attach now
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        videoRef.current.setAttribute('webkit-playsinline', 'true');
-        videoRef.current.muted = true;
-        videoRef.current.play().catch(e => console.warn('Video play:', e));
+        videoRef.current.play().catch(() => {});
       }
-      setCameraActive(true);
     } catch (err) {
       console.error('Camera error:', err.name, err.message);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setCameraError('Camera permission denied. Tap the lock icon in your browser address bar and allow camera, then try again.');
+        setCameraError('Camera permission denied. In Safari: tap AA in address bar → Website Settings → Camera → Allow. Then refresh.');
       } else if (err.name === 'NotFoundError') {
         setCameraError('No camera found on this device.');
+      } else if (err.name === 'NotReadableError') {
+        setCameraError('Camera is in use by another app. Close other apps and try again.');
       } else {
         setCameraError(`Could not start camera (${err.name}). You can continue without a photo.`);
       }
@@ -397,7 +403,13 @@ const PublicVisitorCheckIn = () => {
               {photoDataUrl ? (
                 <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
               ) : cameraActive ? (
-                <video ref={videoRefCallback} autoPlay playsInline muted
+                <video ref={videoRefCallback}
+                  autoPlay
+                  playsInline
+                  muted
+                  webkit-playsinline="true"
+                  x-webkit-airplay="allow"
+                  disablePictureInPicture
                   className="w-full h-full object-cover cursor-pointer"
                   onClick={takePhoto}
                   style={{ transform: 'scaleX(-1)' }}

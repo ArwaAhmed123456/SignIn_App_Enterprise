@@ -261,4 +261,47 @@ router.put('/:id/permissions', verifyAdmin, async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+// POST /api/guards/members/:id/send-welcome
+// Sends welcome email + companion code to a member from the Companion tab
+router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id).lean();
+    if (!member) return res.status(404).json({ error: 'Member not found' });
+
+    const targetEmail = (req.body.email || member.email || '').trim();
+    if (!targetEmail) return res.status(400).json({ error: 'No email address for this member' });
+
+    const site  = member.siteId         ? await Site.findById(member.siteId).lean()                : null;
+    const group = member.visitorGroupId  ? await VisitorGroup.findById(member.visitorGroupId).lean() : null;
+
+    // Generate a 12-digit companion code
+    const plainToken = Array.from({ length: 12 }, () =>
+      'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+    ).join('');
+    const hash   = await bcrypt.hash(plainToken, 10);
+    const expiry = new Date(Date.now() + 72 * 3600000); // 72 hours
+
+    await Member.findByIdAndUpdate(member._id, {
+      mobileTokenHash:   hash,
+      mobileTokenExpiry: expiry,
+      permissions: JSON.stringify({ can_mobile_sign_in: true }),
+    });
+
+    const { sendWelcomeEmail } = require('../services/emailService');
+    await sendWelcomeEmail({
+      email:        targetEmail,
+      name:         member.firstName || targetEmail.split('@')[0],
+      groupName:    group?.name  || member.role  || 'Employees',
+      siteName:     site?.name   || 'our site',
+      orgName:      process.env.ORG_NAME || site?.name || 'Sign In App',
+      companionCode: plainToken,
+    });
+
+    res.json({ success: true, message: 'Welcome email sent' });
+  } catch (err) {
+    console.error('send-welcome error:', err);
+    res.status(500).json({ error: 'Failed to send email: ' + err.message });
+  }
+});
+
 module.exports = router;

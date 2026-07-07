@@ -50,9 +50,14 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/guards/activate-mobile', { token, device_id: deviceId });
             if (response.data.success) {
                 const { jwt_token, guard } = response.data;
+                // Preserve role from token if present
+                const userData = {
+                    ...guard,
+                    role: guard.role || guard.group || 'employee',
+                };
                 await AsyncStorage.setItem('token', jwt_token);
-                await AsyncStorage.setItem('user', JSON.stringify(guard));
-                setUser(guard);
+                await AsyncStorage.setItem('user', JSON.stringify(userData));
+                setUser(userData);
                 return { success: true, message: response.data.message };
             }
             return { success: false, message: 'Activation failed.' };

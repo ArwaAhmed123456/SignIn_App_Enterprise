@@ -33153,7 +33153,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CPp6JTZf.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-_AX9QSVc.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -71299,6 +71299,104 @@ const QrRfidTab = ({ member }) => {
     ] })
   ] });
 };
+const CompanionTab = ({ member }) => {
+  const [inviteEmail, setInviteEmail] = reactExports.useState(member?.email || "");
+  const [sending, setSending] = reactExports.useState(false);
+  const [sentMsg, setSentMsg] = reactExports.useState("");
+  const [sendErr, setSendErr] = reactExports.useState("");
+  const [perms, setPerms] = reactExports.useState({
+    sign_in_visitors: true,
+    run_evacuations: false,
+    view_directory: false
+  });
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim()) {
+      setSendErr("Email address is required");
+      return;
+    }
+    setSending(true);
+    setSentMsg("");
+    setSendErr("");
+    try {
+      await api.post(`/guards/members/${member.id}/send-welcome`, {
+        email: inviteEmail.trim(),
+        include_companion: true
+      });
+      setSentMsg("Welcome email with companion code sent successfully!");
+    } catch (err) {
+      setSendErr(err.response?.data?.error || "Failed to send email. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800 mb-1", children: "Sign In Companion app" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-4", children: "The Companion app lets this member sign in and out from their phone, receive host notifications, and run evacuations." })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 flex items-center gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 20 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Mobile pairing status" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-xs mt-0.5 font-semibold ${member?.mobile_paired ? "text-[#2b4594]" : "text-slate-400"}`, children: member?.mobile_paired ? "✓ Device paired" : "Not paired" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `px-2.5 py-1 rounded-full text-xs font-semibold ${member?.mobile_paired ? "bg-blue-50 text-[#2b4594]" : "bg-slate-200 text-slate-600"}`, children: member?.mobile_paired ? "Active" : "Inactive" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 mb-1", children: "Send welcome email" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-3", children: "Sends a welcome email with QR code + a 12-character companion app activation code (valid 72 hours)." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 mb-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "email",
+            value: inviteEmail,
+            onChange: (e2) => {
+              setInviteEmail(e2.target.value);
+              setSendErr("");
+            },
+            placeholder: "Email address",
+            className: "flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: handleSendInvite,
+            disabled: sending,
+            className: "px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold whitespace-nowrap",
+            children: sending ? "Sending…" : "Send invite"
+          }
+        )
+      ] }),
+      sentMsg && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2", children: sentMsg }),
+      sendErr && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: sendErr })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 mb-1", children: "App permissions" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-3", children: "What this member can do inside the Companion app" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: [
+        { key: "sign_in_visitors", label: "Sign in & out", desc: "Allow member to sign in/out via the companion app" },
+        { key: "run_evacuations", label: "Run evacuations", desc: "Allow member to start and manage evacuations" },
+        { key: "view_directory", label: "View people directory", desc: "Allow member to browse the people directory" }
+      ].map(({ key, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            checked: perms[key],
+            onChange: (e2) => setPerms((p2) => ({ ...p2, [key]: e2.target.checked })),
+            className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: label }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: desc })
+        ] })
+      ] }, key)) })
+    ] })
+  ] });
+};
 const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
   const [tab, setTab] = reactExports.useState("Details");
   const [form, setForm] = reactExports.useState({
@@ -71655,58 +71753,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 text-center", children: "No documents uploaded yet" })
         ] }),
-        tab === "Companion" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800 mb-1", children: "Sign In Companion app" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-4", children: "The Companion app lets this member sign in visitors from their phone, receive host notifications, and run evacuations." })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 flex items-center gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 20 }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Mobile pairing status" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-xs mt-0.5 font-semibold ${member?.mobile_paired ? "text-[#2b4594]" : "text-slate-400"}`, children: member?.mobile_paired ? "✓ Device paired" : "Not paired" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `px-2.5 py-1 rounded-full text-xs font-semibold ${member?.mobile_paired ? "bg-blue-50 text-[#2b4594]" : "bg-slate-200 text-slate-600"}`, children: member?.mobile_paired ? "Active" : "Inactive" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 mb-2", children: "Invite to Companion app" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-3", children: "Send an activation email with a one-time pairing code" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "email",
-                  defaultValue: member?.email || "",
-                  placeholder: "Email address",
-                  className: "flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold", children: "Send invite" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 mb-1", children: "App permissions" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mb-3", children: "What this member can do inside the Companion app" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: [
-              ["Sign in visitors", "Allow member to sign in visitors via app"],
-              ["Run evacuations", "Allow member to start and manage evacuations"],
-              ["View people directory", "Allow member to browse the people directory"]
-            ].map(([label, desc]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "checkbox",
-                  defaultChecked: label === "Sign in visitors",
-                  className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: label }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: desc })
-              ] })
-            ] }, label)) })
-          ] })
-        ] })
+        tab === "Companion" && /* @__PURE__ */ jsxRuntimeExports.jsx(CompanionTab, { member })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-4 border-t border-slate-100 bg-slate-50", children: [
         saveError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3", children: saveError }),
@@ -75763,16 +75810,20 @@ const PublicVisitorCheckIn = () => {
     videoRef.current = el;
     if (el && streamRef.current) {
       el.srcObject = streamRef.current;
-      el.setAttribute("playsinline", "true");
-      el.setAttribute("webkit-playsinline", "true");
+      el.setAttribute("playsinline", "");
+      el.setAttribute("webkit-playsinline", "");
       el.muted = true;
       el.play().catch((e2) => console.warn("Video play error:", e2));
     }
   };
   const startCamera = async () => {
     setCameraError("");
+    if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
+      setCameraError("Camera requires a secure (HTTPS) connection. Please use the secure URL.");
+      return;
+    }
     if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError("Camera not supported on this browser. You can continue without a photo.");
+      setCameraError("Camera not supported on this browser. Please use Safari on iOS or Chrome on Android.");
       return;
     }
     try {
@@ -75789,7 +75840,7 @@ const PublicVisitorCheckIn = () => {
       } catch {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: "user" }, width: { ideal: 640 }, height: { ideal: 640 } },
+            video: { facingMode: "user" },
             audio: false
           });
         } catch {
@@ -75797,20 +75848,20 @@ const PublicVisitorCheckIn = () => {
         }
       }
       streamRef.current = stream;
+      setCameraActive(true);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true");
-        videoRef.current.setAttribute("webkit-playsinline", "true");
-        videoRef.current.muted = true;
-        videoRef.current.play().catch((e2) => console.warn("Video play:", e2));
+        videoRef.current.play().catch(() => {
+        });
       }
-      setCameraActive(true);
     } catch (err) {
       console.error("Camera error:", err.name, err.message);
       if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setCameraError("Camera permission denied. Tap the lock icon in your browser address bar and allow camera, then try again.");
+        setCameraError("Camera permission denied. In Safari: tap AA in address bar → Website Settings → Camera → Allow. Then refresh.");
       } else if (err.name === "NotFoundError") {
         setCameraError("No camera found on this device.");
+      } else if (err.name === "NotReadableError") {
+        setCameraError("Camera is in use by another app. Close other apps and try again.");
       } else {
         setCameraError(`Could not start camera (${err.name}). You can continue without a photo.`);
       }
@@ -76038,6 +76089,9 @@ const PublicVisitorCheckIn = () => {
             autoPlay: true,
             playsInline: true,
             muted: true,
+            "webkit-playsinline": "true",
+            "x-webkit-airplay": "allow",
+            disablePictureInPicture: true,
             className: "w-full h-full object-cover cursor-pointer",
             onClick: takePhoto,
             style: { transform: "scaleX(-1)" }
