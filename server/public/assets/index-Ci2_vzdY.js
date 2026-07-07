@@ -33153,7 +33153,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-hQczeMAk.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-D_4qniQh.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -70906,25 +70906,33 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
     setSaving(true);
     setSaveError("");
     try {
-      const [fn, ...rest] = form.name.trim().split(" ");
-      await api.post("/guards/members", {
+      const parts2 = form.name.trim().split(/\s+/);
+      const fn = parts2[0];
+      const ln2 = parts2.slice(1).join(" ") || void 0;
+      const res = await api.post("/guards/members", {
         first_name: fn,
-        last_name: rest.join(" ") || void 0,
-        email: form.email || void 0,
-        phone: form.phone || void 0,
-        role: form.role || "Employee",
+        last_name: ln2,
+        email: form.email.trim() || void 0,
+        phone: form.phone.trim() || void 0,
+        role: form.role.trim() || "Employee",
         start_date: form.start_date || void 0,
         end_date: form.end_date || void 0,
         visitor_group_id: form.group || void 0,
         status: "Current",
-        // Send welcome email if checkbox ticked AND email provided
-        send_welcome: (form.send_welcome || form.include_companion) && !!form.email,
-        include_companion: form.include_companion && !!form.email
+        send_welcome: (form.send_welcome || form.include_companion) && !!form.email.trim(),
+        include_companion: form.include_companion && !!form.email.trim()
       });
+      if (res.data.email_sent === false && res.data.email_error) {
+        setSaveError(`Member added, but email failed: ${res.data.email_error}`);
+        setSaving(false);
+        onSaved();
+        return;
+      }
       onSaved();
       onClose();
     } catch (err) {
-      setSaveError(err.response?.data?.error || "Failed to add member. Please try again.");
+      const msg = err.response?.data?.error || "Failed to add member. Please try again.";
+      setSaveError(msg);
     } finally {
       setSaving(false);
     }
@@ -71828,9 +71836,13 @@ const PeopleDirectory = () => {
   }, [activeTab, search]);
   const fetchGroups = reactExports.useCallback(async () => {
     try {
-      const sitesRes = await api.get("/projects");
-      const firstSiteId = (sitesRes.data || [])[0]?.id;
-      const url2 = firstSiteId ? `/visitor-groups?project_id=${firstSiteId}` : "/visitor-groups";
+      let url2 = "/visitor-groups";
+      try {
+        const sitesRes = await api.get("/projects");
+        const firstSiteId = (sitesRes.data || [])[0]?.id;
+        if (firstSiteId) url2 = `/visitor-groups?project_id=${firstSiteId}`;
+      } catch {
+      }
       const res = await api.get(url2);
       setGroups(res.data || []);
     } catch {

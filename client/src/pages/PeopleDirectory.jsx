@@ -199,23 +199,34 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
     setSaving(true);
     setSaveError('');
     try {
-      const [fn, ...rest] = form.name.trim().split(' ');
-      await api.post('/guards/members', {
-        first_name: fn, last_name: rest.join(' ') || undefined,
-        email: form.email || undefined, phone: form.phone || undefined,
-        role: form.role || 'Employee',
+      const parts = form.name.trim().split(/\s+/);
+      const fn = parts[0];
+      const ln = parts.slice(1).join(' ') || undefined;
+      const res = await api.post('/guards/members', {
+        first_name: fn,
+        last_name: ln,
+        email: form.email.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        role: form.role.trim() || 'Employee',
         start_date: form.start_date || undefined,
         end_date: form.end_date || undefined,
         visitor_group_id: form.group || undefined,
         status: 'Current',
-        // Send welcome email if checkbox ticked AND email provided
-        send_welcome: (form.send_welcome || form.include_companion) && !!form.email,
-        include_companion: form.include_companion && !!form.email,
+        send_welcome: (form.send_welcome || form.include_companion) && !!form.email.trim(),
+        include_companion: form.include_companion && !!form.email.trim(),
       });
+      // Show email result to user if email was attempted
+      if (res.data.email_sent === false && res.data.email_error) {
+        setSaveError(`Member added, but email failed: ${res.data.email_error}`);
+        setSaving(false);
+        onSaved();
+        return; // keep modal open to show email error
+      }
       onSaved();
       onClose();
     } catch (err) {
-      setSaveError(err.response?.data?.error || 'Failed to add member. Please try again.');
+      const msg = err.response?.data?.error || 'Failed to add member. Please try again.';
+      setSaveError(msg);
     } finally {
       setSaving(false);
     }
@@ -1002,10 +1013,15 @@ const PeopleDirectory = () => {
 
   const fetchGroups = useCallback(async () => {
     try {
-      // Get groups for the first available site
-      const sitesRes = await api.get('/projects');
-      const firstSiteId = (sitesRes.data || [])[0]?.id;
-      const url = firstSiteId ? `/visitor-groups?project_id=${firstSiteId}` : '/visitor-groups';
+      // Try to get groups - first fetch sites, then groups for first site
+      let url = '/visitor-groups';
+      try {
+        const sitesRes = await api.get('/projects');
+        const firstSiteId = (sitesRes.data || [])[0]?.id;
+        if (firstSiteId) url = `/visitor-groups?project_id=${firstSiteId}`;
+      } catch {
+        // If projects fetch fails, try without project_id
+      }
       const res = await api.get(url);
       setGroups(res.data || []);
     } catch { setGroups([]); }

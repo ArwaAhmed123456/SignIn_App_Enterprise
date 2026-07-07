@@ -96,7 +96,7 @@ router.get('/members', verifyAdmin, async (req, res) => {
 // POST /api/guards/members
 router.post('/members', verifyAdmin, async (req, res) => {
   const { first_name, last_name, email, phone, role, status, start_date, end_date, visitor_group_id, site_id } = req.body;
-  if (!first_name) return res.status(400).json({ error: 'first_name is required' });
+  if (!first_name?.trim()) return res.status(400).json({ error: 'first_name is required' });
   try {
     if (email) {
       const existing = await Member.findOne({ email });
