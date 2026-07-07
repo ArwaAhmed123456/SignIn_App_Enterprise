@@ -6,14 +6,15 @@ const nodemailer = require('nodemailer');
 const createTransporter = () => nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true,          // port 465 = SSL, more reliable on cloud hosts
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
+        // Strip spaces from App Password — Render sometimes adds spaces
+        pass: (process.env.EMAIL_PASSWORD || '').replace(/\s/g, ''),
     },
-    connectionTimeout: 10000,   // 10s — prevents 502 server crash
-    greetingTimeout:  10000,
-    socketTimeout:    15000,
+    connectionTimeout: 15000,
+    greetingTimeout:  15000,
+    socketTimeout:    20000,
     tls: { rejectUnauthorized: false },
 });
 

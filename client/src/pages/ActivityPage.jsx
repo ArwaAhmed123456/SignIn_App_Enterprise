@@ -1630,7 +1630,12 @@ const ActivityPage = () => {
           Signed in
         </button>
       ),
-      render: (visit) => formatDateTime(visit.sign_in_time),
+      render: (visit) => (
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+          <span className="text-slate-700 font-medium">{formatDateTime(visit.sign_in_time)}</span>
+        </div>
+      ),
     },
     {
       key: 'Signed out',
@@ -1639,7 +1644,17 @@ const ActivityPage = () => {
           Signed out
         </button>
       ),
-      render: (visit) => formatDateTime(visit.sign_out_time),
+      render: (visit) => visit.sign_out_time ? (
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-slate-400 flex-shrink-0" />
+          <span className="text-slate-600">{formatDateTime(visit.sign_out_time)}</span>
+        </div>
+      ) : (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          On site
+        </span>
+      ),
     },
     {
       key: 'Duration',
@@ -1959,8 +1974,8 @@ const ActivityPage = () => {
               )}
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto overflow-y-visible rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="w-10 px-4 py-3">

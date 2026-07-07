@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CvgeDji5.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CsAiqqkq.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -68083,12 +68083,21 @@ const ActivityPage = () => {
     {
       key: "Signed in",
       header: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => handleSort("sign_in_time"), className: "inline-flex items-center gap-1", children: "Signed in" }),
-      render: (visit) => formatDateTime(visit.sign_in_time)
+      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-green-500 flex-shrink-0" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-700 font-medium", children: formatDateTime(visit.sign_in_time) })
+      ] })
     },
     {
       key: "Signed out",
       header: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => handleSort("sign_out_time"), className: "inline-flex items-center gap-1", children: "Signed out" }),
-      render: (visit) => formatDateTime(visit.sign_out_time)
+      render: (visit) => visit.sign_out_time ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-slate-400 flex-shrink-0" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-600", children: formatDateTime(visit.sign_out_time) })
+      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-green-500" }),
+        "On site"
+      ] })
     },
     {
       key: "Duration",
@@ -68385,8 +68394,8 @@ const ActivityPage = () => {
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left text-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-x-auto overflow-y-visible rounded-2xl border border-slate-200 bg-white shadow-sm", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[900px] text-left text-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-10 px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "input",

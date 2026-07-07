@@ -40,8 +40,9 @@ const verifyStrictAdmin = (req, res, next) => {
   }
 };
 
-const fmt = (l) => ({
-  id: l._id, name: l.name, group: l.userType, site: l.siteId,
+const fmt = (l, siteNameMap = {}) => ({
+  id: l._id, name: l.name, group: l.userType,
+  site: siteNameMap[String(l.siteId)] || l.siteName || String(l.siteId),
   site_id: l.siteId, sign_in_time: l.checkIn, sign_out_time: l.checkOut,
   duration: l.hours ? `${l.hours}h` : null, trade: l.trade, car_reg: l.carReg,
   reason: l.reason, image_url: l.imageUrl, member_id: l.memberId, created_at: l.createdAt,
@@ -163,7 +164,13 @@ router.get('/', verifyAdmin, async (req, res) => {
     if (group && group !== 'All') filter.userType = group;
     if (search) filter.name = new RegExp(search, 'i');
     const logs = await ActivityLog.find(filter).sort({ createdAt: -1 }).limit(500).lean();
-    res.json(logs.map(fmt));
+
+    // Build site name lookup map to avoid N+1 queries
+    const siteIds = [...new Set(logs.map(l => String(l.siteId)).filter(Boolean))];
+    const sites   = await Site.find({ _id: { $in: siteIds } }).lean();
+    const siteMap = Object.fromEntries(sites.map(s => [String(s._id), s.name]));
+
+    res.json(logs.map(l => fmt(l, siteMap)));
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
