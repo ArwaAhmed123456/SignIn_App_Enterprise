@@ -515,7 +515,7 @@ function makeDefaultSignOutFields(groups) {
   ];
 }
 
-// ── Site settings view (tabbed) ───────────────────────────────────────────────
+// ── Site settings view (tabbed) — v2 ─────────────────────────────────────────
 function SiteSettings({ site, groups, onBack, onDeleted }) {
   const TABS = ['Details','Sign in & out flow','Devices & QR posters','Evacuation setup','On-site report','Privacy'];
   const [tab, setTab]               = useState('Details');
