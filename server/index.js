@@ -63,6 +63,20 @@ app.use('/api/pre-registrations', preRegistrationsRoutes);
 app.use('/api/evacuation', evacuationRoutes);
 app.use('/api/posters', require('./routes/posters'));
 
+// Health check — always responds regardless of DB state
+app.get('/api/health', (req, res) => {
+  const dbState = require('mongoose').connection.readyState;
+  // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+  const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  res.json({
+    status: 'ok',
+    db: states[dbState] || 'unknown',
+    mongo_uri_set: !!process.env.MONGO_URI,
+    env: process.env.NODE_ENV || 'development',
+    time: new Date().toISOString(),
+  });
+});
+
 // Catch-all handler for React SPA (must be last)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
