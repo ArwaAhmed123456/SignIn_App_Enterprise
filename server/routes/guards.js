@@ -124,41 +124,48 @@ router.post('/members', verifyAdmin, async (req, res) => {
       siteId: resolvedSiteId,
     });
 
-    // Send welcome email if requested and member has an email
-    if (req.body.send_welcome && email) {
-      try {
-        const { sendWelcomeEmail } = require('../services/emailService');
-        const site = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
-        const group = safeGroupId ? await VisitorGroup.findById(safeGroupId).lean() : null;
-
-        // Auto-generate companion code (12 digits)
-        let companionCode = null;
-        const plainToken = Array.from({ length: 12 }, () => Math.floor(Math.random() * 10)).join('');
-        const hash   = await bcrypt.hash(plainToken, 10);
-        const expiry = new Date(Date.now() + 72 * 3600000); // 72 hours
-
-        // Store token on member
-        await Member.findByIdAndUpdate(member._id, {
-          mobileTokenHash:   hash,
-          mobileTokenExpiry: expiry,
-          permissions: JSON.stringify({ can_mobile_sign_in: true }),
-        });
-        companionCode = plainToken;
-
-        await sendWelcomeEmail({
-          email,
-          name:          first_name,
-          groupName:     group?.name || role || 'Employees',
-          siteName:      site?.name  || 'our site',
-          orgName:       process.env.ORG_NAME || site?.name || 'Tripod Services',
-          companionCode,
-        });
-      } catch (emailErr) {
-        console.warn('Welcome email failed:', emailErr.message);
-      }
-    }
-
+    // Send welcome email AFTER responding — non-blocking (fixes slow add)
+    // Respond to client immediately
     res.status(201).json({ success: true, member: await fmtMember(member.toObject()) });
+
+    // Fire-and-forget email in background
+    if ((req.body.send_welcome || req.body.include_companion) && email) {
+      setImmediate(async () => {
+        try {
+          const { sendWelcomeEmail } = require('../services/emailService');
+          const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean()                : null;
+          const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean()           : null;
+
+          // Generate companion code if companion invite requested
+          let companionCode = null;
+          if (req.body.include_companion) {
+            const plainToken = Array.from({ length: 12 }, () =>
+              'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+            ).join('');
+            const hash   = await bcrypt.hash(plainToken, 10);
+            const expiry = new Date(Date.now() + 72 * 3600000);
+            await Member.findByIdAndUpdate(member._id, {
+              mobileTokenHash:   hash,
+              mobileTokenExpiry: expiry,
+              permissions: JSON.stringify({ can_mobile_sign_in: true }),
+            });
+            companionCode = plainToken;
+          }
+
+          await sendWelcomeEmail({
+            email,
+            name:          first_name,
+            groupName:     group?.name || role || 'Employees',
+            siteName:      site?.name  || 'our site',
+            orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
+            companionCode, // null if companion not requested — email still sends without it
+          });
+          console.log(`✓ Welcome email sent to ${email}`);
+        } catch (emailErr) {
+          console.warn('Welcome email failed:', emailErr.message);
+        }
+      });
+    }
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 

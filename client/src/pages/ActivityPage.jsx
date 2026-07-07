@@ -1381,11 +1381,15 @@ const ActivityPage = () => {
       const response = await api.get('/projects');
       const siteList = response.data || [];
       setSites(siteList);
-      // Pick first real site, or stay empty — don't fall back to 'all'
-      setSelectedSiteId((current) => current || siteList[0]?.id || '');
+      const firstSiteId = siteList[0]?.id || '';
+      setSelectedSiteId((current) => current || firstSiteId);
+      // Load groups immediately for the first site
+      if (firstSiteId) {
+        loadGroups(firstSiteId);
+        loadVisitStats(firstSiteId);
+      }
     } catch (err) {
       setSites([]);
-      // Only show error for real server failures (not just empty list)
       if (err.response?.status !== 404) {
         console.error('Failed to load sites', err);
       }

@@ -208,7 +208,9 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         end_date: form.end_date || undefined,
         visitor_group_id: form.group || undefined,
         status: 'Current',
-        send_welcome: form.send_welcome && !!form.email,
+        // Send welcome email if checkbox ticked AND email provided
+        send_welcome: (form.send_welcome || form.include_companion) && !!form.email,
+        include_companion: form.include_companion && !!form.email,
       });
       onSaved();
       onClose();
@@ -1000,7 +1002,11 @@ const PeopleDirectory = () => {
 
   const fetchGroups = useCallback(async () => {
     try {
-      const res = await api.get('/visitor-groups');
+      // Get groups for the first available site
+      const sitesRes = await api.get('/projects');
+      const firstSiteId = (sitesRes.data || [])[0]?.id;
+      const url = firstSiteId ? `/visitor-groups?project_id=${firstSiteId}` : '/visitor-groups';
+      const res = await api.get(url);
       setGroups(res.data || []);
     } catch { setGroups([]); }
   }, []);

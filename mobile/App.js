@@ -41,7 +41,7 @@ const EmployeeTabs = () => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false,
-      tabBarActiveTintColor: '#4ade80',
+      tabBarActiveTintColor: '#2b4594',
       tabBarInactiveTintColor: '#9ca3af',
       tabBarStyle: {
         borderTopWidth: 1, borderTopColor: '#f3f4f6',

@@ -1,30 +1,44 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, Image, StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+const BRAND_BLUE = '#2b4594';
 
 const OnboardingScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Logo */}
+
+      {/* Logo — uses Tipod logo from assets */}
       <View style={styles.logoWrap}>
-        <View style={styles.logoCircle1} />
-        <View style={styles.logoCircle2} />
+        <Image
+          source={require('../../assets/tipod-logo.png')}
+          style={styles.logoImg}
+          resizeMode="contain"
+        />
       </View>
 
       <Text style={styles.title}>Sign In Companion</Text>
 
-      {/* Illustration placeholder */}
+      {/* Illustration */}
       <View style={styles.illustrationWrap}>
         <View style={styles.illustrationBg}>
-          {/* Green building blocks visual */}
+          {/* Building blocks in brand blue */}
           {[
-            { top: 10, left: 40, w: 120, h: 36 },
-            { top: 50, left: 20, w: 160, h: 36 },
-            { top: 90, left: 10, w: 180, h: 36 },
+            { top: 10,  left: 40,  w: 120, h: 36 },
+            { top: 54,  left: 20,  w: 160, h: 36 },
+            { top: 98,  left: 10,  w: 180, h: 36 },
+            { top: 142, left: 30,  w: 140, h: 36 },
           ].map((s, i) => (
-            <View key={i} style={[styles.block, { top: s.top, left: s.left, width: s.w, height: s.h }]} />
+            <View key={i} style={[styles.block, {
+              top: s.top, left: s.left, width: s.w, height: s.h,
+              opacity: 0.75 + i * 0.06,
+            }]} />
           ))}
           {/* Location pin */}
           <View style={styles.pin} />
+          {/* Small decorative circles */}
+          <View style={[styles.dot, { top: 30, right: 20 }]} />
+          <View style={[styles.dot, { top: 100, right: 50, width: 12, height: 12, borderRadius: 6 }]} />
         </View>
       </View>
 
@@ -47,17 +61,17 @@ const OnboardingScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container:        { flex: 1, backgroundColor: '#ffffff', alignItems: 'center', paddingHorizontal: 24 },
-  logoWrap:         { flexDirection: 'row', alignItems: 'center', marginTop: 48, marginBottom: 12 },
-  logoCircle1:      { width: 40, height: 40, borderRadius: 20, backgroundColor: '#4ade80', marginRight: -12, zIndex: 1 },
-  logoCircle2:      { width: 40, height: 40, borderRadius: 20, backgroundColor: '#2b4594', opacity: 0.85 },
-  title:            { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 32 },
+  logoWrap:         { marginTop: 52, marginBottom: 16, alignItems: 'center' },
+  logoImg:          { width: 120, height: 64 },
+  title:            { fontSize: 26, fontWeight: '700', color: '#111827', marginBottom: 28, letterSpacing: -0.3 },
   illustrationWrap: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' },
-  illustrationBg:   { width: 260, height: 180, position: 'relative' },
-  block:            { position: 'absolute', backgroundColor: '#4ade80', borderRadius: 8, opacity: 0.85 },
-  pin:              { position: 'absolute', top: 20, right: 30, width: 20, height: 28, backgroundColor: '#4ade80', borderRadius: 10 },
-  bottomWrap:       { width: '100%', paddingBottom: 40 },
-  btn:              { backgroundColor: '#4ade80', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 16 },
-  btnText:          { fontSize: 17, fontWeight: '700', color: '#111827' },
+  illustrationBg:   { width: width * 0.78, height: 220, position: 'relative' },
+  block:            { position: 'absolute', backgroundColor: BRAND_BLUE, borderRadius: 10 },
+  pin:              { position: 'absolute', top: 14, right: 28, width: 22, height: 30, backgroundColor: BRAND_BLUE, borderRadius: 11 },
+  dot:              { position: 'absolute', width: 16, height: 16, borderRadius: 8, backgroundColor: '#e0e7ff' },
+  bottomWrap:       { width: '100%', paddingBottom: 44 },
+  btn:              { backgroundColor: BRAND_BLUE, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 18, shadowColor: BRAND_BLUE, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  btnText:          { fontSize: 17, fontWeight: '700', color: '#ffffff' },
   aboutBtn:         { alignItems: 'center' },
   aboutText:        { fontSize: 15, color: '#6b7280' },
 });

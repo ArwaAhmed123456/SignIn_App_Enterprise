@@ -33153,7 +33153,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-_AX9QSVc.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-hQczeMAk.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -67822,7 +67822,12 @@ const ActivityPage = () => {
       const response = await api.get("/projects");
       const siteList = response.data || [];
       setSites(siteList);
-      setSelectedSiteId((current) => current || siteList[0]?.id || "");
+      const firstSiteId = siteList[0]?.id || "";
+      setSelectedSiteId((current) => current || firstSiteId);
+      if (firstSiteId) {
+        loadGroups(firstSiteId);
+        loadVisitStats(firstSiteId);
+      }
     } catch (err) {
       setSites([]);
       if (err.response?.status !== 404) {
@@ -70912,7 +70917,9 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         end_date: form.end_date || void 0,
         visitor_group_id: form.group || void 0,
         status: "Current",
-        send_welcome: form.send_welcome && !!form.email
+        // Send welcome email if checkbox ticked AND email provided
+        send_welcome: (form.send_welcome || form.include_companion) && !!form.email,
+        include_companion: form.include_companion && !!form.email
       });
       onSaved();
       onClose();
@@ -71821,7 +71828,10 @@ const PeopleDirectory = () => {
   }, [activeTab, search]);
   const fetchGroups = reactExports.useCallback(async () => {
     try {
-      const res = await api.get("/visitor-groups");
+      const sitesRes = await api.get("/projects");
+      const firstSiteId = (sitesRes.data || [])[0]?.id;
+      const url2 = firstSiteId ? `/visitor-groups?project_id=${firstSiteId}` : "/visitor-groups";
+      const res = await api.get(url2);
       setGroups(res.data || []);
     } catch {
       setGroups([]);
