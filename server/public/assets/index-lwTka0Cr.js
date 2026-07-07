@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CgPUbHww.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Kqge67le.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -75914,64 +75914,74 @@ const PublicVisitorCheckIn = () => {
   const streamRef = reactExports.useRef(null);
   const videoRefCallback = (el) => {
     videoRef.current = el;
-    if (el && streamRef.current) {
+    if (!el) return;
+    if (streamRef.current) {
       el.srcObject = streamRef.current;
-      el.setAttribute("playsinline", "");
-      el.setAttribute("webkit-playsinline", "");
       el.muted = true;
-      el.play().catch((e2) => console.warn("Video play error:", e2));
+      const playPromise = el.play();
+      if (playPromise !== void 0) {
+        playPromise.catch(() => {
+        });
+      }
     }
   };
   const startCamera = async () => {
     setCameraError("");
-    if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
-      setCameraError("Camera requires a secure (HTTPS) connection. Please use the secure URL.");
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    if (window.location.protocol !== "https:" && !isLocalhost) {
+      setCameraError("Camera requires HTTPS. Please open the site using https://");
       return;
     }
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError("Camera not supported on this browser. Please use Safari on iOS or Chrome on Android.");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError("Camera not available. Please use Safari on iPhone or Chrome on Android.");
       return;
     }
-    try {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t3) => t3.stop());
-        streamRef.current = null;
-      }
-      let stream;
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t3) => t3.stop());
+      streamRef.current = null;
+    }
+    const constraints = [
+      { video: { facingMode: { exact: "user" }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+      { video: { facingMode: "user" }, audio: false },
+      { video: { facingMode: { exact: "environment" } }, audio: false },
+      { video: true, audio: false }
+    ];
+    let stream = null;
+    let lastErr = null;
+    for (const constraint of constraints) {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "user" } },
-          audio: false
-        });
-      } catch {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" },
-            audio: false
-          });
-        } catch {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        }
+        stream = await navigator.mediaDevices.getUserMedia(constraint);
+        break;
+      } catch (err) {
+        lastErr = err;
+        continue;
       }
-      streamRef.current = stream;
-      setCameraActive(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+    }
+    if (!stream) {
+      const err = lastErr;
+      if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+        setCameraError(
+          'Camera permission denied.\n\niPhone: Go to Settings → Safari → Camera → Allow.\n\nOr tap the "AA" in the address bar → Website Settings → Camera → Allow.'
+        );
+      } else if (err?.name === "NotFoundError") {
+        setCameraError("No camera found on this device.");
+      } else if (err?.name === "NotReadableError" || err?.name === "TrackStartError") {
+        setCameraError("Camera is being used by another app. Close other apps and try again.");
+      } else {
+        setCameraError(`Camera error: ${err?.message || "Unknown error"}. You can continue without a photo.`);
+      }
+      return;
+    }
+    streamRef.current = stream;
+    setCameraActive(true);
+    setTimeout(() => {
+      if (videoRef.current && streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.muted = true;
         videoRef.current.play().catch(() => {
         });
       }
-    } catch (err) {
-      console.error("Camera error:", err.name, err.message);
-      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setCameraError("Camera permission denied. In Safari: tap AA in address bar → Website Settings → Camera → Allow. Then refresh.");
-      } else if (err.name === "NotFoundError") {
-        setCameraError("No camera found on this device.");
-      } else if (err.name === "NotReadableError") {
-        setCameraError("Camera is in use by another app. Close other apps and try again.");
-      } else {
-        setCameraError(`Could not start camera (${err.name}). You can continue without a photo.`);
-      }
-    }
+    }, 100);
   };
   const stopCamera = () => {
     if (streamRef.current) {
@@ -76195,9 +76205,6 @@ const PublicVisitorCheckIn = () => {
             autoPlay: true,
             playsInline: true,
             muted: true,
-            "webkit-playsinline": "true",
-            "x-webkit-airplay": "allow",
-            disablePictureInPicture: true,
             className: "w-full h-full object-cover cursor-pointer",
             onClick: takePhoto,
             style: { transform: "scaleX(-1)" }
@@ -76208,7 +76215,7 @@ const PublicVisitorCheckIn = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-center px-4 text-slate-400", children: "Access to the camera will only be used for the purpose of signing you in" })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("canvas", { ref: canvasRef, className: "hidden" }),
-        cameraError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-500 text-center mb-4", children: cameraError }),
+        cameraError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 max-w-xs w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 text-center whitespace-pre-line", children: cameraError }) }),
         submitError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-500 text-center mb-4", children: submitError }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 text-center mb-6 max-w-xs", children: "Please take a photo of yourself using your phone's camera. This will be used to verify your identity on site." }),
         cameraActive && !photoDataUrl && /* @__PURE__ */ jsxRuntimeExports.jsx(

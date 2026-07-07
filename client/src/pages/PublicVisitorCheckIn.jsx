@@ -103,76 +103,98 @@ const PublicVisitorCheckIn = () => {
   // When cameraActive becomes true, the video element is now in the DOM — attach stream
   const streamRef = useRef(null);
 
-  // Ref callback — fires the instant the <video> element mounts into the DOM
+  // Ref callback — fires the instant the <video> element mounts
+  // iOS Safari REQUIRES srcObject set on the element directly via ref
   const videoRefCallback = (el) => {
     videoRef.current = el;
-    if (el && streamRef.current) {
+    if (!el) return;
+    // Attach stream immediately if already acquired
+    if (streamRef.current) {
       el.srcObject = streamRef.current;
-      // iOS Safari requires these attributes set programmatically too
-      el.setAttribute('playsinline', '');
-      el.setAttribute('webkit-playsinline', '');
       el.muted = true;
-      el.play().catch(e => console.warn('Video play error:', e));
+      // Force play — iOS needs this explicit call
+      const playPromise = el.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay blocked — try again on user gesture (handled by onClick)
+        });
+      }
     }
   };
 
   // Camera helpers
   const startCamera = async () => {
     setCameraError('');
-    // iOS Safari requires HTTPS for camera — check
-    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-      setCameraError('Camera requires a secure (HTTPS) connection. Please use the secure URL.');
+
+    // iOS Safari requires HTTPS
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (window.location.protocol !== 'https:' && !isLocalhost) {
+      setCameraError('Camera requires HTTPS. Please open the site using https://');
       return;
     }
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError('Camera not supported on this browser. Please use Safari on iOS or Chrome on Android.');
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError('Camera not available. Please use Safari on iPhone or Chrome on Android.');
       return;
     }
-    try {
-      // Stop any existing stream first
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
-        streamRef.current = null;
-      }
-      let stream;
-      // Try 1: exact front camera (works on most iOS devices)
+
+    // Stop existing stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
+
+    // iOS camera constraint order — must try in this exact sequence
+    const constraints = [
+      { video: { facingMode: { exact: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+      { video: { facingMode: 'user' }, audio: false },
+      { video: { facingMode: { exact: 'environment' } }, audio: false },
+      { video: true, audio: false },
+    ];
+
+    let stream = null;
+    let lastErr = null;
+
+    for (const constraint of constraints) {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: 'user' } },
-          audio: false,
-        });
-      } catch {
-        // Try 2: ideal front camera (works on Android + older iOS)
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' },
-            audio: false,
-          });
-        } catch {
-          // Try 3: any available camera
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        }
+        stream = await navigator.mediaDevices.getUserMedia(constraint);
+        break;
+      } catch (err) {
+        lastErr = err;
+        continue;
       }
-      streamRef.current = stream;
-      setCameraActive(true);
-      // videoRefCallback will attach the stream when the video element mounts
-      // But if it's already mounted, attach now
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+    }
+
+    if (!stream) {
+      const err = lastErr;
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        setCameraError(
+          'Camera permission denied.\n\niPhone: Go to Settings → Safari → Camera → Allow.\n\nOr tap the "AA" in the address bar → Website Settings → Camera → Allow.'
+        );
+      } else if (err?.name === 'NotFoundError') {
+        setCameraError('No camera found on this device.');
+      } else if (err?.name === 'NotReadableError' || err?.name === 'TrackStartError') {
+        setCameraError('Camera is being used by another app. Close other apps and try again.');
+      } else {
+        setCameraError(`Camera error: ${err?.message || 'Unknown error'}. You can continue without a photo.`);
+      }
+      return;
+    }
+
+    streamRef.current = stream;
+
+    // Set cameraActive FIRST so the <video> element renders
+    setCameraActive(true);
+
+    // Then wait a tick for the DOM to update, and attach stream
+    // This is the key fix for iOS — the video element must exist before srcObject is set
+    setTimeout(() => {
+      if (videoRef.current && streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.muted = true;
         videoRef.current.play().catch(() => {});
       }
-    } catch (err) {
-      console.error('Camera error:', err.name, err.message);
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setCameraError('Camera permission denied. In Safari: tap AA in address bar → Website Settings → Camera → Allow. Then refresh.');
-      } else if (err.name === 'NotFoundError') {
-        setCameraError('No camera found on this device.');
-      } else if (err.name === 'NotReadableError') {
-        setCameraError('Camera is in use by another app. Close other apps and try again.');
-      } else {
-        setCameraError(`Could not start camera (${err.name}). You can continue without a photo.`);
-      }
-    }
+    }, 100);
   };
 
   const stopCamera = () => {
@@ -403,13 +425,11 @@ const PublicVisitorCheckIn = () => {
               {photoDataUrl ? (
                 <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
               ) : cameraActive ? (
-                <video ref={videoRefCallback}
+                <video
+                  ref={videoRefCallback}
                   autoPlay
                   playsInline
                   muted
-                  webkit-playsinline="true"
-                  x-webkit-airplay="allow"
-                  disablePictureInPicture
                   className="w-full h-full object-cover cursor-pointer"
                   onClick={takePhoto}
                   style={{ transform: 'scaleX(-1)' }}
@@ -425,7 +445,11 @@ const PublicVisitorCheckIn = () => {
 
             <canvas ref={canvasRef} className="hidden" />
 
-            {cameraError && <p className="text-sm text-red-500 text-center mb-4">{cameraError}</p>}
+            {cameraError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 max-w-xs w-full">
+                <p className="text-sm text-red-600 text-center whitespace-pre-line">{cameraError}</p>
+              </div>
+            )}
             {submitError && <p className="text-sm text-red-500 text-center mb-4">{submitError}</p>}
 
             <p className="text-sm text-slate-600 text-center mb-6 max-w-xs">
