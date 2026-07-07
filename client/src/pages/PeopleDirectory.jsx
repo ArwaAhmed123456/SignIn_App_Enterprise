@@ -257,9 +257,9 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1"><span className="text-red-500">* </span>Which group does this member belong to?</label>
                 <select value={form.group} onChange={e => set('group', e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594] appearance-none bg-white">
                   <option value="">Select group…</option>
-                  {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  {groups && groups.length > 0 ? groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>) : <option disabled>No groups available</option>}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">

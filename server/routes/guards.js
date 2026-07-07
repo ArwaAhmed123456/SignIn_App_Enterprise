@@ -123,56 +123,55 @@ router.post('/members', verifyAdmin, async (req, res) => {
       siteId: resolvedSiteId,
     });
 
-    // Send welcome email synchronously so errors are visible
-    let emailResult = null;
+    // Send welcome email asynchronously to avoid blocking
     const shouldSendEmail = (req.body.send_welcome || req.body.include_companion) && email;
     if (shouldSendEmail) {
-      try {
-        const { sendWelcomeEmail } = require('../services/emailService');
-        const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
-        const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
+      // Send email in background without blocking response
+      setImmediate(async () => {
+        try {
+          const { sendWelcomeEmail } = require('../services/emailService');
+          const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
+          const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
 
-        let companionCode = null;
-        if (req.body.include_companion) {
-          const plainToken = Array.from({ length: 12 }, () =>
-            'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
-          ).join('');
-          const hash   = await bcrypt.hash(plainToken, 10);
-          const expiry = new Date(Date.now() + 72 * 3600000);
-          await Member.findByIdAndUpdate(member._id, {
-            mobileTokenHash:   hash,
-            mobileTokenExpiry: expiry,
-            permissions: JSON.stringify({ can_mobile_sign_in: true }),
+          let companionCode = null;
+          if (req.body.include_companion) {
+            const plainToken = Array.from({ length: 12 }, () =>
+              'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+            ).join('');
+            const hash   = await bcrypt.hash(plainToken, 10);
+            const expiry = new Date(Date.now() + 72 * 3600000);
+            await Member.findByIdAndUpdate(member._id, {
+              mobileTokenHash:   hash,
+              mobileTokenExpiry: expiry,
+              permissions: JSON.stringify({ can_mobile_sign_in: true }),
+            });
+            companionCode = plainToken;
+          }
+
+          const result = await sendWelcomeEmail({
+            email,
+            name:          first_name,
+            groupName:     group?.name || role || 'Employees',
+            siteName:      site?.name  || 'our site',
+            orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
+            companionCode,
           });
-          companionCode = plainToken;
-        }
 
-        const result = await sendWelcomeEmail({
-          email,
-          name:          first_name,
-          groupName:     group?.name || role || 'Employees',
-          siteName:      site?.name  || 'our site',
-          orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
-          companionCode,
-        });
-
-        emailResult = result;
-        if (result.success) {
-          console.log(`✓ Welcome email sent to ${email}`);
-        } else {
-          console.error(`✗ Welcome email FAILED to ${email}:`, result.error);
+          if (result.success) {
+            console.log(`✓ Welcome email sent to ${email}`);
+          } else {
+            console.error(`✗ Welcome email FAILED to ${email}:`, result.error);
+          }
+        } catch (emailErr) {
+          console.error('Welcome email exception:', emailErr.message);
         }
-      } catch (emailErr) {
-        console.error('Welcome email exception:', emailErr.message);
-        emailResult = { success: false, error: emailErr.message };
-      }
+      });
     }
 
     res.status(201).json({
       success: true,
       member: await fmtMember(member.toObject()),
-      email_sent: shouldSendEmail ? (emailResult?.success || false) : null,
-      email_error: emailResult?.error || null,
+      email_sent: shouldSendEmail ? 'pending' : null,
     });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
