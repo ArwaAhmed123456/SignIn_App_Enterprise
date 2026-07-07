@@ -21,8 +21,11 @@ const getResend = () => {
   return new Resend(apiKey);
 };
 
-// From address — use your domain if verified in Resend, otherwise use default
-const FROM = process.env.EMAIL_FROM || 'Sign In App <onboarding@resend.dev>';
+// From address — use Resend's default if no custom domain verified
+// To use your own domain: verify it at resend.com/domains, then set EMAIL_FROM=Sign In App <noreply@yourdomain.com>
+const FROM = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('gmail.com')
+  ? process.env.EMAIL_FROM
+  : 'Sign In App <onboarding@resend.dev>';
 
 // ── Core send function ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
