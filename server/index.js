@@ -62,6 +62,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/pre-registrations', preRegistrationsRoutes);
 app.use('/api/evacuation', evacuationRoutes);
 app.use('/api/posters', require('./routes/posters'));
+app.use('/api/messages', require('./routes/messages'));
 
 // Health check — always responds regardless of DB state
 app.get('/api/health', (req, res) => {
@@ -97,9 +98,22 @@ const io = new Server(server, {
 app.set('io', io);
 
 io.on('connection', (socket) => {
-  console.log('Admin connected:', socket.id);
+  console.log('Client connected:', socket.id);
+
+  // Guard/manager joins their site room for real-time messages
+  socket.on('joinSite', (siteId) => {
+    if (siteId) {
+      socket.join(`site:${siteId}`);
+      console.log(`Socket ${socket.id} joined site:${siteId}`);
+    }
+  });
+
+  socket.on('leaveSite', (siteId) => {
+    if (siteId) socket.leave(`site:${siteId}`);
+  });
+
   socket.on('disconnect', () => {
-    console.log('Admin disconnected');
+    console.log('Client disconnected:', socket.id);
   });
 });
 

@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
     const valid = await bcrypt.compare(password, guard.password);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
     const token = jwt.sign(
-      { id: guard._id, email: guard.email, role: guard.role||'guard',
+      { id: guard._id, email: guard.email, name: guard.firstName, role: guard.role||'guard',
         permissions: guard.permissions ? JSON.parse(guard.permissions) : null },
       JWT_SECRET, { expiresIn: '24h' }
     );
@@ -235,17 +235,48 @@ router.post('/:id/generate-mobile-token', verifyAdmin, async (req, res) => {
 router.post('/activate-mobile', async (req, res) => {
   const { token, device_id } = req.body;
   if (!token || !device_id) return res.status(400).json({ error: 'token and device_id required' });
-  if (!/^\d{12}$/.test(token)) return res.status(400).json({ error: 'Token must be 12 digits' });
+
+  // Accept both 12-digit numeric AND 12-char alphanumeric codes
+  const cleanToken = token.replace(/-/g, '').toUpperCase().trim();
+  if (cleanToken.length !== 12) return res.status(400).json({ error: 'Code must be 12 characters (e.g. ABCD-EFGH-1234)' });
+
   try {
-    const candidates = await Member.find({ mobileTokenExpiry: { $gt: new Date() }, mobilePaired: false });
+    // Find all candidates with unexpired tokens (allow re-pairing if already paired)
+    const candidates = await Member.find({ mobileTokenExpiry: { $gt: new Date() } });
     let matched = null;
     for (const c of candidates) {
-      if (c.mobileTokenHash && await bcrypt.compare(token, c.mobileTokenHash)) { matched = c; break; }
+      if (c.mobileTokenHash && await bcrypt.compare(cleanToken, c.mobileTokenHash)) {
+        matched = c; break;
+      }
     }
-    if (!matched) return res.status(401).json({ error: 'Invalid or expired token' });
-    await Member.findByIdAndUpdate(matched._id, { mobilePaired: true, mobileDeviceId: device_id, mobilePairedAt: new Date(), mobileTokenHash: null, mobileTokenExpiry: null });
-    const mobileJwt = jwt.sign({ id: matched._id, email: matched.email, role: 'mobile_employee', project_id: matched.siteId, device_id }, JWT_SECRET, { expiresIn: '30d' });
-    res.json({ success: true, jwt_token: mobileJwt, guard: { id: matched._id, name: matched.firstName, email: matched.email } });
+    if (!matched) return res.status(401).json({ error: 'Invalid or expired code. Check your welcome email and try again.' });
+
+    await Member.findByIdAndUpdate(matched._id, {
+      mobilePaired: true,
+      mobileDeviceId: device_id,
+      mobilePairedAt: new Date(),
+      mobileTokenHash: null,
+      mobileTokenExpiry: null,
+    });
+
+    const finalRole = matched.role || 'guard';
+    const mobileJwt = jwt.sign(
+      { id: matched._id, email: matched.email, name: matched.firstName, role: finalRole, project_id: matched.siteId, device_id },
+      JWT_SECRET, { expiresIn: '30d' }
+    );
+    res.json({
+      success: true,
+      jwt_token: mobileJwt,
+      guard: {
+        id: matched._id,
+        name: matched.firstName,
+        email: matched.email,
+        role: finalRole,
+        group: matched.visitorGroupId ? 'member' : finalRole,
+        project_id: matched.siteId,
+        organization: matched.siteId ? (await Site.findById(matched.siteId).lean())?.name : '',
+      }
+    });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 

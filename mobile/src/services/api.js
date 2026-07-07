@@ -1,11 +1,14 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-// 1. Production API URL (Main Deployment)
-const PROD_URL = 'https://tripod-signin-app.onrender.com/api';
+const PROD_URL =
+    Constants.expoConfig?.extra?.apiUrl ||
+    'https://tripod-signin-app.onrender.com/api';
 
-// 2. Local Development URL
-const DEV_URL = 'http://192.168.100.173:5000/api';
+const DEV_URL =
+    Constants.expoConfig?.extra?.apiUrl ||
+    'http://192.168.100.173:5000/api';
 
 const API_BASE_URL = __DEV__ ? DEV_URL : PROD_URL;
 

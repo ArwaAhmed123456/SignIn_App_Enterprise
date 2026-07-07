@@ -8,11 +8,34 @@ const VisitorGroup     = require('../models/VisitorGroup');
 const { sendPreRegistrationInviteEmail } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
-const verifyAdmin = (req,res,next) => {
+const verifyAdmin = (req, res, next) => {
   const auth = req.headers['authorization'];
-  if (!auth) return res.status(403).json({ error:'No token' });
-  try { const d=jwt.verify(auth.split(' ')[1],JWT_SECRET); if(!['admin','superadmin'].includes(d.role)) return res.status(403).json({error:'Admin only'}); req.user=d; next(); }
-  catch { res.status(401).json({error:'Unauthorized'}); }
+  if (!auth) return res.status(403).json({ error: 'No token' });
+  try {
+    const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    if (!['admin', 'superadmin', 'guard', 'manager'].includes(d.role)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    req.user = d;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
+const verifyStrictAdmin = (req, res, next) => {
+  const auth = req.headers['authorization'];
+  if (!auth) return res.status(403).json({ error: 'No token' });
+  try {
+    const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    if (!['admin', 'superadmin'].includes(d.role)) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+    req.user = d;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 };
 
 const fmt = (p) => ({
@@ -68,7 +91,7 @@ router.put('/:id', verifyAdmin, async (req,res) => {
   } catch(err){ res.status(500).json({error:'Server error'}); }
 });
 
-router.delete('/:id', verifyAdmin, async (req,res) => {
+router.delete('/:id', verifyStrictAdmin, async (req,res) => {
   try { await PreRegistration.findByIdAndDelete(req.params.id); res.json({success:true}); }
   catch { res.status(500).json({error:'Server error'}); }
 });
@@ -81,8 +104,29 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
     const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     let groupName = 'Visitor';
     if (prereg.visitorGroupId) { const g = await VisitorGroup.findById(prereg.visitorGroupId).lean(); if(g) groupName=g.name; }
-    const log = await ActivityLog.create({ siteId:prereg.siteId, memberId:prereg.memberId||null, name:prereg.name, userType:groupName, date:dateStr, timeIn:timeStr, checkIn:now, reason:prereg.notes||'' });
+    
+    const isGuard = req.user && ['guard', 'security'].includes(req.user.role);
+    const guardName = req.user ? (req.user.name || req.user.firstName || 'Guard') : 'Guard';
+    
+    const log = await ActivityLog.create({
+      siteId: prereg.siteId,
+      memberId: prereg.memberId||null,
+      name: prereg.name,
+      userType: groupName,
+      date: dateStr,
+      timeIn: timeStr,
+      checkIn: now,
+      reason: prereg.notes||'',
+      preRegistered: true,
+      checkedInByGuard: isGuard,
+      checkedInBy: isGuard ? guardName : undefined
+    });
+    
     await PreRegistration.findByIdAndUpdate(req.params.id,{status:'Arrived'});
+    
+    const io = req.app.get('io');
+    if (io) io.emit('newAttendance', { name: prereg.name, date: dateStr });
+    
     res.json({success:true, log_id: log._id});
   } catch(err){ console.error(err); res.status(500).json({error:'Server error'}); }
 });

@@ -27,6 +27,7 @@ const AdminLayout = () => {
   const lastName     = localStorage.getItem('adminLastName')  || '';
   const adminEmail   = localStorage.getItem('admin_remember_email') || '';
   const organization = localStorage.getItem('adminOrg') || '';
+  const adminRole    = localStorage.getItem('adminRole') || '';
   const fullName     = firstName || lastName
     ? `${firstName} ${lastName}`.trim()
     : adminEmail.split('@')[0] || 'Admin';
@@ -60,7 +61,7 @@ const AdminLayout = () => {
     { to: '/admin/manage/safety',         icon: ShieldCheck,  label: 'Safety check',           desc: 'Manage people to be identified at sign in' },
     { to: '/admin/manage/account',        icon: SettingsIcon, label: 'Account management',     desc: 'Manage subscription, user roles and permissions' },
     { to: '/admin/manage/api',            icon: Code,         label: 'Client API',             desc: 'Add an API key for external access to your data' },
-  ];
+  ].filter((item) => adminRole === 'superadmin' || item.to !== '/admin/manage/account');
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">

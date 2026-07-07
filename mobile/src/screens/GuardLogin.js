@@ -57,7 +57,6 @@ const GuardLogin = ({ navigation }) => {
             } else {
                 await AsyncStorage.removeItem('guard_remember_email');
             }
-            navigation.navigate('GuardDashboard');
         } else {
             setError(result.message || 'Invalid credentials. Please try again.');
             setLoading(false);
@@ -129,7 +128,7 @@ const GuardLogin = ({ navigation }) => {
                         }}>
                             <Shield size={13} color="#2b4594" />
                             <Text style={{ color: '#2b4594', fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' }}>
-                                Manager Portal
+                                Enterprise Portal
                             </Text>
                         </View>
 
@@ -137,7 +136,7 @@ const GuardLogin = ({ navigation }) => {
                             Sign In
                         </Text>
                         <Text style={{ fontSize: 14, color: '#64748b', marginTop: 6, fontWeight: '500' }}>
-                            Tripod Services Security
+                            Security guard and manager access
                         </Text>
                     </View>
 

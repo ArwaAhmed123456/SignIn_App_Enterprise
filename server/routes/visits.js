@@ -9,11 +9,35 @@ const fs          = require('fs');
 const { addWorker } = require('../services/manifestCache');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
+
 const verifyAdmin = (req, res, next) => {
   const auth = req.headers['authorization'];
   if (!auth) return res.status(403).json({ error: 'No token provided' });
-  try { const d = jwt.verify(auth.split(' ')[1], JWT_SECRET); if (!['admin','superadmin'].includes(d.role)) return res.status(403).json({ error: 'Admin only' }); req.user = d; next(); }
-  catch { res.status(401).json({ error: 'Unauthorized' }); }
+  try {
+    const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    if (!['admin', 'superadmin', 'guard', 'manager'].includes(d.role)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    req.user = d;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
+const verifyStrictAdmin = (req, res, next) => {
+  const auth = req.headers['authorization'];
+  if (!auth) return res.status(403).json({ error: 'No token provided' });
+  try {
+    const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    if (!['admin', 'superadmin'].includes(d.role)) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+    req.user = d;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 };
 
 const fmt = (l) => ({
@@ -21,6 +45,9 @@ const fmt = (l) => ({
   site_id: l.siteId, sign_in_time: l.checkIn, sign_out_time: l.checkOut,
   duration: l.hours ? `${l.hours}h` : null, trade: l.trade, car_reg: l.carReg,
   reason: l.reason, image_url: l.imageUrl, member_id: l.memberId, created_at: l.createdAt,
+  pre_registered: l.preRegistered || false,
+  checked_in_by_guard: l.checkedInByGuard || false,
+  checked_in_by: l.checkedInBy || '',
 });
 
 const nowStr = () => { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
@@ -171,7 +198,7 @@ router.post('/:id/sign-out', async (req, res) => {
 });
 
 // DELETE /api/visits/:id
-router.delete('/:id', verifyAdmin, async (req, res) => {
+router.delete('/:id', verifyStrictAdmin, async (req, res) => {
   try { await ActivityLog.findByIdAndDelete(req.params.id); res.json({ success: true }); }
   catch { res.status(500).json({ error: 'Server error' }); }
 });

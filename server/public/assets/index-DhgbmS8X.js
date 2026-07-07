@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Kqge67le.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CvgeDji5.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66272,6 +66272,7 @@ const AdminLayout = () => {
   const lastName = localStorage.getItem("adminLastName") || "";
   const adminEmail = localStorage.getItem("admin_remember_email") || "";
   const organization = localStorage.getItem("adminOrg") || "";
+  const adminRole = localStorage.getItem("adminRole") || "";
   const fullName = firstName || lastName ? `${firstName} ${lastName}`.trim() : adminEmail.split("@")[0] || "Admin";
   const initials2 = fullName.split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) || "AD";
   const handleLogout = () => {
@@ -66299,7 +66300,7 @@ const AdminLayout = () => {
     { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" },
     { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
     { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
-  ];
+  ].filter((item) => adminRole === "superadmin" || item.to !== "/admin/manage/account");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-[#f8fafc] flex flex-col font-sans", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "bg-white border-b border-slate-200 shadow-sm z-30 sticky top-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-[60px] lg:h-[72px] px-4 lg:px-6", children: [
@@ -74380,12 +74381,16 @@ const SectionCard = ({ icon: Icon2, title, desc, onClick }) => /* @__PURE__ */ j
   }
 );
 const AccountManagement = () => {
+  const adminRole = localStorage.getItem("adminRole") || "";
   const [activeSection, setActiveSection] = reactExports.useState("overview");
   const [showInvite, setShowInvite] = reactExports.useState(false);
   const [users, setUsers] = reactExports.useState([
     { id: 1, email: "admin@signinapp.com", role: "superadmin", status: "active" },
     { id: 2, email: "test@tripod.com", role: "admin", status: "active" }
   ]);
+  if (adminRole !== "superadmin") {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/manage/sites", replace: true });
+  }
   const addUser = (u2) => setUsers((prev) => [...prev, { ...u2, id: Date.now(), status: "invited" }]);
   const removeUser = (id) => {
     if (confirm("Remove this user?")) setUsers((u2) => u2.filter((x2) => x2.id !== id));
@@ -74515,48 +74520,59 @@ const navItems = [
   { id: "api", label: "Client API", icon: Code, path: "/admin/manage/api" },
   { id: "account", label: "Account management", icon: Settings, path: "/admin/manage/account" }
 ];
-const ManageSettings = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex bg-slate-50 overflow-hidden", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden md:flex w-52 lg:w-56 bg-white border-r border-slate-200 flex-col h-full flex-shrink-0", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 py-6 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Manage settings" }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 py-2 overflow-y-auto", children: navItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+const ManageSettings = () => {
+  const adminRole = localStorage.getItem("adminRole") || "";
+  const canManageAccounts = adminRole === "superadmin";
+  const visibleNavItems = navItems.filter((item) => canManageAccounts || item.id !== "account");
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex bg-slate-50 overflow-hidden", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden md:flex w-52 lg:w-56 bg-white border-r border-slate-200 flex-col h-full flex-shrink-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 py-6 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Manage settings" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 py-2 overflow-y-auto", children: visibleNavItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NavLink,
+        {
+          to: path,
+          className: ({ isActive }) => `flex items-center justify-between px-5 py-2.5 text-sm transition-colors ${isActive ? "bg-slate-50 text-[#2b4594] font-semibold border-l-2 border-[#2b4594]" : "text-slate-500 hover:bg-slate-50 hover:text-[#2b4594] border-l-2 border-transparent"}`,
+          children: ({ isActive }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 16, className: "flex-shrink-0" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: label })
+            ] }),
+            isActive && /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 18l6-6-6-6" }) })
+          ] })
+        },
+        id
+      )) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden w-full absolute top-0 left-0 z-10 bg-white border-b border-slate-200 overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex px-2 py-1", children: visibleNavItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
       NavLink,
       {
         to: path,
-        className: ({ isActive }) => `flex items-center justify-between px-5 py-2.5 text-sm transition-colors ${isActive ? "bg-slate-50 text-[#2b4594] font-semibold border-l-2 border-[#2b4594]" : "text-slate-500 hover:bg-slate-50 hover:text-[#2b4594] border-l-2 border-transparent"}`,
-        children: ({ isActive }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 16, className: "flex-shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: label })
-          ] }),
-          isActive && /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M9 18l6-6-6-6" }) })
-        ] })
+        className: ({ isActive }) => `flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${isActive ? "text-[#2b4594] bg-[#2b4594]/8" : "text-slate-500"}`,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 18 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px]", children: label.split(" ")[0] })
+        ]
       },
       id
-    )) })
-  ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden w-full absolute top-0 left-0 z-10 bg-white border-b border-slate-200 overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex px-2 py-1", children: navItems.map(({ id, label, icon: Icon2, path }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    NavLink,
-    {
-      to: path,
-      className: ({ isActive }) => `flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${isActive ? "text-[#2b4594] bg-[#2b4594]/8" : "text-slate-500"}`,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { size: 18 }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px]", children: label.split(" ")[0] })
-      ]
-    },
-    id
-  )) }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-auto bg-slate-50 mt-0 md:mt-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pt-14 md:pt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { index: true, element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "sites", replace: true }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "sites", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SitesList, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "visitor-groups", element: /* @__PURE__ */ jsxRuntimeExports.jsx(VisitorGroupsList, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "notifications", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdvancedNotifications, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "safety", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SafetyCheck, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "api", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ClientAPI, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "account", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AccountManagement, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "*", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "sites", replace: true }) })
-  ] }) }) })
-] });
+    )) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-auto bg-slate-50 mt-0 md:mt-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pt-14 md:pt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { index: true, element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "sites", replace: true }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "sites", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SitesList, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "visitor-groups", element: /* @__PURE__ */ jsxRuntimeExports.jsx(VisitorGroupsList, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "notifications", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdvancedNotifications, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "safety", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SafetyCheck, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "api", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ClientAPI, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Route,
+        {
+          path: "account",
+          element: canManageAccounts ? /* @__PURE__ */ jsxRuntimeExports.jsx(AccountManagement, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/manage/sites", replace: true })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "*", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "sites", replace: true }) })
+    ] }) }) })
+  ] });
+};
 const ProfilePage = () => {
   const firstName = localStorage.getItem("adminFirstName") || "";
   const lastName = localStorage.getItem("adminLastName") || "";

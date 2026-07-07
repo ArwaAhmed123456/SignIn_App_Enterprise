@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X } from 'lucide-react';
 import api from '../../api';
 
@@ -86,12 +87,17 @@ const SectionCard = ({ icon: Icon, title, desc, onClick }) => (
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 const AccountManagement = () => {
+  const adminRole = localStorage.getItem('adminRole') || '';
   const [activeSection, setActiveSection] = useState('overview');
   const [showInvite, setShowInvite] = useState(false);
   const [users, setUsers] = useState([
     { id: 1, email: 'admin@signinapp.com', role: 'superadmin', status: 'active' },
     { id: 2, email: 'test@tripod.com',     role: 'admin',      status: 'active' },
   ]);
+
+  if (adminRole !== 'superadmin') {
+    return <Navigate to="/admin/manage/sites" replace />;
+  }
 
   const addUser = (u) => setUsers(prev => [...prev, { ...u, id: Date.now(), status: 'invited' }]);
   const removeUser = (id) => { if (confirm('Remove this user?')) setUsers(u => u.filter(x => x.id !== id)); };

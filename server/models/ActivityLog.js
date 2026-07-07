@@ -16,6 +16,9 @@ const activityLogSchema = new mongoose.Schema({
   checkOut:  { type: Date },
   hours:     { type: Number },
   duration:  { type: Number },
+  preRegistered:    { type: Boolean, default: false },
+  checkedInByGuard: { type: Boolean, default: false },
+  checkedInBy:      { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model('ActivityLog', activityLogSchema);

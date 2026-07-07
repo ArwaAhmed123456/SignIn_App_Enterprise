@@ -17,7 +17,12 @@ const navItems = [
   { id: 'account',       label: 'Account management',      icon: SettingsIcon,   path: '/admin/manage/account' },
 ];
 
-const ManageSettings = () => (
+const ManageSettings = () => {
+  const adminRole = localStorage.getItem('adminRole') || '';
+  const canManageAccounts = adminRole === 'superadmin';
+  const visibleNavItems = navItems.filter((item) => canManageAccounts || item.id !== 'account');
+
+  return (
   <div className="h-full flex bg-slate-50 overflow-hidden">
 
     {/* Sidebar — hidden on mobile, collapsible on tablet */}
@@ -27,7 +32,7 @@ const ManageSettings = () => (
       </div>
 
       <nav className="flex-1 py-2 overflow-y-auto">
-        {navItems.map(({ id, label, icon: Icon, path }) => (
+        {visibleNavItems.map(({ id, label, icon: Icon, path }) => (
           <NavLink
             key={id}
             to={path}
@@ -60,7 +65,7 @@ const ManageSettings = () => (
     {/* Mobile tab bar — only on small screens */}
     <div className="md:hidden w-full absolute top-0 left-0 z-10 bg-white border-b border-slate-200 overflow-x-auto">
       <div className="flex px-2 py-1">
-        {navItems.map(({ id, label, icon: Icon, path }) => (
+        {visibleNavItems.map(({ id, label, icon: Icon, path }) => (
           <NavLink key={id} to={path}
             className={({ isActive }) =>
               `flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
@@ -84,13 +89,17 @@ const ManageSettings = () => (
           <Route path="notifications"  element={<AdvancedNotifications />} />
           <Route path="safety"         element={<SafetyCheck />} />
           <Route path="api"            element={<ClientAPI />} />
-          <Route path="account"        element={<AccountManagement />} />
+          <Route
+            path="account"
+            element={canManageAccounts ? <AccountManagement /> : <Navigate to="/admin/manage/sites" replace />}
+          />
           <Route path="*" element={<Navigate to="sites" replace />} />
         </Routes>
       </div>
     </div>
 
   </div>
-);
+  );
+};
 
 export default ManageSettings;

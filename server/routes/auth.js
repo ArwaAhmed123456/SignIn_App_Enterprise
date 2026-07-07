@@ -181,7 +181,7 @@ router.post('/change-password', verifyToken, async (req, res) => {
 });
 
 // ─── Invite portal user (creates account with temp password) ─────────────────
-router.post('/invite', verifyToken, async (req, res) => {
+router.post('/invite', verifySuperAdmin, async (req, res) => {
     const { email, role } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
     try {
