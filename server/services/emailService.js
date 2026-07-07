@@ -27,17 +27,27 @@ const FROM = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('gmail.c
   ? process.env.EMAIL_FROM
   : 'Sign In App <onboarding@resend.dev>';
 
+// For testing with free Resend account - redirect all emails to account owner
+const TEST_EMAIL_OVERRIDE = process.env.TEST_EMAIL_OVERRIDE || null;
+
 // ── Core send function ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
   const resend = getResend();
   if (!resend) return { success: false, error: 'RESEND_API_KEY not configured' };
+  
+  // For testing with free Resend account, redirect to account owner email
+  const finalTo = TEST_EMAIL_OVERRIDE || to;
+  if (TEST_EMAIL_OVERRIDE && to !== TEST_EMAIL_OVERRIDE) {
+    console.log(`[TEST MODE] Redirecting email from ${to} to ${TEST_EMAIL_OVERRIDE}`);
+  }
+  
   try {
-    const { data, error } = await resend.emails.send({ from: FROM, to, subject, html });
+    const { data, error } = await resend.emails.send({ from: FROM, to: finalTo, subject, html });
     if (error) {
       console.error('Resend error:', error);
       return { success: false, error: error.message || JSON.stringify(error) };
     }
-    console.log(`✓ Email sent to ${to} — id: ${data?.id}`);
+    console.log(`✓ Email sent to ${finalTo}${TEST_EMAIL_OVERRIDE ? ` (originally to: ${to})` : ''} — id: ${data?.id}`);
     return { success: true, id: data?.id };
   } catch (err) {
     console.error('Email exception:', err.message);
@@ -129,7 +139,9 @@ const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, com
         <tr><td style="width:28px;vertical-align:top;padding-top:2px;">
           <div style="width:26px;height:26px;border-radius:50%;background:#2b4594;color:#fff;font-size:13px;font-weight:700;text-align:center;line-height:26px;">1</div>
         </td><td style="padding-left:12px;padding-bottom:14px;font-size:14px;color:#374151;">
-          <strong>Download</strong> the Sign In companion app from the App Store or Play Store.
+          <strong>Download</strong> the Sign In companion app:
+          <br/><a href="https://apps.apple.com/app/sign-in-companion" style="color:#2b4594;text-decoration:none;">App Store</a> or 
+          <a href="https://play.google.com/store/apps/details?id=com.signinapp.companion" style="color:#2b4594;text-decoration:none;">Play Store</a>
         </td></tr>
         <tr><td style="width:28px;vertical-align:top;padding-top:2px;">
           <div style="width:26px;height:26px;border-radius:50%;background:#2b4594;color:#fff;font-size:13px;font-weight:700;text-align:center;line-height:26px;">2</div>

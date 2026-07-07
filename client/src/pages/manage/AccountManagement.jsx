@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X } from 'lucide-react';
 import api from '../../api';
@@ -10,6 +10,8 @@ const ROLE_COLORS = {
   admin:      'bg-blue-100 text-[#2b4594]',
   viewer:     'bg-slate-100 text-slate-600',
 };
+
+const MOBILE_ROLES = ['employee', 'guard', 'manager', 'admin'];
 
 // ─── Invite user modal ────────────────────────────────────────────────────────
 const InviteModal = ({ onClose, onInvited }) => {
@@ -70,6 +72,102 @@ const InviteModal = ({ onClose, onInvited }) => {
   );
 };
 
+// ─── Create mobile user modal (Guard/Manager) ─────────────────────────────────
+const MobileUserModal = ({ onClose, onCreated }) => {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', mobileRole: 'guard', site_id: '' });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [sites, setSites] = useState([]);
+
+  useEffect(() => {
+    api.get('/projects').then(res => setSites(res.data || [])).catch(() => setSites([]));
+  }, []);
+
+  const handleCreate = async () => {
+    if (!form.name.trim()) { setError('Name is required'); return; }
+    setSaving(true); setError('');
+    try {
+      const parts = form.name.trim().split(/\s+/);
+      const res = await api.post('/guards/members', {
+        first_name: parts[0],
+        last_name: parts.slice(1).join(' ') || undefined,
+        email: form.email.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        mobileRole: form.mobileRole,
+        role: form.mobileRole === 'guard' ? 'Guard' : form.mobileRole === 'manager' ? 'Manager' : 'Employee',
+        site_id: form.site_id || undefined,
+        status: 'Current',
+      });
+      onCreated(res.data.member);
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to create user');
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">Create mobile app user</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"><X size={18} /></button>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Full name <span className="text-red-500">*</span></label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              placeholder="John Smith"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+            <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              placeholder="john@company.com"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Phone</label>
+            <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              placeholder="+44 7700 900000"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
+            <select value={form.mobileRole} onChange={e => setForm(f => ({ ...f, mobileRole: e.target.value }))}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+              {MOBILE_ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+            </select>
+            <div className="mt-2 text-xs text-slate-500 space-y-1">
+              <p><strong>Guard</strong> — sign in/out visitors, run evacuations</p>
+              <p><strong>Manager</strong> — view on-site people, receive notifications</p>
+              <p><strong>Employee</strong> — sign self in/out, view calendar</p>
+              <p><strong>Admin</strong> — full mobile app access</p>
+            </div>
+          </div>
+          {sites.length > 0 && (
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Site</label>
+              <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                <option value="">Select site…</option>
+                {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+          )}
+          {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+        </div>
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
+          <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button onClick={handleCreate} disabled={saving}
+            className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
+            {saving ? 'Creating…' : 'Create user'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Section card ─────────────────────────────────────────────────────────────
 const SectionCard = ({ icon: Icon, title, desc, onClick }) => (
   <button onClick={onClick}
@@ -90,6 +188,7 @@ const AccountManagement = () => {
   const adminRole = localStorage.getItem('adminRole') || '';
   const [activeSection, setActiveSection] = useState('overview');
   const [showInvite, setShowInvite] = useState(false);
+  const [showMobileUser, setShowMobileUser] = useState(false);
   const [users, setUsers] = useState([
     { id: 1, email: 'admin@signinapp.com', role: 'superadmin', status: 'active' },
     { id: 2, email: 'test@tripod.com',     role: 'admin',      status: 'active' },
@@ -110,10 +209,12 @@ const AccountManagement = () => {
       <p className="text-slate-500 text-sm mb-8">Manage subscription, user roles and permissions for your organisation.</p>
       <div className="space-y-3">
         <SectionCard icon={Users}       title="Portal users"         desc="Add and edit users who have access to this portal" onClick={() => setActiveSection('users')} />
+        <SectionCard icon={Shield}      title="Mobile app users"      desc="Create Guard, Manager, and Employee accounts for the companion app" onClick={() => setShowMobileUser(true)} />
         <SectionCard icon={Shield}      title="Roles and permissions" desc="Set up different user roles and what they can do"  onClick={() => setActiveSection('roles')} />
         <SectionCard icon={CreditCard}  title="Subscription details"  desc="Plans and payment details"                        onClick={() => setActiveSection('billing')} />
         <SectionCard icon={FileText}    title="Audit log"             desc="Record of system activity and events"              onClick={() => setActiveSection('audit')} />
       </div>
+      {showMobileUser && <MobileUserModal onClose={() => setShowMobileUser(false)} onCreated={(member) => console.log('Created mobile user:', member)} />}
     </div>
   );
 

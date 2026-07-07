@@ -95,7 +95,7 @@ router.get('/members', verifyAdmin, async (req, res) => {
 
 // POST /api/guards/members
 router.post('/members', verifyAdmin, async (req, res) => {
-  const { first_name, last_name, email, phone, role, status, start_date, end_date, visitor_group_id, site_id } = req.body;
+  const { first_name, last_name, email, phone, role, mobileRole, status, start_date, end_date, visitor_group_id, site_id } = req.body;
   if (!first_name?.trim()) return res.status(400).json({ error: 'first_name is required' });
   try {
     if (email) {
@@ -115,7 +115,8 @@ router.post('/members', verifyAdmin, async (req, res) => {
     const member = await Member.create({
       firstName: first_name, lastName: last_name||null,
       email: email||null, phone: phone||null,
-      role: role||'Employee', status: status||'Current',
+      role: role||'Employee', mobileRole: mobileRole||'employee',
+      status: status||'Current',
       startDate: start_date ? new Date(start_date) : null,
       endDate:   end_date   ? new Date(end_date)   : null,
       visitorGroupId: safeGroupId,
@@ -259,7 +260,7 @@ router.post('/activate-mobile', async (req, res) => {
       mobileTokenExpiry: null,
     });
 
-    const finalRole = matched.role || 'guard';
+    const finalRole = matched.mobileRole || matched.role || 'employee';
     const mobileJwt = jwt.sign(
       { id: matched._id, email: matched.email, name: matched.firstName, role: finalRole, project_id: matched.siteId, device_id },
       JWT_SECRET, { expiresIn: '30d' }

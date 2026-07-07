@@ -172,7 +172,7 @@ const EditAllPanel = ({ onClose }) => (
 const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [drawerTab, setDrawerTab] = useState('Details');
   const [form, setForm] = useState({
-    group: '', name: '', email: '', phone: '', role: '',
+    group: '', name: '', email: '', phone: '', role: '', mobileRole: 'employee',
     language: 'English (UK)', show_on_sites: 'All sites',
     start_date: '', end_date: '',
     send_welcome: true, include_companion: false,
@@ -208,6 +208,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         email: form.email.trim() || undefined,
         phone: form.phone.trim() || undefined,
         role: form.role.trim() || 'Employee',
+        mobileRole: form.mobileRole || 'employee',
         start_date: form.start_date || undefined,
         end_date: form.end_date || undefined,
         visitor_group_id: form.group || undefined,
@@ -285,6 +286,17 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
                   <input value={form.role} onChange={e => set('role', e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
+                  <select value={form.mobileRole} onChange={e => set('mobileRole', e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                    <option value="employee">Employee</option>
+                    <option value="guard">Security Guard</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <p className="text-xs text-slate-400 mt-1">Determines what they see in the companion app</p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Language</label>
