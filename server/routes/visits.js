@@ -50,17 +50,17 @@ const nowStr = () => {
   return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
 };
 
-const savePhoto = (base64Data, siteCode) => {
+// Store photo as base64 data URL directly in MongoDB.
+// Render's filesystem is ephemeral — files written to disk are lost on every
+// redeploy/restart, which is why images were disappearing. Storing in MongoDB
+// means the photo persists permanently with the visit record.
+// Our images are already compressed to ~80-120kb so document size is fine.
+const savePhoto = (base64Data) => {
   try {
     if (!base64Data || !base64Data.startsWith('data:image')) return null;
-    const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
-    if (!matches) return null;
-    const ext = matches[1]; const data = matches[2];
-    const dir = path.join(__dirname, '..', 'uploads', siteCode || 'visitors');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const filename = `visitor-${Date.now()}.${ext}`;
-    fs.writeFileSync(path.join(dir, filename), Buffer.from(data, 'base64'));
-    return `/uploads/${siteCode || 'visitors'}/${filename}`;
+    // Validate it's a real base64 image
+    if (!base64Data.match(/^data:image\/(jpeg|jpg|png|webp);base64,/)) return null;
+    return base64Data; // store the data URL directly
   } catch { return null; }
 };
 
@@ -98,7 +98,7 @@ router.post('/public', async (req, res) => {
 
     const now     = new Date();
     const dateStr = now.toISOString().split('T')[0];
-    const imageUrl = photo_base64 ? savePhoto(photo_base64, site.code) : null;
+    const imageUrl = photo_base64 ? savePhoto(photo_base64) : null;
 
     const log = await ActivityLog.create({
       siteId: site._id, name: name.trim(),

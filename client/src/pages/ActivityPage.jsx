@@ -1588,14 +1588,15 @@ const ActivityPage = () => {
       key: 'Photo',
       header: <span>Photo</span>,
       render: (visit) => (
-        <div className="flex flex-col items-center gap-1">
+        <div className="relative inline-block">
           {visit.image_url
-            ? <img src={visit.image_url} alt={visit.name} className="w-9 h-9 rounded-full object-cover" />
-            : <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
+            ? <img src={visit.image_url} alt={visit.name} className="w-9 h-9 rounded-full object-cover block" />
+            : <div className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
                 {(visit.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
               </div>
           }
-          <span className={`w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? 'bg-red-500' : 'bg-green-500'}`} />
+          {/* Status dot — bottom-right corner like MS Teams / Office */}
+          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? 'bg-red-500' : 'bg-green-500'}`} />
         </div>
       ),
     },

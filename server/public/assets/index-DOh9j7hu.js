@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CuVzzu6j.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-7sAKeSYz.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -68065,9 +68065,9 @@ const ActivityPage = () => {
     {
       key: "Photo",
       header: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Photo" }),
-      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1", children: [
-        visit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: visit.image_url, alt: visit.name, className: "w-9 h-9 rounded-full object-cover" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400", children: (visit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? "bg-red-500" : "bg-green-500"}` })
+      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
+        visit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: visit.image_url, alt: visit.name, className: "w-9 h-9 rounded-full object-cover block" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600", children: (visit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? "bg-red-500" : "bg-green-500"}` })
       ] })
     },
     {
