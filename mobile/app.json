@@ -19,7 +19,8 @@
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Camera is used to take your visitor photo for identity verification on site.",
-        "NSMicrophoneUsageDescription": "Microphone access for voice features."
+        "NSMicrophoneUsageDescription": "Microphone access for voice features.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
