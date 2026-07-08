@@ -6,9 +6,12 @@ const PROD_URL =
     Constants.expoConfig?.extra?.apiUrl ||
     'https://tripod-signin-app.onrender.com/api';
 
+// In dev, always use production URL unless a local override is set
+// This avoids hardcoded IPs breaking on different networks
 const DEV_URL =
+    Constants.expoConfig?.extra?.devApiUrl ||
     Constants.expoConfig?.extra?.apiUrl ||
-    'http://192.168.100.173:5000/api';
+    'https://tripod-signin-app.onrender.com/api';
 
 const API_BASE_URL = __DEV__ ? DEV_URL : PROD_URL;
 

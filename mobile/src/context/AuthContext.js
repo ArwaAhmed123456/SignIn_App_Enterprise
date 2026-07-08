@@ -28,16 +28,37 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password, role = 'admin') => {
         try {
             const startTime = Date.now();
-            const path = role === 'guard' ? '/guards/login' : '/auth/login';
-            const response = await api.post(path, { email, password });
             const duration = Date.now() - startTime;
 
-            console.log(`[AUTH] Login success in ${duration}ms`);
+            // Try guard/member login first, then fall back to admin login
+            // This covers both guards (created via People Directory with passwords)
+            // and admins/managers (created via admin portal)
+            let response = null;
+            let lastError = null;
 
-            const { user, token } = response.data;
+            const endpoints = role === 'guard'
+                ? ['/guards/login', '/auth/login']   // guards first, then admin fallback
+                : ['/auth/login', '/guards/login'];   // admins first, then guard fallback
+
+            for (const path of endpoints) {
+                try {
+                    response = await api.post(path, { email, password });
+                    console.log(`[AUTH] Login success via ${path} in ${Date.now() - startTime}ms`);
+                    break;
+                } catch (err) {
+                    lastError = err;
+                    // Only fall through if it was a 401 (wrong credentials would be same on both)
+                    if (err.response?.status !== 401 && err.response?.status !== 404) break;
+                }
+            }
+
+            if (!response) throw lastError;
+
+            const userData = response.data.user || response.data.guard;
+            const token = response.data.token || response.data.jwt_token;
             await AsyncStorage.setItem('token', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
-            setUser(user);
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
             return { success: true, duration };
         } catch (error) {
             console.error('[AUTH] Login error:', error);
