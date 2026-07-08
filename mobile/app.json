@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Tripod Services",
-    "slug": "signinapp-enterprise-mobile",
+    "slug": "tripodhub",
     "scheme": "tripodservices",
     "version": "1.1.0",
     "orientation": "portrait",
@@ -61,7 +61,7 @@
         "projectId": "bf3dc46e-6679-4561-b3c8-10a9a6758310"
       }
     },
-    "owner": "hayat123a",
+    "owner": "haalim",
     "runtimeVersion": {
       "policy": "appVersion"
     },
