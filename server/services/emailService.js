@@ -17,8 +17,10 @@ const getResend = () => {
   return new Resend(apiKey);
 };
 
-// From address - use Resend's default for testing
-const FROM = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('gmail.com')
+// From address — set EMAIL_FROM env var to your verified Resend domain address
+// e.g. EMAIL_FROM="Tripod Services <Abid.fiaz@tripodsvcs.co.uk>"
+// Falls back to Resend's shared domain for testing only (sends to verified email only)
+const FROM = process.env.EMAIL_FROM
   ? process.env.EMAIL_FROM
   : 'Sign In App <onboarding@resend.dev>';
 
@@ -69,7 +71,7 @@ const sendPasswordResetEmail = async (email, projectName, resetToken) =>
 // ── Contact email ─────────────────────────────────────────────────────────────
 const sendContactEmail = async (userEmail, query) =>
   sendMail({
-    to: process.env.EMAIL_USER || 'arwase46@gmail.com',
+    to: process.env.EMAIL_USER || 'Abid.fiaz@tripodsvcs.co.uk',
     subject: `New query from ${userEmail}`,
     html: `<div style="font-family:Arial,sans-serif;padding:20px;"><h3>From: ${userEmail}</h3><p style="white-space:pre-wrap;">${query}</p></div>`,
   });
@@ -217,7 +219,7 @@ const sendAdminCredentialsEmail = async ({ email, firstName, tempPassword, role 
     <div style="background:#f0f4ff;border:1.5px solid #c7d7fe;border-radius:12px;padding:24px;">
       <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Login credentials</p>
       <table cellpadding="0" cellspacing="0" style="width:100%;">
-        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Login URL:</strong></td><td style="padding:6px 0;font-size:14px;"><a href="https://tripod-signin-app.onrender.com/admin/login" style="color:#2b4594;text-decoration:none;">tripod-signin-app.onrender.com</a></td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Login URL:</strong></td><td style="padding:6px 0;font-size:14px;"><a href="${process.env.APP_URL || 'https://tripod-signin-app.onrender.com'}/admin/login" style="color:#2b4594;text-decoration:none;">${(process.env.APP_URL || 'https://tripod-signin-app.onrender.com').replace('https://','')}</a></td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Email:</strong></td><td style="padding:6px 0;font-size:14px;color:#111827;">${email.toLowerCase()}</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Password:</strong></td><td style="padding:6px 0;"><span style="font-family:'Courier New',monospace;font-size:18px;font-weight:900;color:#2b4594;background:#e8eeff;padding:4px 10px;border-radius:6px;">${tempPassword}</span></td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Role:</strong></td><td style="padding:6px 0;font-size:14px;color:#111827;">${roleLabel}</td></tr>
