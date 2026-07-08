@@ -24,18 +24,18 @@ const OnboardingScreen = ({ navigation }) => {
       <View style={styles.bottomWrap}>
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => navigation.navigate('InviteCode')}
+          onPress={() => navigation.navigate('GuardLogin')}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnText}>Connect with Invite Code</Text>
+          <Text style={styles.btnText}>Log In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.btn, styles.portalBtn]}
-          onPress={() => navigation.navigate('GuardLogin')}
+          onPress={() => navigation.navigate('InviteCode')}
           activeOpacity={0.85}
         >
-          <Text style={[styles.btnText, styles.portalBtnText]}>Security / Manager Login</Text>
+          <Text style={[styles.btnText, styles.portalBtnText]}>Connect with Invite Code</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.aboutBtn} activeOpacity={0.7}>

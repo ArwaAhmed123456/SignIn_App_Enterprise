@@ -26,10 +26,14 @@ const ProfileScreen = ({ navigation }) => {
   const org        = user?.organization || 'Observant Security Services';
 
   const handleDisconnect = () => {
-    Alert.alert('Disconnect account', 'Are you sure you want to disconnect?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Disconnect', style: 'destructive', onPress: logout },
-    ]);
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Log Out', style: 'destructive', onPress: logout },
+      ]
+    );
   };
 
   const BG  = '#1c1c1e';
@@ -209,10 +213,10 @@ const ProfileScreen = ({ navigation }) => {
           </TouchableOpacity>
         </Card>
 
-        {/* Disconnect */}
+        {/* Log Out */}
         <TouchableOpacity onPress={handleDisconnect}
-          style={{ backgroundColor: BG2, borderWidth: 1, borderColor: BD, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 8 }}>
-          <Text style={{ fontSize: 15, fontWeight: '700', color: T1 }}>Disconnect account</Text>
+          style={{ backgroundColor: '#ff3b30', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 8 }}>
+          <Text style={{ fontSize: 15, fontWeight: '700', color: '#ffffff' }}>Log Out</Text>
         </TouchableOpacity>
 
         <Text style={{ textAlign: 'center', color: T2, fontSize: 13, marginBottom: 8 }}>Version 1.1.0 (10001)</Text>
