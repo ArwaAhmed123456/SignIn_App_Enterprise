@@ -12,6 +12,7 @@
     "@expo/metro-runtime": "~4.0.1",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.4.4",
+    "@react-native-ml-kit/text-recognition": "^2.0.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.3.10",
@@ -21,22 +22,27 @@
     "expo-constants": "~17.0.8",
     "expo-device": "~7.0.3",
     "expo-image-picker": "~16.0.6",
+    "expo-print": "~15.0.8",
+    "expo-sharing": "~14.0.8",
     "expo-status-bar": "~2.0.1",
     "expo-updates": "~0.27.4",
     "fs-extra": "^11.3.6",
     "lucide-react-native": "^0.475.0",
     "react": "18.3.1",
     "react-native": "0.76.9",
-    "react-native-get-random-values": "^1.11.0",
     "react-native-gesture-handler": "~2.22.0",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-qrcode-svg": "^6.3.15",
     "react-native-reanimated": "~3.16.7",
     "react-native-safe-area-context": "4.14.0",
     "react-native-screens": "~4.4.0",
-    "react-native-svg": "15.11.2"
+    "react-native-svg": "15.11.2",
+    "react-native-worklets": "0.5.1"
   },
   "private": true,
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "nativewind": "^4.1.23",
+    "tailwindcss": "^3.4.17"
   }
 }
