@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Modal,
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Bell, CheckCircle, ChevronDown, RefreshCw, Users } from 'lucide-react-native';
+import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, Users, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import {
   getAccessibleSites,
@@ -55,6 +58,7 @@ const ManagerScreen = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifOn, setNotifOn] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   const managerName = user?.name || user?.firstName || 'Manager';
 
@@ -110,6 +114,72 @@ const ManagerScreen = () => {
     load();
   };
 
+  // ── Export ─────────────────────────────────────────────────────────
+  const fmtExportTime = (val) => {
+    if (!val) return '';
+    try { return new Date(val).toLocaleString('en-GB'); } catch { return val; }
+  };
+
+  const buildCSV = (rows, headers) => {
+    const esc = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
+    return [headers.map(esc).join(','), ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\n');
+  };
+
+  const handleExport = async (format) => {
+    const list = activeTab === 'On Site' ? onSite
+      : activeTab === 'Signed Out' ? signedOut
+      : expected;
+
+    if (!list.length) {
+      Alert.alert('Nothing to export', 'No records available for this tab.');
+      return;
+    }
+    setExporting(true);
+    try {
+      const siteName = selectedSite?.name || 'Site';
+      const dateStr  = new Date().toLocaleDateString('en-GB');
+
+      if (format === 'csv') {
+        const headers = activeTab === 'Notifications'
+          ? ['Name', 'Group', 'Sign In', 'Checked in by']
+          : ['Name', 'Group', 'Sign In', 'Sign Out'];
+        const rows = list.map(item => ({
+          Name:           item.name || '',
+          Group:          item.group || '',
+          'Sign In':      fmtExportTime(item.sign_in_time || item.expected_date),
+          'Sign Out':     fmtExportTime(item.sign_out_time),
+          'Checked in by': item.checked_in_by || '',
+        }));
+        await Share.share({
+          message: buildCSV(rows, headers),
+          title: `${siteName} — ${activeTab} — ${dateStr}.csv`,
+        });
+      } else {
+        const divider = '─'.repeat(48);
+        const lines = [
+          `MANAGER REPORT — ${siteName.toUpperCase()}`,
+          `Tab: ${activeTab}   Date: ${dateStr}`,
+          divider,
+          ...list.map((item, i) =>
+            `${i + 1}. ${item.name} [${item.group || 'Visitor'}]\n   In: ${fmtExportTime(item.sign_in_time || item.expected_date)}${item.sign_out_time ? '  Out: ' + fmtExportTime(item.sign_out_time) : ''}`
+          ),
+          divider,
+          `Total: ${list.length} record(s)`,
+        ];
+        await Share.share({
+          message: lines.join('\n'),
+          title: `${siteName} — ${activeTab} — ${dateStr}.txt`,
+        });
+      }
+    } catch (err) {
+      if (err?.message !== 'User did not share') {
+        Alert.alert('Export failed', err?.message || 'Could not export.');
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const notifications = useMemo(
     () =>
       [...onSite, ...signedOut]
@@ -136,9 +206,26 @@ const ManagerScreen = () => {
           <Text style={s.headerTitle}>Manager portal</Text>
           <Text style={s.headerSub}>{managerName}</Text>
         </View>
-        <TouchableOpacity onPress={() => setNotifOn((value) => !value)} style={[s.notifBtn, notifOn && s.notifBtnActive]}>
-          <Bell size={20} color={notifOn ? '#fff' : '#6b7280'} />
-        </TouchableOpacity>
+        <View style={s.headerActions}>
+          <TouchableOpacity
+            onPress={() => Alert.alert(
+              'Export',
+              'Choose export format',
+              [
+                { text: 'CSV (Excel)', onPress: () => handleExport('csv') },
+                { text: 'Text Report', onPress: () => handleExport('pdf') },
+                { text: 'Cancel', style: 'cancel' },
+              ]
+            )}
+            style={[s.notifBtn, { marginRight: 8 }]}
+            disabled={exporting}
+          >
+            {exporting ? <ActivityIndicator size="small" color="#2b4594" /> : <Download size={20} color="#2b4594" />}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setNotifOn((value) => !value)} style={[s.notifBtn, notifOn && s.notifBtnActive]}>
+            <Bell size={20} color={notifOn ? '#fff' : '#6b7280'} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={s.sitePicker}>
@@ -146,26 +233,41 @@ const ManagerScreen = () => {
           <Text style={s.sitePickerText}>{selectedSite?.name || 'Select site'}</Text>
           <ChevronDown size={16} color="#6b7280" />
         </TouchableOpacity>
-        {siteOpen && (
-          <View style={s.siteDropdown}>
-            {sites.map((site) => (
-              <TouchableOpacity
-                key={site.id}
-                onPress={async () => {
-                  setSelectedSite(site);
-                  setSiteOpen(false);
-                  setRefreshing(true);
-                  await loadSiteData(site.id);
-                  setRefreshing(false);
-                }}
-                style={s.siteOption}
-              >
-                <Text style={[s.siteOptionTxt, selectedSite?.id === site.id && s.siteOptionTxtActive]}>{site.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
       </View>
+      <Modal visible={siteOpen} transparent={true} animationType="fade" onRequestClose={() => setSiteOpen(false)}>
+        <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }} activeOpacity={1} onPress={() => setSiteOpen(false)}>
+          <View style={{ backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 40, maxHeight: '70%' }}>
+            <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
+              <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
+            </View>
+            <ScrollView style={{ paddingHorizontal: 16 }}>
+              {sites.length === 0 ? (
+                <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>
+                </View>
+              ) : sites.map((site) => (
+                <TouchableOpacity
+                  key={site.id}
+                  onPress={async () => {
+                    setSelectedSite(site);
+                    setSiteOpen(false);
+                    setRefreshing(true);
+                    await loadSiteData(site.id);
+                    setRefreshing(false);
+                  }}
+                  style={{ paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <Text style={{ fontSize: 16, color: selectedSite?.id === site.id ? '#2b4594' : '#111827', fontWeight: selectedSite?.id === site.id ? '700' : '400' }}>
+                    {site.name}
+                  </Text>
+                  {selectedSite?.id === site.id && <CheckCircle size={18} color="#2b4594" />}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
         {TABS.map((tab) => (
@@ -225,8 +327,9 @@ const ManagerScreen = () => {
             ) : (
               onSite.slice(0, 5).map((visit) => (
                 <View key={visit.id} style={s.visitCard}>
-                  <View style={[s.visitAvatar, s.visitAvatarActive]}>
+                  <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
+                    <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
                   </View>
                   <View style={s.visitMeta}>
                     <Text style={s.visitName}>{visit.name}</Text>
@@ -254,8 +357,9 @@ const ManagerScreen = () => {
             ) : (
               onSite.map((visit) => (
                 <View key={visit.id} style={s.visitCard}>
-                  <View style={[s.visitAvatar, s.visitAvatarActive]}>
+                  <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
+                    <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
                   </View>
                   <View style={s.visitMeta}>
                     <Text style={s.visitName}>{visit.name}</Text>
@@ -359,6 +463,7 @@ const s = StyleSheet.create({
     backgroundColor: '#fff',
   },
   notifBtnActive: { backgroundColor: '#2b4594', borderColor: '#2b4594' },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
   sitePicker: {
     paddingHorizontal: 16,
     paddingVertical: 10,

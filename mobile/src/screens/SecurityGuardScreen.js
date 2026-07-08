@@ -3,16 +3,18 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Platform,
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ChevronDown, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X } from 'lucide-react-native';
+import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import {
   getAccessibleSites,
@@ -141,6 +143,7 @@ const SecurityGuardScreen = ({ navigation }) => {
   const [signOutTarget, setSignOutTarget] = useState(null);
   const [signingOutVisitor, setSigningOutVisitor] = useState(false);
   const [arrivingId, setArrivingId] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   const guardName = user?.name || user?.firstName || 'Security guard';
 
@@ -190,6 +193,82 @@ const SecurityGuardScreen = ({ navigation }) => {
   const onRefresh = () => {
     setRefreshing(true);
     load();
+  };
+
+  // ── Export helpers ─────────────────────────────────────────────────────────
+  const buildCSV = (rows, headers) => {
+    const escape = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
+    const headerLine = headers.map(escape).join(',');
+    const lines = rows.map(row => headers.map(h => escape(row[h])).join(','));
+    return [headerLine, ...lines].join('\n');
+  };
+
+  const fmtExportTime = (val) => {
+    if (!val) return '';
+    try { return new Date(val).toLocaleString('en-GB'); } catch { return val; }
+  };
+
+  const handleExport = async (format) => {
+    const list = activeTab === 'On Site' ? filteredOnSite
+      : activeTab === 'Signed Out' ? filteredSignedOut
+      : filteredExpected;
+
+    if (!list.length) {
+      Alert.alert('Nothing to export', 'There are no records to export in this tab.');
+      return;
+    }
+    setExporting(true);
+    try {
+      const siteName = selectedSite?.name || 'Site';
+      const tabName  = activeTab;
+      const dateStr  = new Date().toLocaleDateString('en-GB');
+
+      if (format === 'csv') {
+        const headers = activeTab === 'Pre-register'
+          ? ['Name', 'Expected', 'Notes']
+          : ['Name', 'Group', 'Sign In', 'Sign Out'];
+
+        const rows = list.map(item => ({
+          Name:      item.name || '',
+          Group:     item.group || '',
+          'Sign In': fmtExportTime(item.sign_in_time),
+          'Sign Out':fmtExportTime(item.sign_out_time),
+          Expected:  fmtExportTime(item.expected_date),
+          Notes:     item.notes || '',
+        }));
+        const csv = buildCSV(rows, headers);
+        await Share.share({
+          message: csv,
+          title: `${siteName} — ${tabName} — ${dateStr}.csv`,
+        });
+      } else {
+        // Plain-text PDF-style report shared as text
+        const divider = '─'.repeat(48);
+        const lines = [
+          `SIGN IN APP — ${siteName.toUpperCase()}`,
+          `Tab: ${tabName}   Exported: ${dateStr}`,
+          divider,
+          ...list.map((item, i) => {
+            if (activeTab === 'Pre-register') {
+              return `${i + 1}. ${item.name}\n   Expected: ${fmtExportTime(item.expected_date)}${item.notes ? '\n   Notes: ' + item.notes : ''}`;
+            }
+            return `${i + 1}. ${item.name} [${item.group || 'Visitor'}]\n   In: ${fmtExportTime(item.sign_in_time)}${item.sign_out_time ? '  Out: ' + fmtExportTime(item.sign_out_time) : ''}`;
+          }),
+          divider,
+          `Total: ${list.length} record(s)`,
+        ];
+        await Share.share({
+          message: lines.join('\n'),
+          title: `${siteName} — ${tabName} — ${dateStr}.txt`,
+        });
+      }
+    } catch (err) {
+      if (err?.message !== 'User did not share') {
+        Alert.alert('Export failed', err?.message || 'Could not export data.');
+      }
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleCheckIn = async ({ name, group, notes }) => {
@@ -280,9 +359,26 @@ const SecurityGuardScreen = ({ navigation }) => {
             <Text style={s.headerSub}>{guardName}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={load} style={s.refreshBtn}>
-          <RefreshCw size={18} color="#6b7280" />
-        </TouchableOpacity>
+        <View style={s.headerActions}>
+          <TouchableOpacity
+            onPress={() => Alert.alert(
+              'Export',
+              'Choose export format',
+              [
+                { text: 'CSV (Excel)', onPress: () => handleExport('csv') },
+                { text: 'Text Report', onPress: () => handleExport('pdf') },
+                { text: 'Cancel', style: 'cancel' },
+              ]
+            )}
+            style={[s.refreshBtn, { marginRight: 8 }]}
+            disabled={exporting}
+          >
+            {exporting ? <ActivityIndicator size="small" color="#2b4594" /> : <Download size={18} color="#2b4594" />}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={load} style={s.refreshBtn}>
+            <RefreshCw size={18} color="#6b7280" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={s.actionCard}>
@@ -308,26 +404,42 @@ const SecurityGuardScreen = ({ navigation }) => {
           <Text style={s.sitePickerText}>{selectedSite?.name || 'Select site'}</Text>
           <ChevronDown size={16} color="#6b7280" />
         </TouchableOpacity>
-        {siteOpen && (
-          <View style={s.siteDropdown}>
-            {sites.map((site) => (
-              <TouchableOpacity
-                key={site.id}
-                onPress={async () => {
-                  setSelectedSite(site);
-                  setSiteOpen(false);
-                  setRefreshing(true);
-                  await loadSiteData(site.id);
-                  setRefreshing(false);
-                }}
-                style={s.siteOption}
-              >
-                <Text style={[s.siteOptionTxt, selectedSite?.id === site.id && s.siteOptionTxtActive]}>{site.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
       </View>
+      {/* Site Picker Modal guarantees it renders on top */}
+      <Modal visible={siteOpen} transparent={true} animationType="fade" onRequestClose={() => setSiteOpen(false)}>
+        <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }} activeOpacity={1} onPress={() => setSiteOpen(false)}>
+          <View style={{ backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 40, maxHeight: '70%' }}>
+            <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
+              <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
+            </View>
+            <ScrollView style={{ paddingHorizontal: 16 }}>
+              {sites.length === 0 ? (
+                <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>
+                </View>
+              ) : sites.map((site) => (
+                <TouchableOpacity
+                  key={site.id}
+                  onPress={async () => {
+                    setSelectedSite(site);
+                    setSiteOpen(false);
+                    setRefreshing(true);
+                    await loadSiteData(site.id);
+                    setRefreshing(false);
+                  }}
+                  style={{ paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <Text style={{ fontSize: 16, color: selectedSite?.id === site.id ? '#2b4594' : '#111827', fontWeight: selectedSite?.id === site.id ? '700' : '400' }}>
+                    {site.name}
+                  </Text>
+                  {selectedSite?.id === site.id && <ShieldCheck size={18} color="#2b4594" />}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       <View style={s.tabBar}>
         {TABS.map((tab) => (
@@ -372,8 +484,9 @@ const SecurityGuardScreen = ({ navigation }) => {
             ) : (
               filteredOnSite.map((visit) => (
                 <View key={visit.id} style={s.visitCard}>
-                  <View style={[s.visitAvatar, s.visitAvatarActive]}>
+                  <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
+                    <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
                   </View>
                   <View style={s.visitMeta}>
                     <Text style={s.visitName}>{visit.name}</Text>
@@ -498,8 +611,10 @@ const s = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
+    zIndex: 1,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
   shieldIcon: {
     width: 40,
     height: 40,
@@ -554,7 +669,7 @@ const s = StyleSheet.create({
     backgroundColor: '#fff',
   },
   secondaryBtnText: { color: '#2b4594', fontWeight: '700', fontSize: 15 },
-  sitePickerWrap: { paddingHorizontal: 16, paddingBottom: 8, paddingTop: 10, backgroundColor: '#fff', zIndex: 10 },
+  sitePickerWrap: { paddingHorizontal: 16, paddingBottom: 8, paddingTop: 10, backgroundColor: '#fff' },
   sitePickerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -571,14 +686,18 @@ const s = StyleSheet.create({
     position: 'absolute',
     left: 16,
     right: 16,
-    top: 56,
+    top: 148, // below header + actionCard + sitePickerWrap
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#e5e7eb',
     borderRadius: 10,
     overflow: 'hidden',
-    zIndex: 20,
-    elevation: 5,
+    zIndex: 999,
+    elevation: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
   },
   siteOption: { paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   siteOptionTxt: { fontSize: 15, color: '#111827' },

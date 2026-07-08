@@ -181,6 +181,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         fetchProjects();
         fetchPendingRequests();
+        fetchGuards();
 
         // Initialize Socket.io
         // It will use the current host and port, matching the page's protocol (HTTPS in production)
@@ -213,6 +214,15 @@ const AdminDashboard = () => {
 
         return () => socket.disconnect();
     }, []);
+
+    const fetchGuards = async () => {
+        try {
+            const res = await api.get('/guards');
+            setGuards(res.data);
+        } catch (err) {
+            console.error('Failed to fetch guards', err);
+        }
+    };
 
     const fetchProjects = async () => {
         try {
@@ -455,12 +465,24 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-4">
-                        <div className="bg-emerald-50 p-4 rounded-xl text-emerald-600">
+                        <div className="bg-emerald-50 p-4 rounded-xl text-emerald-600 relative">
                             <Users size={24} />
+                            <div className="absolute top-3 right-3 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
-                        <div>
-                            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Live Activity</p>
-                            <p className="text-2xl font-bold text-slate-900">Active</p>
+                        <div className="flex-1">
+                            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">Active Mobile Guards</p>
+                            {guards.filter(g => g.mobile_paired).length === 0 ? (
+                                <p className="text-sm text-slate-400 font-medium">No active guards</p>
+                            ) : (
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {guards.filter(g => g.mobile_paired).map(g => (
+                                        <span key={g.id} className="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm border border-emerald-200">
+                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                            {g.name.split(' ')[0]}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center gap-4">

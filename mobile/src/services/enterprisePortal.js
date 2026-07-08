@@ -21,29 +21,29 @@ export const getStoredUser = async () => {
 };
 
 export const getAccessibleSites = async (preferredSiteId) => {
-  const siteIds = [];
-  if (preferredSiteId) siteIds.push(preferredSiteId);
-
   const storedUser = await getStoredUser();
-  if (storedUser?.project_id && !siteIds.includes(storedUser.project_id)) {
-    siteIds.push(storedUser.project_id);
+  const resolvedSiteId = preferredSiteId || storedUser?.project_id;
+
+  // Strategy 1: Try fetching the full projects list first (works for guards/managers with multiple sites)
+  try {
+    const response = await api.get('/projects');
+    const allSites = sortByName(response.data || []);
+    if (allSites.length) return allSites;
+  } catch {
+    // fall through to single-site lookup
   }
 
-  for (const siteId of siteIds) {
+  // Strategy 2: If only one project is assigned, fetch it directly by ID
+  if (resolvedSiteId) {
     try {
-      const response = await api.get(`/projects/${siteId}/public`);
+      const response = await api.get(`/projects/${resolvedSiteId}/public`);
       return response?.data ? [response.data] : [];
     } catch {
-      // try next strategy
+      // fall through
     }
   }
 
-  try {
-    const response = await api.get('/projects');
-    return sortByName(response.data || []);
-  } catch {
-    return [];
-  }
+  return [];
 };
 
 const normalizeVisit = (visit) => ({

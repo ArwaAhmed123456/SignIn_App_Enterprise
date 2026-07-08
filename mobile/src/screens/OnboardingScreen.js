@@ -1,47 +1,26 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, Image, StyleSheet } from 'react-native';
 
-const { width } = Dimensions.get('window');
 const BRAND_BLUE = '#2b4594';
 
 const OnboardingScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Logo — uses Tipod logo from assets */}
-      <View style={styles.logoWrap}>
-        <Image
-          source={require('../../assets/tipod-logo.png')}
-          style={styles.logoImg}
-          resizeMode="contain"
-        />
-      </View>
-
-      <Text style={styles.title}>Sign In Enterprise</Text>
-
-      {/* Illustration */}
-      <View style={styles.illustrationWrap}>
-        <View style={styles.illustrationBg}>
-          {/* Building blocks in brand blue */}
-          {[
-            { top: 10,  left: 40,  w: 120, h: 36 },
-            { top: 54,  left: 20,  w: 160, h: 36 },
-            { top: 98,  left: 10,  w: 180, h: 36 },
-            { top: 142, left: 30,  w: 140, h: 36 },
-          ].map((s, i) => (
-            <View key={i} style={[styles.block, {
-              top: s.top, left: s.left, width: s.w, height: s.h,
-              opacity: 0.75 + i * 0.06,
-            }]} />
-          ))}
-          {/* Location pin */}
-          <View style={styles.pin} />
-          {/* Small decorative circles */}
-          <View style={[styles.dot, { top: 30, right: 20 }]} />
-          <View style={[styles.dot, { top: 100, right: 50, width: 12, height: 12, borderRadius: 6 }]} />
+      {/* Logo centred — visual only */}
+      <View style={styles.logoSection}>
+        <View style={styles.logoCard}>
+          <Image
+            source={require('../../assets/tipod-logo.png')}
+            style={styles.logoImg}
+            resizeMode="contain"
+          />
         </View>
+        <Text style={styles.title}>Sign In Enterprise</Text>
+        <Text style={styles.subtitle}>Secure workforce management for Tripod Services</Text>
       </View>
 
+      {/* Bottom actions */}
       <View style={styles.bottomWrap}>
         <TouchableOpacity
           style={styles.btn}
@@ -68,22 +47,44 @@ const OnboardingScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container:        { flex: 1, backgroundColor: '#ffffff', alignItems: 'center', paddingHorizontal: 24 },
-  logoWrap:         { marginTop: 52, marginBottom: 16, alignItems: 'center' },
-  logoImg:          { width: 120, height: 64 },
-  title:            { fontSize: 26, fontWeight: '700', color: '#111827', marginBottom: 28, letterSpacing: -0.3 },
-  illustrationWrap: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' },
-  illustrationBg:   { width: width * 0.78, height: 220, position: 'relative' },
-  block:            { position: 'absolute', backgroundColor: BRAND_BLUE, borderRadius: 10 },
-  pin:              { position: 'absolute', top: 14, right: 28, width: 22, height: 30, backgroundColor: BRAND_BLUE, borderRadius: 11 },
-  dot:              { position: 'absolute', width: 16, height: 16, borderRadius: 8, backgroundColor: '#e0e7ff' },
-  bottomWrap:       { width: '100%', paddingBottom: 44 },
-  btn:              { backgroundColor: BRAND_BLUE, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 14, shadowColor: BRAND_BLUE, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  btnText:          { fontSize: 17, fontWeight: '700', color: '#ffffff' },
-  portalBtn:        { backgroundColor: '#ffffff', borderColor: BRAND_BLUE, borderWidth: 1.5, shadowColor: 'transparent', elevation: 0 },
-  portalBtnText:    { color: BRAND_BLUE },
-  aboutBtn:         { alignItems: 'center', marginTop: 12 },
-  aboutText:        { fontSize: 15, color: '#6b7280' },
+  container:   { flex: 1, backgroundColor: '#ffffff', alignItems: 'center', paddingHorizontal: 28 },
+
+  // Logo section — takes remaining space, centred
+  logoSection: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  logoCard: {
+    backgroundColor: '#f0f4ff',
+    borderRadius: 32,
+    padding: 28,
+    marginBottom: 28,
+    shadowColor: BRAND_BLUE,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  logoImg:  { width: 130, height: 72 },
+  title:    { fontSize: 26, fontWeight: '800', color: '#111827', marginBottom: 10, letterSpacing: -0.3, textAlign: 'center' },
+  subtitle: { fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 20, fontWeight: '500' },
+
+  // Bottom buttons
+  bottomWrap: { width: '100%', paddingBottom: 44 },
+  btn: {
+    backgroundColor: BRAND_BLUE,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 14,
+    shadowColor: BRAND_BLUE,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  btnText:      { fontSize: 17, fontWeight: '700', color: '#ffffff' },
+  portalBtn:    { backgroundColor: '#ffffff', borderColor: BRAND_BLUE, borderWidth: 1.5, shadowColor: 'transparent', elevation: 0 },
+  portalBtnText:{ color: BRAND_BLUE },
+  aboutBtn:     { alignItems: 'center', marginTop: 12 },
+  aboutText:    { fontSize: 15, color: '#6b7280' },
 });
 
 export default OnboardingScreen;

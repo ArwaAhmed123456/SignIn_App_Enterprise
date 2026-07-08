@@ -188,11 +188,58 @@ const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, com
   });
 };
 
+// ── Admin credentials email ───────────────────────────────────────────────────
+const sendAdminCredentialsEmail = async ({ email, firstName, tempPassword, role }) => {
+  const roleLabel = role === 'superadmin' ? 'Super Admin' : 'Admin';
+  return sendMail({
+    to: email,
+    subject: `Your Sign In App portal account has been created`,
+    html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0"><tbody><tr><td align="center" style="padding:32px 16px 40px;">
+<table width="100%" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);" cellpadding="0" cellspacing="0"><tbody>
+  <tr><td style="background:#2b4594;height:6px;"></td></tr>
+  <tr><td style="padding:36px 40px 24px;">
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px;">Your portal account is ready</h1>
+    <p style="color:#475569;font-size:15px;line-height:1.6;margin:0;">
+      Hi <strong>${firstName || email.split('@')[0]}</strong>, a <strong>${roleLabel}</strong> account has been created for you on the Sign In App portal.
+    </p>
+  </td></tr>
+  <tr><td style="padding:0 40px 28px;">
+    <div style="background:#f0f4ff;border:1.5px solid #c7d7fe;border-radius:12px;padding:24px;">
+      <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Login credentials</p>
+      <table cellpadding="0" cellspacing="0" style="width:100%;">
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Login URL:</strong></td><td style="padding:6px 0;font-size:14px;"><a href="https://tripod-signin-app.onrender.com/admin/login" style="color:#2b4594;text-decoration:none;">tripod-signin-app.onrender.com</a></td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Email:</strong></td><td style="padding:6px 0;font-size:14px;color:#111827;">${email.toLowerCase()}</td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Password:</strong></td><td style="padding:6px 0;"><span style="font-family:'Courier New',monospace;font-size:18px;font-weight:900;color:#2b4594;background:#e8eeff;padding:4px 10px;border-radius:6px;">${tempPassword}</span></td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Role:</strong></td><td style="padding:6px 0;font-size:14px;color:#111827;">${roleLabel}</td></tr>
+      </table>
+    </div>
+  </td></tr>
+  <tr><td style="padding:0 40px 28px;">
+    <div style="background:#fef9ec;border-radius:10px;border:1px solid #fde68a;padding:16px 20px;">
+      <p style="color:#92400e;font-size:14px;margin:0;"><strong>⚠️ Important:</strong> Please change your password after your first login for security.</p>
+    </div>
+  </td></tr>
+  <tr><td style="padding:16px 40px 28px;text-align:center;border-top:1px solid #f3f4f6;">
+    <p style="color:#94a3b8;font-size:13px;margin:0;">Powered by <strong>Sign In App</strong> · Tripod Services</p>
+  </td></tr>
+</tbody></table>
+</td></tr></tbody></table>
+</body>
+</html>`,
+  });
+};
+
 module.exports = {
+  sendMail,
   generateResetToken,
   sendPasswordResetEmail,
   sendContactEmail,
   sendMobileInviteEmail,
   sendPreRegistrationInviteEmail,
   sendWelcomeEmail,
+  sendAdminCredentialsEmail,
 };
