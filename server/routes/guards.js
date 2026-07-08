@@ -381,9 +381,9 @@ router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
 });
 
 // GET /api/guards/test-email?to=youremail@gmail.com
-// Quick test — hit this URL when logged in to verify email is working
-router.get('/test-email', verifyAdmin, async (req, res) => {
-  const to = req.query.to || req.user?.email;
+// Quick test — hit this URL to verify email is working (no auth required for testing)
+router.get('/test-email', async (req, res) => {
+  const to = req.query.to;
   if (!to) return res.status(400).json({ error: 'Provide ?to=email' });
   try {
     const { sendWelcomeEmail } = require('../services/emailService');
