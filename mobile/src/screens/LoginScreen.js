@@ -3,12 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvo
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Lock, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
-const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledView = View;
+const StyledText = Text;
+const StyledTextInput = TextInput;
+const StyledTouchableOpacity = TouchableOpacity;
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');

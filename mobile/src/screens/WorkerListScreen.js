@@ -4,12 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, User, Clock, LogOut, RotateCcw, Plus, Search, AlertCircle, CheckCircle, FileText } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
-import { styled } from 'nativewind';
 import { useFocusEffect } from '@react-navigation/native';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledView = View;
+const StyledText = Text;
+const StyledTouchableOpacity = TouchableOpacity;
 
 const WorkerListScreen = ({ navigation }) => {
     const [project, setProject] = useState(null);

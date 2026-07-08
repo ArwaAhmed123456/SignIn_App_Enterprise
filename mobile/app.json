@@ -1,14 +1,13 @@
 {
   "expo": {
     "name": "Tripod Services",
-    "slug": "tripodhub",
+    "slug": "tripodhubauth",
     "scheme": "tripodservices",
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
-    "description": "Professional attendance tracking app for construction sites and projects with real-time reporting and multi-language support",
+    "description": "Professional visitor management companion app for Tripod Services",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -16,11 +15,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hayat123a.attendancemobileapp",
+      "bundleIdentifier": "com.haalim.tripodservices",
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Camera is used to take your visitor photo for identity verification on site.",
-        "NSMicrophoneUsageDescription": "This app uses the microphone for voice commands"
+        "NSMicrophoneUsageDescription": "Microphone access for voice features."
       }
     },
     "android": {
@@ -28,8 +27,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hayat123a.attendancemobileapp",
-      "versionCode": 9,
+      "package": "com.haalim.tripodservices",
+      "versionCode": 10,
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",
@@ -45,8 +44,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
             "minSdkVersion": 24
           }
         }
@@ -55,17 +54,16 @@
     "extra": {
       "apiUrl": "https://tripod-signin-app.onrender.com/api",
       "webAppUrl": "https://tripod-signin-app.onrender.com",
-      "privacyPolicyUrl": "https://tripod-signin-app.onrender.com/privacy-policy.html",
       "eas": {
-        "projectId": "bf3dc46e-6679-4561-b3c8-10a9a6758310"
+        "projectId": "93a2574b-7e98-4ab5-a640-e8c08da3f5df"
       }
     },
-    "owner": "haalim",
+    "owner": "ayeshaes-team",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/bf3dc46e-6679-4561-b3c8-10a9a6758310"
+      "url": "https://u.expo.dev/93a2574b-7e98-4ab5-a640-e8c08da3f5df"
     }
   }
 }

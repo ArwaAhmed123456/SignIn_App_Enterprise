@@ -6,13 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import api from '../services/api';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledScrollView = styled(ScrollView);
+const StyledView = View;
+const StyledText = Text;
+const StyledTextInput = TextInput;
+const StyledTouchableOpacity = TouchableOpacity;
+const StyledScrollView = ScrollView;
 
 const MobileForm = ({ navigation }) => {
     const [project, setProject] = useState(null);

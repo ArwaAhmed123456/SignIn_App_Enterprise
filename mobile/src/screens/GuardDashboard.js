@@ -3,13 +3,12 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Lock } from 'lucide-react-native';
 import api from '../services/api';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledScrollView = styled(ScrollView);
-const StyledTextInput = styled(TextInput);
+const StyledView = View;
+const StyledText = Text;
+const StyledTouchableOpacity = TouchableOpacity;
+const StyledScrollView = ScrollView;
+const StyledTextInput = TextInput;
 
 const GuardDashboard = ({ navigation }) => {
     const [projectCode, setProjectCode] = useState('');

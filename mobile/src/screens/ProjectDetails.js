@@ -5,13 +5,12 @@ import { ArrowLeft, Clock, User, Briefcase, Car, FileText, Download, Search, Use
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import api from '../services/api';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledScrollView = styled(ScrollView);
-const StyledTextInput = styled(TextInput);
+const StyledView = View;
+const StyledText = Text;
+const StyledTouchableOpacity = TouchableOpacity;
+const StyledScrollView = ScrollView;
+const StyledTextInput = TextInput;
 
 const ProjectDetails = ({ route, navigation }) => {
     const { project } = route.params;

@@ -8,12 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, AlertCircle, MessageSquare, X, Send, Shield, Building2, ChevronRight } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
-const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledView = View;
+const StyledText = Text;
+const StyledTextInput = TextInput;
+const StyledTouchableOpacity = TouchableOpacity;
 
 const LandingScreen = ({ navigation }) => {
     const [code, setCode] = useState('');

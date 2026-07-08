@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import { ArrowLeft, HelpCircle } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
-import 'react-native-get-random-values';
 
 const InviteCodeScreen = ({ navigation }) => {
   const { activateMobile } = useAuth();

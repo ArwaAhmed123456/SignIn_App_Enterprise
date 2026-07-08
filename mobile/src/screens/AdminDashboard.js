@@ -4,12 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Folder, LogOut, Clock, Check, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { styled } from 'nativewind';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledScrollView = styled(ScrollView);
+const StyledView = View;
+const StyledText = Text;
+const StyledTouchableOpacity = TouchableOpacity;
+const StyledScrollView = ScrollView;
 
 const AdminDashboard = ({ navigation }) => {
     const [projects, setProjects] = useState([]);
