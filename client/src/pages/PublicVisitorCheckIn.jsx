@@ -446,60 +446,80 @@ const PublicVisitorCheckIn = () => {
             continueDisabled={submitting}
           />
           <div className="flex-1 flex flex-col items-center px-6 pt-20 pb-8">
-            {/* Camera / preview circle */}
-            <div className="relative w-64 h-64 rounded-full overflow-hidden bg-slate-100 border-4 border-slate-200 mb-6 flex items-center justify-center">
-              {photoDataUrl ? (
-                <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
-              ) : cameraActive ? (
-                <video
-                  ref={videoRefCallback}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover cursor-pointer"
-                  onClick={takePhoto}
-                  style={{ transform: 'scaleX(-1)' }}
-                />
-              ) : (
-                <button onClick={startCamera} className="flex flex-col items-center gap-3 text-slate-400">
-                  <Camera size={48} strokeWidth={1.2} />
-                  <span className="text-sm text-center px-4">Tap to activate camera</span>
-                  <span className="text-xs text-center px-4 text-slate-400">Access to the camera will only be used for the purpose of signing you in</span>
+            {cameraError ? (
+              <div className="flex flex-col items-center text-center w-full max-w-xs mt-4">
+                <div className="bg-red-50 text-red-500 rounded-full p-4 mb-6">
+                  <Camera size={48} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Camera Unavailable</h3>
+                <p className="text-sm text-slate-600 mb-8 whitespace-pre-line">{cameraError}</p>
+                <button 
+                  onClick={() => { stopCamera(); handleSignIn(); }}
+                  style={{ backgroundColor: BLUE }}
+                  className="w-full py-4 text-white font-semibold rounded-full text-base shadow-md mb-4"
+                >
+                  Skip photo & sign in
                 </button>
-              )}
-            </div>
-
-            <canvas ref={canvasRef} className="hidden" />
-
-            {cameraError && (
-              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 max-w-xs w-full">
-                <p className="text-sm text-red-600 text-center whitespace-pre-line">{cameraError}</p>
+                <button 
+                  onClick={startCamera}
+                  className="w-full py-4 bg-slate-100 text-slate-700 font-semibold rounded-full text-base"
+                >
+                  Try camera again
+                </button>
               </div>
-            )}
-            {submitError && <p className="text-sm text-red-500 text-center mb-4">{submitError}</p>}
+            ) : (
+              <>
+                {/* Camera / preview circle */}
+                <div className="relative w-64 h-64 rounded-full overflow-hidden bg-slate-100 border-4 border-slate-200 mb-6 flex items-center justify-center">
+                  {photoDataUrl ? (
+                    <img src={photoDataUrl} alt="Captured" className="w-full h-full object-cover" />
+                  ) : cameraActive ? (
+                    <video
+                      ref={videoRefCallback}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={takePhoto}
+                      style={{ transform: 'scaleX(-1)' }}
+                    />
+                  ) : (
+                    <button onClick={startCamera} className="flex flex-col items-center gap-3 text-slate-400">
+                      <Camera size={48} strokeWidth={1.2} />
+                      <span className="text-sm text-center px-4">Tap to activate camera</span>
+                      <span className="text-xs text-center px-4 text-slate-400">Access to the camera will only be used for the purpose of signing you in</span>
+                    </button>
+                  )}
+                </div>
 
-            <p className="text-sm text-slate-600 text-center mb-6 max-w-xs">
-              Please take a photo of yourself using your phone's camera. This will be used to verify your identity on site.
-            </p>
+                <canvas ref={canvasRef} className="hidden" />
 
-            {cameraActive && !photoDataUrl && (
-              <button onClick={takePhoto}
-                style={{ backgroundColor: BLUE }}
-                className="px-8 py-3 text-white font-semibold rounded-full mb-3">
-                Take photo
-              </button>
-            )}
+                {submitError && <p className="text-sm text-red-500 text-center mb-4">{submitError}</p>}
 
-            {photoDataUrl && (
-              <button onClick={retakePhoto} className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-full">
-                <RotateCcw size={16} /> Retake
-              </button>
-            )}
+                <p className="text-sm text-slate-600 text-center mb-6 max-w-xs">
+                  Please take a photo of yourself using your phone's camera. This will be used to verify your identity on site.
+                </p>
 
-            {(!photoDataUrl) && (
-              <button onClick={() => { stopCamera(); handleSignIn(); }} className="text-sm text-slate-400 hover:text-slate-600 underline mt-4">
-                Skip photo & sign in
-              </button>
+                {cameraActive && !photoDataUrl && (
+                  <button onClick={takePhoto}
+                    style={{ backgroundColor: BLUE }}
+                    className="px-8 py-3 text-white font-semibold rounded-full mb-3">
+                    Take photo
+                  </button>
+                )}
+
+                {photoDataUrl && (
+                  <button onClick={retakePhoto} className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-full">
+                    <RotateCcw size={16} /> Retake
+                  </button>
+                )}
+
+                {(!photoDataUrl) && (
+                  <button onClick={() => { stopCamera(); handleSignIn(); }} className="text-sm text-slate-400 hover:text-slate-600 underline mt-4">
+                    Skip photo & sign in
+                  </button>
+                )}
+              </>
             )}
           </div>
         </>
