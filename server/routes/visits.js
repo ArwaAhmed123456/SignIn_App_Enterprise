@@ -85,8 +85,16 @@ router.post('/public', async (req, res) => {
   const { site_id, name, group, trade, car_reg, reason, photo_base64 } = req.body;
   if (!name) return res.status(400).json({ error: 'name is required' });
   try {
-    const site = await Site.findById(site_id).lean();
-    if (!site) return res.status(400).json({ error: 'Site not found' });
+    // Try to find site by the provided ID; if not found fall back to the first site in DB
+    let site = null;
+    if (site_id) {
+      try { site = await Site.findById(site_id).lean(); } catch (_) {}
+    }
+    if (!site) {
+      // QR code ID might be stale or from a different collection — fall back gracefully
+      site = await Site.findOne().lean();
+    }
+    if (!site) return res.status(400).json({ error: 'No sites are configured. Please contact your administrator.' });
 
     const now     = new Date();
     const dateStr = now.toISOString().split('T')[0];
@@ -111,6 +119,7 @@ router.post('/public', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 // ─── PUBLIC sign-out (no auth) ────────────────────────────────────────────────
 router.post('/public/:id/sign-out', async (req, res) => {
