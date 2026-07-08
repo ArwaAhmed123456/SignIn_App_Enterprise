@@ -63,11 +63,12 @@ const InviteModal = ({ onClose, onInvited }) => {
         });
         setCreatedCreds({
           email: email.trim(),
-          password: '(sent by welcome email)',
+          password: res.data.password || '(sent by welcome email)',
           role: mobileRole,
           type: 'Mobile app account',
           note: 'Welcome email with companion code sent to their inbox.',
         });
+        onInvited({ email: email.trim(), role: mobileRole, status: 'invited' });
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create account');
@@ -336,10 +337,35 @@ const AccountManagement = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [showInvite, setShowInvite] = useState(false);
   const [showMobileUser, setShowMobileUser] = useState(false);
-  const [users, setUsers] = useState([
-    { id: 1, email: 'admin@signinapp.com', role: 'superadmin', status: 'active' },
-    { id: 2, email: 'test@tripod.com',     role: 'admin',      status: 'active' },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  useEffect(() => {
+    if (activeSection === 'users') {
+      fetchUsers();
+    }
+  }, [activeSection]);
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const [adminsRes, membersRes] = await Promise.all([
+        api.get('/auth/admins'),
+        api.get('/guards/members')
+      ]);
+      const admins = adminsRes.data.map(a => ({ id: a._id, email: a.email, role: a.role, status: 'active', isPortal: true }));
+      const members = membersRes.data
+        .filter(m => ['Guard', 'Manager', 'Employee'].includes(m.role))
+        .map(m => ({ id: m._id, email: m.email || 'No email', role: m.role.toLowerCase(), status: m.status.toLowerCase(), isPortal: false }));
+      
+      // Filter out superadmin if current user is not superadmin (though only superadmin should be here normally)
+      setUsers([...admins, ...members].filter(u => adminRole === 'superadmin' || u.role !== 'superadmin'));
+    } catch (err) {
+      console.error('Failed to fetch users', err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
 
   if (adminRole !== 'superadmin') {
     return <Navigate to="/admin/manage/sites" replace />;
@@ -387,33 +413,55 @@ const AccountManagement = () => {
             <tr>
               <th className="px-5 py-3 text-left">Email</th>
               <th className="px-5 py-3 text-left">Role</th>
+              <th className="px-5 py-3 text-left">Type</th>
               <th className="px-5 py-3 text-left">Status</th>
               <th className="px-5 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {users.map(u => (
-              <tr key={u.id} className="hover:bg-slate-50 group">
-                <td className="px-5 py-3 text-slate-800 font-medium">{u.email}</td>
-                <td className="px-5 py-3">
-                  <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}
-                    className="border border-slate-200 rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#2b4594] bg-white">
-                    {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
-                  </select>
-                </td>
-                <td className="px-5 py-3">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
-                    u.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                  }`}>{u.status}</span>
-                </td>
-                <td className="px-5 py-3 text-right">
-                  <button onClick={() => removeUser(u.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100">
-                    <Trash2 size={13} />
-                  </button>
-                </td>
+            {loadingUsers ? (
+              <tr>
+                <td colSpan="5" className="px-5 py-8 text-center text-slate-400">Loading accounts...</td>
               </tr>
-            ))}
+            ) : users.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="px-5 py-8 text-center text-slate-400">No accounts found.</td>
+              </tr>
+            ) : (
+              users.map(u => (
+                <tr key={u.id} className="hover:bg-slate-50 group">
+                  <td className="px-5 py-3 text-slate-800 font-medium">{u.email}</td>
+                  <td className="px-5 py-3">
+                    {u.isPortal ? (
+                      <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}
+                        className="border border-slate-200 rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#2b4594] bg-white">
+                        {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+                      </select>
+                    ) : (
+                      <span className="capitalize">{u.role}</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${u.isPortal ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                      {u.isPortal ? 'Portal' : 'Mobile App'}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                      u.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                    }`}>{u.status}</span>
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    {u.role !== 'superadmin' && (
+                      <button onClick={() => removeUser(u.id)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100" title="Remove account">
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

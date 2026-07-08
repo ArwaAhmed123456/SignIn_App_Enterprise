@@ -151,6 +151,21 @@ router.post('/members', verifyAdmin, async (req, res) => {
       siteName:       resolvedSite?.name || null,
     });
 
+    // Generate companion code synchronously if needed
+    let companionCode = null;
+    if (req.body.include_companion) {
+      companionCode = Array.from({ length: 12 }, () =>
+        'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+      ).join('');
+      const hash   = await bcrypt.hash(companionCode, 10);
+      const expiry = new Date(Date.now() + 72 * 3600000);
+      await Member.findByIdAndUpdate(member._id, {
+        mobileTokenHash:   hash,
+        mobileTokenExpiry: expiry,
+        permissions: JSON.stringify({ can_mobile_sign_in: true }),
+      });
+    }
+
     // Send welcome email asynchronously to avoid blocking
     const shouldSendEmail = (req.body.send_welcome || req.body.include_companion) && email;
     if (shouldSendEmail) {
@@ -160,21 +175,6 @@ router.post('/members', verifyAdmin, async (req, res) => {
           const { sendWelcomeEmail } = require('../services/emailService');
           const site  = resolvedSiteId ? await Project.findById(resolvedSiteId).lean() : null;
           const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
-
-          let companionCode = null;
-          if (req.body.include_companion) {
-            const plainToken = Array.from({ length: 12 }, () =>
-              'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
-            ).join('');
-            const hash   = await bcrypt.hash(plainToken, 10);
-            const expiry = new Date(Date.now() + 72 * 3600000);
-            await Member.findByIdAndUpdate(member._id, {
-              mobileTokenHash:   hash,
-              mobileTokenExpiry: expiry,
-              permissions: JSON.stringify({ can_mobile_sign_in: true }),
-            });
-            companionCode = plainToken;
-          }
 
           const result = await sendWelcomeEmail({
             email,
@@ -200,6 +200,7 @@ router.post('/members', verifyAdmin, async (req, res) => {
       success: true,
       member: await fmtMember(member.toObject()),
       email_sent: shouldSendEmail ? 'pending' : null,
+      password: companionCode // Include companion code to show in UI
     });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
