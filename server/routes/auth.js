@@ -80,27 +80,40 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// ─── Signup (superadmin only) ─────────────────────────────────────────────────
-router.post('/signup', verifySuperAdmin, async (req, res) => {
+// ─── Signup (open for first superadmin, superadmin-only thereafter) ───────────
+router.post('/signup', async (req, res) => {
     const { email, password, first_name, last_name, phone, organization } = req.body;
     if (!email || !password || !first_name || !last_name)
         return res.status(400).json({ error: 'Email, password, first name, and last name are required' });
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email))
-        return res.status(400).json({ error: 'Invalid email format' });
-
     try {
+        // Check if any superadmin exists
+        const existingSuperAdmin = await Admin.findOne({ role: 'superadmin' });
+        if (existingSuperAdmin) {
+            // Not first-time setup — require superadmin token
+            const authHeader = req.headers['authorization'];
+            if (!authHeader) return res.status(401).json({ error: 'Superadmin token required' });
+            try {
+                const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+                const admin = await Admin.findById(decoded.id);
+                if (!admin || admin.role !== 'superadmin')
+                    return res.status(403).json({ error: 'Access denied. Super Admin only.' });
+            } catch {
+                return res.status(401).json({ error: 'Invalid token' });
+            }
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email))
+            return res.status(400).json({ error: 'Invalid email format' });
         const existing = await Admin.findOne({ email: email.toLowerCase() });
         if (existing) return res.status(400).json({ error: 'Email already exists' });
-
         const hashed = await bcrypt.hash(password, 10);
         await Admin.create({
             email: email.toLowerCase(),
             password: hashed,
             first_name, last_name, phone, organization,
+            role: existingSuperAdmin ? 'admin' : 'superadmin',
         });
-        res.status(201).json({ message: 'Admin account created successfully' });
+        res.status(201).json({ message: existingSuperAdmin ? 'Admin account created successfully' : 'Super admin account created successfully' });
     } catch (err) {
         console.error('Signup error:', err);
         res.status(500).json({ error: 'Server error' });

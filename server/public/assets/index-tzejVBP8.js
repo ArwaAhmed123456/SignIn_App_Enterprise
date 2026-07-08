@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-ByOki0LA.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CuVzzu6j.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -68060,15 +68060,15 @@ const ActivityPage = () => {
     {
       key: "Name",
       header: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => handleSort("name"), className: "inline-flex items-center gap-1", children: "Name" }),
-      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        visibleCols.includes("Photo") && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-7 h-7 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center text-[10px] font-bold text-slate-600", children: visit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: visit.image_url, alt: "", className: "w-full h-full object-cover" }) : (visit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: visit.name })
-      ] })
+      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: visit.name })
     },
     {
       key: "Photo",
       header: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Photo" }),
-      render: (visit) => visit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: visit.image_url, alt: visit.name, className: "w-8 h-8 rounded-full object-cover" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400", children: (visit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) })
+      render: (visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1", children: [
+        visit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: visit.image_url, alt: visit.name, className: "w-9 h-9 rounded-full object-cover" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400", children: (visit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? "bg-red-500" : "bg-green-500"}` })
+      ] })
     },
     {
       key: "Site",
@@ -68387,14 +68387,18 @@ const ActivityPage = () => {
                   className: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]",
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "All", children: "All" }),
-                    groups.map((group) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: group.name, children: group.name }, group.id))
+                    (groups.length > 0 ? groups : [
+                      { id: "v", name: "Visitors" },
+                      { id: "e", name: "Employees" },
+                      { id: "d", name: "Deliveries" }
+                    ]).map((group) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: group.name, children: group.name }, group.id))
                   ]
                 }
               )
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm", style: { overflowY: "visible" }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-x-auto", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[900px] text-left text-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-10 px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -72327,6 +72331,11 @@ const VisitorGroupsList = () => {
   const [showNewGroup, setShowNewGroup] = reactExports.useState(false);
   const [saving, setSaving] = reactExports.useState(false);
   const [createError, setCreateError] = reactExports.useState("");
+  const navigate = useNavigate();
+  const handleGroupClick = (group) => {
+    if (group.type === "Repeat") navigate("/admin/people");
+    else navigate("/admin/activity");
+  };
   reactExports.useEffect(() => {
     init();
   }, []);
@@ -72468,7 +72477,7 @@ const VisitorGroupsList = () => {
       createError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2", children: createError })
     ] }),
     loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-12 text-slate-400 text-sm", children: "Loading…" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-      groups.map((group) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center p-4 bg-white border border-slate-100 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group", children: [
+      groups.map((group) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { onClick: () => handleGroupClick(group), className: "flex items-center p-4 bg-white border border-slate-100 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-300 mr-4 cursor-grab", children: /* @__PURE__ */ jsxRuntimeExports.jsx(GripVertical, { size: 20 }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 mr-4", children: iconFor(group.type) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
@@ -72491,7 +72500,8 @@ const VisitorGroupsList = () => {
             title: "Deactivate group",
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { size: 20 })
           }
-        ) })
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { size: 18, className: "text-slate-300 ml-2 flex-shrink-0" })
       ] }, group.id)),
       groups.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-12 text-center text-slate-400 text-sm", children: "No visitor groups yet. Create your first group above." })
     ] })
@@ -74420,11 +74430,12 @@ const InviteModal = ({ onClose, onInvited }) => {
         });
         setCreatedCreds({
           email: email.trim(),
-          password: "(sent by welcome email)",
+          password: res.data.password || "(sent by welcome email)",
           role: mobileRole,
           type: "Mobile app account",
           note: "Welcome email with companion code sent to their inbox."
         });
+        onInvited({ email: email.trim(), role: mobileRole, status: "invited" });
       }
     } catch (err) {
       setError(err.response?.data?.error || "Failed to create account");
@@ -74767,10 +74778,29 @@ const AccountManagement = () => {
   const [activeSection, setActiveSection] = reactExports.useState("overview");
   const [showInvite, setShowInvite] = reactExports.useState(false);
   const [showMobileUser, setShowMobileUser] = reactExports.useState(false);
-  const [users, setUsers] = reactExports.useState([
-    { id: 1, email: "admin@signinapp.com", role: "superadmin", status: "active" },
-    { id: 2, email: "test@tripod.com", role: "admin", status: "active" }
-  ]);
+  const [users, setUsers] = reactExports.useState([]);
+  const [loadingUsers, setLoadingUsers] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (activeSection === "users") {
+      fetchUsers();
+    }
+  }, [activeSection]);
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const [adminsRes, membersRes] = await Promise.all([
+        api.get("/auth/admins"),
+        api.get("/guards/members")
+      ]);
+      const admins = adminsRes.data.map((a2) => ({ id: a2._id, email: a2.email, role: a2.role, status: "active", isPortal: true }));
+      const members = membersRes.data.filter((m2) => ["Guard", "Manager", "Employee"].includes(m2.role)).map((m2) => ({ id: m2._id, email: m2.email || "No email", role: m2.role.toLowerCase(), status: m2.status.toLowerCase(), isPortal: false }));
+      setUsers([...admins, ...members].filter((u2) => adminRole === "superadmin" || u2.role !== "superadmin"));
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
   if (adminRole !== "superadmin") {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/manage/sites", replace: true });
   }
@@ -74814,12 +74844,13 @@ const AccountManagement = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Email" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Role" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Type" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Status" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-right", children: "Actions" })
       ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: users.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loadingUsers ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "5", className: "px-5 py-8 text-center text-slate-400", children: "Loading accounts..." }) }) : users.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "5", className: "px-5 py-8 text-center text-slate-400", children: "No accounts found." }) }) : users.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-800 font-medium", children: u2.email }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: u2.isPortal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "select",
           {
             value: u2.role,
@@ -74827,13 +74858,15 @@ const AccountManagement = () => {
             className: "border border-slate-200 rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#2b4594] bg-white",
             children: ROLES.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: r, children: r.charAt(0).toUpperCase() + r.slice(1) }, r))
           }
-        ) }),
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "capitalize", children: u2.role }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${u2.isPortal ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`, children: u2.isPortal ? "Portal" : "Mobile App" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${u2.status === "active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`, children: u2.status }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-right", children: u2.role !== "superadmin" && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             onClick: () => removeUser(u2.id),
             className: "p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100",
+            title: "Remove account",
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 13 })
           }
         ) })
@@ -76342,9 +76375,8 @@ const PublicVisitorCheckIn = () => {
       streamRef.current = null;
     }
     const constraints = [
-      { video: { facingMode: { exact: "user" }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
       { video: { facingMode: "user" }, audio: false },
-      { video: { facingMode: { exact: "environment" } }, audio: false },
+      { video: { facingMode: "environment" }, audio: false },
       { video: true, audio: false }
     ];
     let stream = null;
@@ -76392,18 +76424,35 @@ const PublicVisitorCheckIn = () => {
     if (videoRef.current) videoRef.current.srcObject = null;
     setCameraActive(false);
   };
-  const takePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+  const doCapture = () => {
     const v2 = videoRef.current;
     const c2 = canvasRef.current;
-    c2.width = v2.videoWidth || 640;
-    c2.height = v2.videoHeight || 640;
+    if (!v2 || !c2) return;
+    const w2 = v2.videoWidth;
+    const h2 = v2.videoHeight;
+    if (!w2 || !h2) {
+      setTimeout(doCapture, 150);
+      return;
+    }
+    const MAX_WIDTH = 800;
+    const scale = Math.min(1, MAX_WIDTH / w2);
+    c2.width = Math.round(w2 * scale);
+    c2.height = Math.round(h2 * scale);
     const ctx = c2.getContext("2d");
     ctx.translate(c2.width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(v2, 0, 0);
-    setPhotoDataUrl(c2.toDataURL("image/jpeg", 0.85));
+    ctx.drawImage(v2, 0, 0, c2.width, c2.height);
+    const dataUrl = c2.toDataURL("image/jpeg", 0.7);
+    if (dataUrl.length < 5e3) {
+      setTimeout(doCapture, 150);
+      return;
+    }
+    setPhotoDataUrl(dataUrl);
     stopCamera();
+  };
+  const takePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    doCapture();
   };
   const retakePhoto = () => {
     setPhotoDataUrl(null);
@@ -76598,7 +76647,31 @@ const PublicVisitorCheckIn = () => {
           continueDisabled: submitting
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col items-center px-6 pt-20 pb-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex flex-col items-center px-6 pt-20 pb-8", children: cameraError ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center text-center w-full max-w-xs mt-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-50 text-red-500 rounded-full p-4 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { size: 48, strokeWidth: 1.5 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-slate-900 mb-3", children: "Camera Unavailable" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 mb-8 whitespace-pre-line", children: cameraError }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => {
+              stopCamera();
+              handleSignIn();
+            },
+            style: { backgroundColor: BLUE },
+            className: "w-full py-4 text-white font-semibold rounded-full text-base shadow-md mb-4",
+            children: "Skip photo & sign in"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: startCamera,
+            className: "w-full py-4 bg-slate-100 text-slate-700 font-semibold rounded-full text-base",
+            children: "Try camera again"
+          }
+        )
+      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative w-64 h-64 rounded-full overflow-hidden bg-slate-100 border-4 border-slate-200 mb-6 flex items-center justify-center", children: photoDataUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: photoDataUrl, alt: "Captured", className: "w-full h-full object-cover" }) : cameraActive ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "video",
           {
@@ -76616,7 +76689,6 @@ const PublicVisitorCheckIn = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-center px-4 text-slate-400", children: "Access to the camera will only be used for the purpose of signing you in" })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("canvas", { ref: canvasRef, className: "hidden" }),
-        cameraError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 max-w-xs w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 text-center whitespace-pre-line", children: cameraError }) }),
         submitError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-500 text-center mb-4", children: submitError }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 text-center mb-6 max-w-xs", children: "Please take a photo of yourself using your phone's camera. This will be used to verify your identity on site." }),
         cameraActive && !photoDataUrl && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -76632,8 +76704,11 @@ const PublicVisitorCheckIn = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { size: 16 }),
           " Retake"
         ] }),
-        !cameraActive && !photoDataUrl && !cameraError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 text-center mt-2", children: "Tap the circle above to activate your camera, or tap Continue to skip the photo step." })
-      ] })
+        !photoDataUrl && /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => {
+          stopCamera();
+          handleSignIn();
+        }, className: "text-sm text-slate-400 hover:text-slate-600 underline mt-4", children: "Skip photo & sign in" })
+      ] }) })
     ] }),
     step === "signed-in" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col items-center justify-center px-8 pb-24 text-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative mb-6", children: [
@@ -76671,6 +76746,7 @@ const App = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/form", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MobileForm, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/checkin/:siteId", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicVisitorCheckIn, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/admin/login", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLogin, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/admin/register", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSignup, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Route,
       {

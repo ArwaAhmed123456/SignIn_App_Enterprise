@@ -1582,28 +1582,22 @@ const ActivityPage = () => {
           Name
         </button>
       ),
-      render: (visit) => (
-        <div className="flex items-center gap-2">
-          {visibleCols.includes('Photo') && (
-            <div className="w-7 h-7 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden flex items-center justify-center text-[10px] font-bold text-slate-600">
-              {visit.image_url
-                ? <img src={visit.image_url} alt="" className="w-full h-full object-cover" />
-                : (visit.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-              }
-            </div>
-          )}
-          <span className="font-medium text-slate-800">{visit.name}</span>
-        </div>
-      ),
+      render: (visit) => <span className="font-medium text-slate-800">{visit.name}</span>,
     },
     {
       key: 'Photo',
       header: <span>Photo</span>,
-      render: (visit) => visit.image_url
-        ? <img src={visit.image_url} alt={visit.name} className="w-8 h-8 rounded-full object-cover" />
-        : <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
-            {(visit.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
-          </div>,
+      render: (visit) => (
+        <div className="flex flex-col items-center gap-1">
+          {visit.image_url
+            ? <img src={visit.image_url} alt={visit.name} className="w-9 h-9 rounded-full object-cover" />
+            : <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
+                {(visit.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+              </div>
+          }
+          <span className={`w-2.5 h-2.5 rounded-full border-2 border-white ${visit.sign_out_time ? 'bg-red-500' : 'bg-green-500'}`} />
+        </div>
+      ),
     },
     {
       key: 'Site',
@@ -1963,7 +1957,9 @@ const ActivityPage = () => {
                       className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
                     >
                       <option value="All">All</option>
-                      {groups.map((group) => (
+                      {(groups.length > 0 ? groups : [
+                        {id:'v', name:'Visitors'}, {id:'e', name:'Employees'}, {id:'d', name:'Deliveries'}
+                      ]).map((group) => (
                         <option key={group.id} value={group.name}>
                           {group.name}
                         </option>
@@ -1974,7 +1970,7 @@ const ActivityPage = () => {
               )}
             </div>
 
-      <div className="relative overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm" style={{overflowY: 'visible'}}>
+      <div className="relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>

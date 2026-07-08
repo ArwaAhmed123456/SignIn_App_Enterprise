@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Package, User, Users, GripVertical, Settings } from 'lucide-react';
+import { Package, User, Users, GripVertical, Settings, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 
 const VisitorGroupsList = () => {
@@ -11,6 +12,12 @@ const VisitorGroupsList = () => {
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [saving, setSaving]         = useState(false);
   const [createError, setCreateError] = useState('');
+
+  const navigate = useNavigate();
+  const handleGroupClick = (group) => {
+    if (group.type === 'Repeat') navigate('/admin/people');
+    else navigate('/admin/activity');
+  };
 
   useEffect(() => { init(); }, []);
 
@@ -143,7 +150,7 @@ const VisitorGroupsList = () => {
       ) : (
         <div className="space-y-3">
           {groups.map((group) => (
-            <div key={group.id} className="flex items-center p-4 bg-white border border-slate-100 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+            <div key={group.id} onClick={() => handleGroupClick(group)} className="flex items-center p-4 bg-white border border-slate-100 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
               <div className="text-slate-300 mr-4 cursor-grab">
                 <GripVertical size={20} />
               </div>
@@ -172,6 +179,7 @@ const VisitorGroupsList = () => {
                   <Settings size={20} />
                 </button>
               </div>
+              <ChevronRight size={18} className="text-slate-300 ml-2 flex-shrink-0" />
             </div>
           ))}
 

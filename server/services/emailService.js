@@ -28,7 +28,13 @@ const sendMail = async ({ to, subject, html }) => {
   if (!resend) return { success: false, error: 'RESEND_API_KEY not configured' };
 
   try {
-    const { data, error } = await resend.emails.send({ from: FROM, to, subject, html });
+    const { data, error } = await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html,
+      reply_to: process.env.EMAIL_REPLY_TO || process.env.EMAIL_USER || undefined,
+    });
     if (error) {
       console.error('Resend error:', error);
       return { success: false, error: error.message || JSON.stringify(error) };
