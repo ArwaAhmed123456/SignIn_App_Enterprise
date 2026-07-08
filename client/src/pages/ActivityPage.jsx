@@ -1974,7 +1974,7 @@ const ActivityPage = () => {
               )}
             </div>
 
-            <div className="overflow-x-auto overflow-y-visible rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="relative overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm" style={{overflowY: 'visible'}}>
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>

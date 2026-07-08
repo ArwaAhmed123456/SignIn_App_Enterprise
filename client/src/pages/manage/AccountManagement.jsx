@@ -20,23 +20,55 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [lastName, setLastName]         = useState('');
   const [organization, setOrganization] = useState('');
   const [role, setRole]                 = useState('admin');
+  const [accountType, setAccountType]   = useState('portal'); // portal | mobile
+  const [mobileRole, setMobileRole]     = useState('guard');
+  const [siteId, setSiteId]             = useState('');
+  const [sites, setSites]               = useState([]);
   const [saving, setSaving]             = useState(false);
   const [error, setError]               = useState('');
-  const [createdCreds, setCreatedCreds] = useState(null); // show after creation
+  const [createdCreds, setCreatedCreds] = useState(null);
 
-  const handleInvite = async () => {
+  useEffect(() => {
+    api.get('/projects').then(r => setSites(r.data || [])).catch(() => {});
+  }, []);
+
+  const handleCreate = async () => {
     if (!email.trim()) { setError('Email is required'); return; }
     setSaving(true); setError('');
     try {
-      const res = await api.post('/auth/invite', {
-        email: email.trim(), role,
-        first_name: firstName.trim() || undefined,
-        last_name:  lastName.trim()  || undefined,
-        organization: organization.trim() || undefined,
-      });
-      // Show the generated credentials — user MUST copy them
-      setCreatedCreds({ email: email.trim(), password: res.data.password, role });
-      onInvited({ email: email.trim(), role });
+      if (accountType === 'portal') {
+        // Create portal (web dashboard) account
+        const res = await api.post('/auth/invite', {
+          email: email.trim(), role,
+          first_name: firstName.trim() || undefined,
+          last_name:  lastName.trim()  || undefined,
+          organization: organization.trim() || undefined,
+          send_email: true,
+        });
+        setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: 'Portal account' });
+        onInvited({ email: email.trim(), role });
+      } else {
+        // Create mobile app account (Guard/Manager/Employee)
+        const parts = (firstName + ' ' + lastName).trim().split(/\s+/);
+        const res = await api.post('/guards/members', {
+          first_name: firstName.trim() || email.split('@')[0],
+          last_name:  lastName.trim() || undefined,
+          email: email.trim(),
+          mobileRole,
+          role: mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
+          site_id: siteId || undefined,
+          status: 'Current',
+          send_welcome: true,
+          include_companion: true,
+        });
+        setCreatedCreds({
+          email: email.trim(),
+          password: '(sent by welcome email)',
+          role: mobileRole,
+          type: 'Mobile app account',
+          note: 'Welcome email with companion code sent to their inbox.',
+        });
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create account');
     } finally { setSaving(false); }
@@ -47,7 +79,7 @@ const InviteModal = ({ onClose, onInvited }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">Account created ✓</h2>
+          <h2 className="text-lg font-bold text-slate-800">✓ {createdCreds.type} created</h2>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
@@ -65,15 +97,15 @@ const InviteModal = ({ onClose, onInvited }) => {
               <p className="text-sm font-semibold capitalize text-slate-800">{createdCreds.role}</p>
             </div>
           </div>
+          {createdCreds.note && (
+            <p className="text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">{createdCreds.note}</p>
+          )}
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
             ⚠ Copy these credentials now — the password will not be shown again.
           </p>
         </div>
         <div className="flex justify-end px-6 py-4 border-t border-slate-100">
-          <button onClick={onClose}
-            className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
-            Done
-          </button>
+          <button onClick={onClose} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">Done</button>
         </div>
       </div>
     </div>
@@ -81,12 +113,31 @@ const InviteModal = ({ onClose, onInvited }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">Create portal account</h2>
+          <h2 className="text-lg font-bold text-slate-800">Create account</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"><X size={18} /></button>
         </div>
-        <div className="px-6 py-5 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+          {/* Account type toggle */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Account type</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { val: 'portal', label: 'Portal (Web)', desc: 'Access the admin dashboard' },
+                { val: 'mobile', label: 'Mobile App',   desc: 'Guard / Manager / Employee' },
+              ].map(({ val, label, desc }) => (
+                <button key={val} type="button" onClick={() => setAccountType(val)}
+                  className={`text-left px-4 py-3 rounded-xl border-2 transition-colors ${accountType === val ? 'border-[#2b4594] bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                  <p className={`text-sm font-semibold ${accountType === val ? 'text-[#2b4594]' : 'text-slate-800'}`}>{label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Name */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">First name</label>
@@ -99,29 +150,66 @@ const InviteModal = ({ onClose, onInvited }) => {
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
             </div>
           </div>
+
+          {/* Email */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Email address <span className="text-red-500">*</span></label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="colleague@company.com"
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="john@company.com"
               className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Organization</label>
-            <input value={organization} onChange={e => setOrganization(e.target.value)} placeholder="IB Vogt - Horton Solar Farm"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Portal role</label>
-            <select value={role} onChange={e => setRole(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-              <option value="admin">Admin — manage their own site</option>
-              <option value="superadmin">Superadmin — full access to all sites</option>
-            </select>
-          </div>
+
+          {/* Portal-specific fields */}
+          {accountType === 'portal' && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Organization</label>
+                <input value={organization} onChange={e => setOrganization(e.target.value)} placeholder="IB Vogt - Horton Solar Farm"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Portal role</label>
+                <select value={role} onChange={e => setRole(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                  <option value="admin">Admin — manage their own site</option>
+                  <option value="superadmin">Superadmin — full access to all sites</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          {/* Mobile-specific fields */}
+          {accountType === 'mobile' && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile app role</label>
+                <select value={mobileRole} onChange={e => setMobileRole(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                  <option value="guard">Security Guard — sign in/out visitors, run evacuations</option>
+                  <option value="manager">Manager — view on-site people, receive notifications</option>
+                  <option value="employee">Employee — sign self in/out, view calendar</option>
+                </select>
+              </div>
+              {sites.length > 0 && (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Assign to site</label>
+                  <select value={siteId} onChange={e => setSiteId(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                    <option value="">Select site…</option>
+                    {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+              )}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700">
+                A welcome email with the companion app activation code will be sent to their email address.
+              </div>
+            </>
+          )}
+
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
           <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button onClick={handleInvite} disabled={saving}
+          <button onClick={handleCreate} disabled={saving}
             className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
             {saving ? 'Creating…' : 'Create account'}
           </button>

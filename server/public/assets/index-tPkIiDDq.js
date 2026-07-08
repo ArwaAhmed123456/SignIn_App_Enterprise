@@ -33159,7 +33159,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CLsGYKt0.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-ByOki0LA.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -68394,7 +68394,7 @@ const ActivityPage = () => {
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-x-auto overflow-y-visible rounded-2xl border border-slate-200 bg-white shadow-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm", style: { overflowY: "visible" }, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[900px] text-left text-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-10 px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -70843,6 +70843,16 @@ const fmtDate$2 = (iso) => {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 };
+const fmtDateTime = (iso) => {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+};
 const Avatar = ({ name, size = "md", online = false }) => {
   const s2 = size === "lg" ? "w-14 h-14 text-base" : "w-9 h-9 text-xs";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block flex-shrink-0", children: [
@@ -71089,59 +71099,66 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Phone number" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border border-slate-300 rounded-lg overflow-hidden focus-within:border-[#2b4594]", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 px-3 py-2 border-r border-slate-300 text-sm flex items-center gap-1", children: [
-                "🇺🇸 ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { size: 12 })
-              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "select",
+                {
+                  value: form.phoneCode || "+1",
+                  onChange: (e2) => set("phoneCode", e2.target.value),
+                  className: "bg-slate-50 border-r border-slate-300 text-sm px-2 py-2 outline-none cursor-pointer",
+                  children: [["🇬🇧", "+44"], ["🇺🇸", "+1"], ["🇵🇰", "+92"], ["🇦🇪", "+971"], ["🇩🇪", "+49"], ["🇫🇷", "+33"], ["🇮🇳", "+91"], ["🇨🇦", "+1"], ["🇦🇺", "+61"], ["🇳🇱", "+31"], ["🇸🇦", "+966"], ["🇿🇦", "+27"]].map(([flag, code]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: code, children: [
+                    flag,
+                    " ",
+                    code
+                  ] }, code + flag))
+                }
+              ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "input",
                 {
                   type: "tel",
                   value: form.phone,
                   onChange: (e2) => set("phone", e2.target.value),
+                  placeholder: "7700 900000",
                   className: "flex-1 px-3 py-2 text-sm outline-none"
                 }
               )
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Role / Job title" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Role" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "select",
               {
                 value: form.role,
-                onChange: (e2) => set("role", e2.target.value),
+                onChange: (e2) => {
+                  const r = e2.target.value;
+                  const mobileRoleMap = {
+                    "Guard": "guard",
+                    "Manager": "manager",
+                    "Employee": "employee",
+                    "Visitor": "employee",
+                    "Contractor": "employee",
+                    "Delivery": "employee"
+                  };
+                  set("role", r);
+                  set("mobileRole", mobileRoleMap[r] || "employee");
+                },
                 className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select role…" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Employee", children: "Employee" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Guard", children: "Guard (Security Guard)" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Manager", children: "Manager" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Employee", children: "Employee — standard staff member" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Guard", children: "Guard — security guard, can sign visitors in/out" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Manager", children: "Manager — receives notifications, sees who's on site" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Visitor", children: "Visitor" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Contractor", children: "Contractor" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Delivery", children: "Delivery" })
                 ]
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Guard/Manager roles unlock mobile app features" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile App Role" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "select",
-              {
-                value: form.mobileRole,
-                onChange: (e2) => set("mobileRole", e2.target.value),
-                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Security Guard" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin" })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Determines what they see in the companion app" })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-400 mt-1", children: [
+              "Mobile app view: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: form.role === "Guard" ? "Security Guard dashboard (sign in/out visitors)" : form.role === "Manager" ? "Manager dashboard (notifications, on-site view)" : "Employee view (sign self in/out)" })
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Language" }),
@@ -71995,11 +72012,44 @@ const PeopleDirectory = () => {
     fetchMembers();
   };
   const toggleCol = (col) => setVisibleCols((c2) => c2.includes(col) ? c2.filter((x2) => x2 !== col) : [...c2, col]);
+  const [memberActivity, setMemberActivity] = reactExports.useState({});
+  reactExports.useEffect(() => {
+    if (activeTab !== "current") return;
+    const load = async () => {
+      try {
+        const res = await api.get("/visits?limit=500");
+        const visits = res.data || [];
+        const activity = {};
+        visits.forEach((v2) => {
+          if (!v2.name) return;
+          const key = v2.name.trim().toLowerCase();
+          if (!activity[key] || new Date(v2.sign_in_time) > new Date(activity[key].sign_in_time)) {
+            activity[key] = v2;
+          }
+        });
+        setMemberActivity(activity);
+      } catch {
+        setMemberActivity({});
+      }
+    };
+    load();
+  }, [activeTab]);
   const lastColLabel = activeTab === "upcoming" ? "Start date" : activeTab === "archived" ? "Archived date" : "Latest activity";
   const lastColValue = (m2) => {
     if (activeTab === "upcoming") return m2.start_date ? fmtDate$2(m2.start_date) : "—";
     if (activeTab === "archived") return m2.updated_at ? fmtDate$2(m2.updated_at) : "—";
-    return "—";
+    const key = (m2.name || "").trim().toLowerCase();
+    const v2 = memberActivity[key];
+    if (!v2) return "—";
+    const action = v2.sign_out_time ? "Signed out" : "Signed in";
+    const site = v2.site || "";
+    const time = v2.sign_out_time ? fmtDateTime(v2.sign_out_time) : fmtDateTime(v2.sign_in_time);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-slate-600", children: [
+      action,
+      site ? ` from ${site}` : "",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400", children: time })
+    ] });
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full overflow-auto bg-[#f8fafc]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-[1600px] mx-auto px-8 py-8 flex flex-col gap-6", children: [
@@ -74325,10 +74375,18 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [lastName, setLastName] = reactExports.useState("");
   const [organization, setOrganization] = reactExports.useState("");
   const [role, setRole] = reactExports.useState("admin");
+  const [accountType, setAccountType] = reactExports.useState("portal");
+  const [mobileRole, setMobileRole] = reactExports.useState("guard");
+  const [siteId, setSiteId] = reactExports.useState("");
+  const [sites, setSites] = reactExports.useState([]);
   const [saving, setSaving] = reactExports.useState(false);
   const [error, setError] = reactExports.useState("");
   const [createdCreds, setCreatedCreds] = reactExports.useState(null);
-  const handleInvite = async () => {
+  reactExports.useEffect(() => {
+    api.get("/projects").then((r) => setSites(r.data || [])).catch(() => {
+    });
+  }, []);
+  const handleCreate = async () => {
     if (!email.trim()) {
       setError("Email is required");
       return;
@@ -74336,15 +74394,38 @@ const InviteModal = ({ onClose, onInvited }) => {
     setSaving(true);
     setError("");
     try {
-      const res = await api.post("/auth/invite", {
-        email: email.trim(),
-        role,
-        first_name: firstName.trim() || void 0,
-        last_name: lastName.trim() || void 0,
-        organization: organization.trim() || void 0
-      });
-      setCreatedCreds({ email: email.trim(), password: res.data.password, role });
-      onInvited({ email: email.trim(), role });
+      if (accountType === "portal") {
+        const res = await api.post("/auth/invite", {
+          email: email.trim(),
+          role,
+          first_name: firstName.trim() || void 0,
+          last_name: lastName.trim() || void 0,
+          organization: organization.trim() || void 0,
+          send_email: true
+        });
+        setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: "Portal account" });
+        onInvited({ email: email.trim(), role });
+      } else {
+        const parts2 = (firstName + " " + lastName).trim().split(/\s+/);
+        const res = await api.post("/guards/members", {
+          first_name: firstName.trim() || email.split("@")[0],
+          last_name: lastName.trim() || void 0,
+          email: email.trim(),
+          mobileRole,
+          role: mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
+          site_id: siteId || void 0,
+          status: "Current",
+          send_welcome: true,
+          include_companion: true
+        });
+        setCreatedCreds({
+          email: email.trim(),
+          password: "(sent by welcome email)",
+          role: mobileRole,
+          type: "Mobile app account",
+          note: "Welcome email with companion code sent to their inbox."
+        });
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Failed to create account");
     } finally {
@@ -74352,7 +74433,11 @@ const InviteModal = ({ onClose, onInvited }) => {
     }
   };
   if (createdCreds) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Account created ✓" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-lg font-bold text-slate-800", children: [
+      "✓ ",
+      createdCreds.type,
+      " created"
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-5 space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-green-50 border border-green-200 rounded-xl p-4 space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-green-800", children: "Share these credentials with the user:" }),
@@ -74369,23 +74454,36 @@ const InviteModal = ({ onClose, onInvited }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold capitalize text-slate-800", children: createdCreds.role })
         ] })
       ] }),
+      createdCreds.note && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2", children: createdCreds.note }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2", children: "⚠ Copy these credentials now — the password will not be shown again." })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end px-6 py-4 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "button",
-      {
-        onClick: onClose,
-        className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold",
-        children: "Done"
-      }
-    ) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end px-6 py-4 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold", children: "Done" }) })
   ] }) });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Create portal account" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Create account" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 18 }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-5 space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-6 py-5 space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Account type" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-2", children: [
+          { val: "portal", label: "Portal (Web)", desc: "Access the admin dashboard" },
+          { val: "mobile", label: "Mobile App", desc: "Guard / Manager / Employee" }
+        ].map(({ val, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: () => setAccountType(val),
+            className: `text-left px-4 py-3 rounded-xl border-2 transition-colors ${accountType === val ? "border-[#2b4594] bg-blue-50" : "border-slate-200 hover:border-slate-300"}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-sm font-semibold ${accountType === val ? "text-[#2b4594]" : "text-slate-800"}`, children: label }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: desc })
+            ]
+          },
+          val
+        )) })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "First name" }),
@@ -74423,37 +74521,73 @@ const InviteModal = ({ onClose, onInvited }) => {
             type: "email",
             value: email,
             onChange: (e2) => setEmail(e2.target.value),
-            placeholder: "colleague@company.com",
+            placeholder: "john@company.com",
             className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Organization" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            value: organization,
-            onChange: (e2) => setOrganization(e2.target.value),
-            placeholder: "IB Vogt - Horton Solar Farm",
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-          }
-        )
+      accountType === "portal" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Organization" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              value: organization,
+              onChange: (e2) => setOrganization(e2.target.value),
+              placeholder: "IB Vogt - Horton Solar Farm",
+              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Portal role" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              value: role,
+              onChange: (e2) => setRole(e2.target.value),
+              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin — manage their own site" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "superadmin", children: "Superadmin — full access to all sites" })
+              ]
+            }
+          )
+        ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Portal role" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "select",
-          {
-            value: role,
-            onChange: (e2) => setRole(e2.target.value),
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin — manage their own site" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "superadmin", children: "Superadmin — full access to all sites" })
-            ]
-          }
-        )
+      accountType === "mobile" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile app role" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              value: mobileRole,
+              onChange: (e2) => setMobileRole(e2.target.value),
+              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Security Guard — sign in/out visitors, run evacuations" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager — view on-site people, receive notifications" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee — sign self in/out, view calendar" })
+              ]
+            }
+          )
+        ] }),
+        sites.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Assign to site" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              value: siteId,
+              onChange: (e2) => setSiteId(e2.target.value),
+              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
+                sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id))
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700", children: "A welcome email with the companion app activation code will be sent to their email address." })
       ] }),
       error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: error })
     ] }),
@@ -74462,7 +74596,7 @@ const InviteModal = ({ onClose, onInvited }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
-          onClick: handleInvite,
+          onClick: handleCreate,
           disabled: saving,
           className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold",
           children: saving ? "Creating…" : "Create account"

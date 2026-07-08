@@ -205,10 +205,44 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
             role:         role || 'admin',
         });
 
-        // Return password in response — superadmin shares it manually
+        // Always return password — superadmin shares it manually if email fails
+        // Also try to send credentials by email
+        let emailSent = false;
+        try {
+            const { sendMail } = require('../services/emailService');
+            if (sendMail) {
+                // Use internal sendMail if available
+            }
+            const { Resend } = require('resend');
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            if (process.env.RESEND_API_KEY) {
+                await resend.emails.send({
+                    from: process.env.EMAIL_FROM || 'Sign In App <onboarding@resend.dev>',
+                    to: email.toLowerCase(),
+                    subject: 'Your Sign In App portal account',
+                    html: `
+<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;">
+  <h2 style="color:#2b4594;margin:0 0 16px;">Your account is ready</h2>
+  <p style="color:#374151;">Hi ${first_name || email.split('@')[0]},</p>
+  <p style="color:#374151;">Your Sign In App portal account has been created. Here are your login details:</p>
+  <div style="background:#f0f4ff;border:1px solid #c7d7fe;border-radius:10px;padding:20px;margin:20px 0;">
+    <p style="margin:0 0 8px;"><strong>Login URL:</strong> <a href="https://tripod-signin-app.onrender.com/admin/login">tripod-signin-app.onrender.com/admin/login</a></p>
+    <p style="margin:0 0 8px;"><strong>Email:</strong> ${email.toLowerCase()}</p>
+    <p style="margin:0;"><strong>Password:</strong> <span style="font-family:monospace;font-size:16px;font-weight:bold;">${tempPassword}</span></p>
+  </div>
+  <p style="color:#6b7280;font-size:13px;">Please change your password after first login.</p>
+</div>`,
+                });
+                emailSent = true;
+            }
+        } catch (emailErr) {
+            console.warn('Could not send credentials email:', emailErr.message);
+        }
+
         res.status(201).json({
-            message:  'Account created successfully',
-            password: tempPassword,
+            message:    emailSent ? 'Account created and credentials sent by email' : 'Account created successfully',
+            password:   tempPassword,
+            email_sent: emailSent,
             user: {
                 id:     newAdmin._id,
                 email:  newAdmin.email,

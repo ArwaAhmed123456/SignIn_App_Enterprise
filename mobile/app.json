@@ -58,7 +58,7 @@
       "webAppUrl": "https://tripod-signin-app.onrender.com",
       "privacyPolicyUrl": "https://tripod-signin-app.onrender.com/privacy-policy.html",
       "eas": {
-        "projectId": "995ac383-70e8-4f81-b6e1-8ff63b77a8a9"
+        "projectId": "bf3dc46e-6679-4561-b3c8-10a9a6758310"
       }
     },
     "owner": "hayat123a",
@@ -66,7 +66,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/995ac383-70e8-4f81-b6e1-8ff63b77a8a9"
+      "url": "https://u.expo.dev/bf3dc46e-6679-4561-b3c8-10a9a6758310"
     }
   }
 }

@@ -277,35 +277,51 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Phone number</label>
                   <div className="flex border border-slate-300 rounded-lg overflow-hidden focus-within:border-[#2b4594]">
-                    <div className="bg-slate-50 px-3 py-2 border-r border-slate-300 text-sm flex items-center gap-1">🇺🇸 <ChevronDown size={12} /></div>
+                    <select
+                      value={form.phoneCode || '+1'}
+                      onChange={e => set('phoneCode', e.target.value)}
+                      className="bg-slate-50 border-r border-slate-300 text-sm px-2 py-2 outline-none cursor-pointer"
+                    >
+                      {[['🇬🇧','+44'],['🇺🇸','+1'],['🇵🇰','+92'],['🇦🇪','+971'],['🇩🇪','+49'],['🇫🇷','+33'],['🇮🇳','+91'],['🇨🇦','+1'],['🇦🇺','+61'],['🇳🇱','+31'],['🇸🇦','+966'],['🇿🇦','+27']].map(([flag, code]) => (
+                        <option key={code+flag} value={code}>{flag} {code}</option>
+                      ))}
+                    </select>
                     <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
+                      placeholder="7700 900000"
                       className="flex-1 px-3 py-2 text-sm outline-none" />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Role / Job title</label>
-                  <select value={form.role} onChange={e => set('role', e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                <div className="col-span-2">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
+                  <select
+                    value={form.role}
+                    onChange={e => {
+                      const r = e.target.value;
+                      const mobileRoleMap = {
+                        'Guard': 'guard', 'Manager': 'manager',
+                        'Employee': 'employee', 'Visitor': 'employee',
+                        'Contractor': 'employee', 'Delivery': 'employee',
+                      };
+                      set('role', r);
+                      set('mobileRole', mobileRoleMap[r] || 'employee');
+                    }}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+                  >
                     <option value="">Select role…</option>
-                    <option value="Employee">Employee</option>
-                    <option value="Guard">Guard (Security Guard)</option>
-                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee — standard staff member</option>
+                    <option value="Guard">Guard — security guard, can sign visitors in/out</option>
+                    <option value="Manager">Manager — receives notifications, sees who's on site</option>
                     <option value="Visitor">Visitor</option>
                     <option value="Contractor">Contractor</option>
                     <option value="Delivery">Delivery</option>
                   </select>
-                  <p className="text-xs text-slate-400 mt-1">Guard/Manager roles unlock mobile app features</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
-                  <select value={form.mobileRole} onChange={e => set('mobileRole', e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                    <option value="employee">Employee</option>
-                    <option value="guard">Security Guard</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <p className="text-xs text-slate-400 mt-1">Determines what they see in the companion app</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Mobile app view: <strong>{
+                      form.role === 'Guard' ? 'Security Guard dashboard (sign in/out visitors)' :
+                      form.role === 'Manager' ? 'Manager dashboard (notifications, on-site view)' :
+                      'Employee view (sign self in/out)'
+                    }</strong>
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Language</label>
@@ -1083,12 +1099,50 @@ const PeopleDirectory = () => {
 
   const toggleCol = (col) => setVisibleCols(c => c.includes(col) ? c.filter(x => x !== col) : [...c, col]);
 
+  // Load latest activity per member from visits API
+  const [memberActivity, setMemberActivity] = useState({});
+
+  useEffect(() => {
+    if (activeTab !== 'current') return;
+    const load = async () => {
+      try {
+        const res = await api.get('/visits?limit=500');
+        const visits = res.data || [];
+        // Map member name → latest visit info
+        const activity = {};
+        visits.forEach(v => {
+          if (!v.name) return;
+          const key = v.name.trim().toLowerCase();
+          if (!activity[key] || new Date(v.sign_in_time) > new Date(activity[key].sign_in_time)) {
+            activity[key] = v;
+          }
+        });
+        setMemberActivity(activity);
+      } catch { setMemberActivity({}); }
+    };
+    load();
+  }, [activeTab]);
+
   // column for "latest activity" or "start date" depending on tab
   const lastColLabel = activeTab === 'upcoming' ? 'Start date' : activeTab === 'archived' ? 'Archived date' : 'Latest activity';
   const lastColValue = (m) => {
     if (activeTab === 'upcoming') return m.start_date ? fmtDate(m.start_date) : '—';
     if (activeTab === 'archived') return m.updated_at ? fmtDate(m.updated_at) : '—';
-    return '—';
+    // For current tab — look up from visits
+    const key = (m.name || '').trim().toLowerCase();
+    const v = memberActivity[key];
+    if (!v) return '—';
+    const action = v.sign_out_time ? 'Signed out' : 'Signed in';
+    const site   = v.site || '';
+    const time   = v.sign_out_time
+      ? fmtDateTime(v.sign_out_time)
+      : fmtDateTime(v.sign_in_time);
+    return (
+      <span className="text-xs text-slate-600">
+        {action}{site ? ` from ${site}` : ''}<br/>
+        <span className="text-slate-400">{time}</span>
+      </span>
+    );
   };
 
   return (
