@@ -146,9 +146,8 @@ const PublicVisitorCheckIn = () => {
 
     // iOS camera constraint order — must try in this exact sequence
     const constraints = [
-      { video: { facingMode: { exact: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
       { video: { facingMode: 'user' }, audio: false },
-      { video: { facingMode: { exact: 'environment' } }, audio: false },
+      { video: { facingMode: 'environment' }, audio: false },
       { video: true, audio: false },
     ];
 
@@ -206,26 +205,46 @@ const PublicVisitorCheckIn = () => {
     setCameraActive(false);
   };
 
-  const takePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+  const doCapture = () => {
     const v = videoRef.current;
     const c = canvasRef.current;
+    if (!v || !c) return;
 
-    // Cap resolution to 800px wide max — reduces base64 size significantly
-    // iOS cameras can be 1280×720+ which creates a 400-600kb base64 string
-    // that exceeds server limits and causes "Sign in failed" on iPhone
+    // Wait until the video has actual dimensions — iOS reports 0 until stream is ready
+    const w = v.videoWidth;
+    const h = v.videoHeight;
+    if (!w || !h) {
+      // Not ready yet — retry in 150ms
+      setTimeout(doCapture, 150);
+      return;
+    }
+
+    // Cap to 800px wide to keep base64 payload small (prevents 413 on server)
     const MAX_WIDTH = 800;
-    const scale = Math.min(1, MAX_WIDTH / (v.videoWidth || 640));
-    c.width  = Math.round((v.videoWidth  || 640) * scale);
-    c.height = Math.round((v.videoHeight || 640) * scale);
+    const scale = Math.min(1, MAX_WIDTH / w);
+    c.width  = Math.round(w * scale);
+    c.height = Math.round(h * scale);
 
     const ctx = c.getContext('2d');
     // Mirror horizontally to match the mirrored video preview
     ctx.translate(c.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(v, 0, 0, c.width, c.height);
-    setPhotoDataUrl(c.toDataURL('image/jpeg', 0.7)); // 0.7 quality keeps size ~80-120kb
+
+    const dataUrl = c.toDataURL('image/jpeg', 0.7);
+    // Sanity check — if canvas is blank the dataUrl is tiny (<1kb)
+    if (dataUrl.length < 5000) {
+      setTimeout(doCapture, 150);
+      return;
+    }
+
+    setPhotoDataUrl(dataUrl);
     stopCamera();
+  };
+
+  const takePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    doCapture();
   };
 
   const retakePhoto = () => { setPhotoDataUrl(null); startCamera(); };
@@ -477,8 +496,10 @@ const PublicVisitorCheckIn = () => {
               </button>
             )}
 
-            {!cameraActive && !photoDataUrl && !cameraError && (
-              <p className="text-xs text-slate-400 text-center mt-2">Tap the circle above to activate your camera, or tap Continue to skip the photo step.</p>
+            {(!photoDataUrl) && (
+              <button onClick={() => { stopCamera(); handleSignIn(); }} className="text-sm text-slate-400 hover:text-slate-600 underline mt-4">
+                Skip photo & sign in
+              </button>
             )}
           </div>
         </>
