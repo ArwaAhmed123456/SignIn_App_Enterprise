@@ -2,7 +2,7 @@ const express     = require('express');
 const router      = express.Router();
 const jwt         = require('jsonwebtoken');
 const ActivityLog = require('../models/ActivityLog');
-const Project     = require('../models/Project'); // sites live in Project collection
+const Site = require('../models/Site'); // sites live in Project collection
 const Member      = require('../models/Member');
 const path        = require('path');
 const fs          = require('fs');
@@ -68,7 +68,7 @@ const savePhoto = (base64Data, siteCode) => {
 const resolveFirst = async (siteId) => {
   if (siteId && siteId !== 'all') return siteId;
   if (siteId === 'all') return null;
-  const s = await Project.findOne().sort({ createdAt: 1 }).lean();
+  const s = await Site.findOne().sort({ createdAt: 1 }).lean();
   return s?._id || null;
 };
 
@@ -76,7 +76,7 @@ const resolveFirst = async (siteId) => {
 const buildSiteMap = async (logs) => {
   const ids = [...new Set(logs.map(l => String(l.siteId)).filter(Boolean))];
   if (!ids.length) return {};
-  const projects = await Project.find({ _id: { $in: ids } }).lean();
+  const projects = await Site.find({ _id: { $in: ids } }).lean();
   return Object.fromEntries(projects.map(p => [String(p._id), p.name]));
 };
 
@@ -85,7 +85,7 @@ router.post('/public', async (req, res) => {
   const { site_id, name, group, trade, car_reg, reason, photo_base64 } = req.body;
   if (!name) return res.status(400).json({ error: 'name is required' });
   try {
-    const site = await Project.findById(site_id).lean();
+    const site = await Site.findById(site_id).lean();
     if (!site) return res.status(400).json({ error: 'Site not found' });
 
     const now     = new Date();
@@ -198,7 +198,7 @@ router.post('/', async (req, res) => {
     if (io) io.emit('newAttendance', { name: displayName, date: dateStr });
 
     // add to manifest cache
-    try { const site = await Project.findById(sid).lean(); if (site?.code) addWorker(site.code, log); } catch {}
+    try { const site = await Site.findById(sid).lean(); if (site?.code) addWorker(site.code, log); } catch {}
 
     const siteMap = await buildSiteMap([log]);
     res.status(201).json({ success: true, visit: fmt(log, siteMap) });

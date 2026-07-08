@@ -3,7 +3,7 @@ const router   = express.Router();
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const Member   = require('../models/Member');
-const Project  = require('../models/Project'); // sites are stored in Project collection
+const Site = require('../models/Site'); // sites are stored in Project collection
 const VisitorGroup = require('../models/VisitorGroup');
 const { sendMobileInviteEmail } = require('../services/emailService');
 
@@ -32,7 +32,7 @@ const verifyAdmin = (req, res, next) => {
 
 const fmtMember = async (m) => {
   // siteId references Project (not Site) — this is the fix for "ID showing instead of name"
-  const site  = m.siteId ? await Project.findById(m.siteId).lean() : null;
+  const site  = m.siteId ? await Site.findById(m.siteId).lean() : null;
   const group = m.visitorGroupId ? await VisitorGroup.findById(m.visitorGroupId).lean() : null;
   return {
     id:              m._id,
@@ -126,10 +126,10 @@ router.post('/members', verifyAdmin, async (req, res) => {
     let resolvedSiteId = site_id;
     let resolvedSite = null;
     if (!resolvedSiteId) {
-      resolvedSite = await Project.findOne().sort({ createdAt: 1 });
+      resolvedSite = await Site.findOne().sort({ createdAt: 1 });
       resolvedSiteId = resolvedSite?._id;
     } else {
-      resolvedSite = await Project.findById(resolvedSiteId).lean();
+      resolvedSite = await Site.findById(resolvedSiteId).lean();
     }
 
     const mongoose = require('mongoose');
@@ -173,7 +173,7 @@ router.post('/members', verifyAdmin, async (req, res) => {
       setImmediate(async () => {
         try {
           const { sendWelcomeEmail } = require('../services/emailService');
-          const site  = resolvedSiteId ? await Project.findById(resolvedSiteId).lean() : null;
+          const site  = resolvedSiteId ? await Site.findById(resolvedSiteId).lean() : null;
           const group = safeGroupId    ? await VisitorGroup.findById(safeGroupId).lean() : null;
 
           const result = await sendWelcomeEmail({
@@ -294,7 +294,7 @@ router.post('/activate-mobile', async (req, res) => {
       JWT_SECRET, { expiresIn: '30d' }
     );
     // Look up site name from Project collection
-    const siteDoc = matched.siteId ? await Project.findById(matched.siteId).lean() : null;
+    const siteDoc = matched.siteId ? await Site.findById(matched.siteId).lean() : null;
     res.json({
       success: true,
       jwt_token: mobileJwt,
@@ -347,7 +347,7 @@ router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
     const targetEmail = (req.body.email || member.email || '').trim();
     if (!targetEmail) return res.status(400).json({ error: 'No email address for this member' });
 
-    const site  = member.siteId ? await Project.findById(member.siteId).lean() : null;
+    const site  = member.siteId ? await Site.findById(member.siteId).lean() : null;
     const group = member.visitorGroupId ? await VisitorGroup.findById(member.visitorGroupId).lean() : null;
 
     // Generate a 12-digit companion code
