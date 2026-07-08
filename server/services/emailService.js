@@ -7,11 +7,36 @@
  * For testing: emails only go to the account owner's verified email.
  */
 const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
+
+const getSmtpTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const port = parseInt(process.env.SMTP_PORT || '587', 10);
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASSWORD;
+
+  if (!host || !user || !pass) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465, // true for 465, false for other ports
+    auth: {
+      user,
+      pass,
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+};
 
 const getResend = () => {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.warn('RESEND_API_KEY not set — emails will not be sent');
+    console.warn('RESEND_API_KEY not set — Resend will not be available as a fallback');
     return null;
   }
   return new Resend(apiKey);
@@ -26,8 +51,26 @@ const FROM = process.env.EMAIL_FROM
 
 // ── Core send function ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
+  const transporter = getSmtpTransporter();
+  if (transporter) {
+    try {
+      console.log(`[SMTP] Attempting to send email to ${to} via SMTP...`);
+      const info = await transporter.sendMail({
+        from: FROM,
+        to,
+        subject,
+        html,
+        replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_USER || undefined,
+      });
+      console.log(`✓ Email sent to ${to} via SMTP — messageId: ${info.messageId}`);
+      return { success: true, id: info.messageId };
+    } catch (smtpErr) {
+      console.error('[SMTP] Error sending email, falling back to Resend:', smtpErr.message);
+    }
+  }
+
   const resend = getResend();
-  if (!resend) return { success: false, error: 'RESEND_API_KEY not configured' };
+  if (!resend) return { success: false, error: 'Neither SMTP nor Resend configured' };
 
   try {
     const { data, error } = await resend.emails.send({
@@ -41,7 +84,7 @@ const sendMail = async ({ to, subject, html }) => {
       console.error('Resend error:', error);
       return { success: false, error: error.message || JSON.stringify(error) };
     }
-    console.log(`✓ Email sent to ${to} — id: ${data?.id}`);
+    console.log(`✓ Email sent to ${to} via Resend — id: ${data?.id}`);
     return { success: true, id: data?.id };
   } catch (err) {
     console.error('Email exception:', err.message);

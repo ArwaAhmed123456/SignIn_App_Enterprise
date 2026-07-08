@@ -26,15 +26,7 @@ import SecurityGuardScreen from './src/screens/SecurityGuardScreen';
 import GuardLogin          from './src/screens/GuardLogin';
 import GuardSignup         from './src/screens/GuardSignup';
 
-// Legacy screens
-import LandingScreen          from './src/screens/LandingScreen';
-import LoginScreen            from './src/screens/LoginScreen';
-import MobileForm             from './src/screens/MobileForm';
-import WorkerListScreen       from './src/screens/WorkerListScreen';
-import GuardDashboard         from './src/screens/GuardDashboard';
-import ProjectDetails         from './src/screens/ProjectDetails';
-import MobileActivationScreen from './src/screens/MobileActivationScreen';
-import DeliveryScreen         from './src/screens/DeliveryScreen';
+
 
 const Stack = createNativeStackNavigator();
 const Tab   = createBottomTabNavigator();
@@ -123,15 +115,7 @@ const Navigation = () => {
             <Stack.Screen name="GuardSignup" component={GuardSignup} />
           </>
         )}
-        {/* Legacy screens */}
-        <Stack.Screen name="Landing"          component={LandingScreen} />
-        <Stack.Screen name="Login"            component={LoginScreen} />
-        <Stack.Screen name="WorkerListScreen" component={WorkerListScreen} />
-        <Stack.Screen name="MobileForm"       component={MobileForm} />
-        <Stack.Screen name="GuardDashboard"   component={GuardDashboard} />
-        <Stack.Screen name="MobileActivation" component={MobileActivationScreen} />
-        <Stack.Screen name="Delivery"         component={DeliveryScreen} />
-        <Stack.Screen name="ProjectDetails"   component={ProjectDetails} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

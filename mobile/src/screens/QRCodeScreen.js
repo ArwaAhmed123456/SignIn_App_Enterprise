@@ -13,7 +13,8 @@ const QRCodeScreen = ({ navigation }) => {
     user?.email ||
     'Member';
   const group    = user?.group || user?.role || 'Employee';
-  const qrValue  = JSON.stringify({ id: memberId, name: memberName, group });
+  // QR value matches the format expected by the web kiosk: MEMBER:<email>
+  const qrValue  = `MEMBER:${user?.email || memberId}`;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>

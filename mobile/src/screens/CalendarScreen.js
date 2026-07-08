@@ -30,19 +30,24 @@ const fmtHours = (h) => {
 };
 
 const CalendarScreen = () => {
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [week, setWeek]                 = useState(getWeekDays(new Date()));
-  const [dayData, setDayData]           = useState({});   // date string → { entries, totalHours, firstIn, lastOut }
+  const [dayData, setDayData]           = useState({});
   const [weekSummary, setWeekSummary]   = useState({ worked: 0, total: 40 });
   const [loading, setLoading]           = useState(true);
   const [refreshing, setRefreshing]     = useState(false);
   const today = new Date();
 
+  const memberName = user?.name || user?.firstName || '';
+
   const loadData = useCallback(async () => {
     try {
       const mon = week[0];
       const sun = week[6];
-      const res = await api.get(`/attendance/timesheets?date_from=${isoDate(mon)}&date_to=${isoDate(sun)}`);
+      const params = { date_from: isoDate(mon), date_to: isoDate(sun) };
+      if (memberName) params.search = memberName;
+      const res = await api.get(`/attendance/timesheets`, { params });
       const rows = res.data?.rows || [];
 
       const map = {};
