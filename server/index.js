@@ -27,7 +27,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files (React App)
 app.use(express.static(path.join(__dirname, 'public')));

@@ -210,14 +210,21 @@ const PublicVisitorCheckIn = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const v = videoRef.current;
     const c = canvasRef.current;
-    c.width  = v.videoWidth  || 640;
-    c.height = v.videoHeight || 640;
+
+    // Cap resolution to 800px wide max — reduces base64 size significantly
+    // iOS cameras can be 1280×720+ which creates a 400-600kb base64 string
+    // that exceeds server limits and causes "Sign in failed" on iPhone
+    const MAX_WIDTH = 800;
+    const scale = Math.min(1, MAX_WIDTH / (v.videoWidth || 640));
+    c.width  = Math.round((v.videoWidth  || 640) * scale);
+    c.height = Math.round((v.videoHeight || 640) * scale);
+
     const ctx = c.getContext('2d');
     // Mirror horizontally to match the mirrored video preview
     ctx.translate(c.width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(v, 0, 0);
-    setPhotoDataUrl(c.toDataURL('image/jpeg', 0.85));
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    setPhotoDataUrl(c.toDataURL('image/jpeg', 0.7)); // 0.7 quality keeps size ~80-120kb
     stopCamera();
   };
 
