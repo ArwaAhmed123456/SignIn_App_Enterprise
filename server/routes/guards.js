@@ -83,7 +83,20 @@ router.post('/login', async (req, res) => {
         permissions: guard.permissions ? JSON.parse(guard.permissions) : null },
       JWT_SECRET, { expiresIn: '24h' }
     );
-    res.json({ success: true, token, user: { name: guard.firstName, email: guard.email, phone: guard.phone||null, role: guard.role||'guard', project_id: guard.siteId } });
+    // Look up site name so mobile app knows which company this guard belongs to
+    const siteDoc = guard.siteId ? await Site.findById(guard.siteId).lean() : null;
+    res.json({
+      success: true,
+      token,
+      user: {
+        name:         guard.firstName,
+        email:        guard.email,
+        phone:        guard.phone || null,
+        role:         guard.role || 'guard',
+        project_id:   guard.siteId || null,
+        organization: siteDoc?.name || null,   // ← company name for display
+      }
+    });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
