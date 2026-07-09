@@ -1691,7 +1691,7 @@ const ActivityPage = () => {
     <div className="h-full overflow-auto bg-slate-50">
       <Toaster position="top-right" />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-8 pt-12 pb-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-8 pt-8 pb-8">
 
         {/* ── No sites yet banner ─────────────────────────────────── */}
         {sites.length === 0 && (
@@ -1715,7 +1715,7 @@ const ActivityPage = () => {
         )}
 
         <div className="flex items-center gap-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-800">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-800">
             Hi {adminName}, here&apos;s the latest at
           </h1>
 
@@ -1971,7 +1971,8 @@ const ActivityPage = () => {
               )}
             </div>
 
-      <div className="relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
+      <div className="relative rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
@@ -2128,6 +2129,7 @@ const ActivityPage = () => {
               {loadingVisits && (
                 <div className="py-12 text-center text-sm text-slate-500">Loading visits...</div>
               )}
+            </div>
             </div>
           </>
         )}

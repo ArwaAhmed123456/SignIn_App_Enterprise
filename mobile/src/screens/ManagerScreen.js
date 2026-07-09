@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
@@ -26,7 +27,7 @@ import {
   getVisitStats,
 } from '../services/enterprisePortal';
 
-const TABS = ['Overview', 'On Site', 'Signed Out', 'Notifications', 'Guards'];
+const TABS = ['Overview', 'On Site', 'Signed Out', 'Approvals', 'Notifications', 'Guards'];
 
 const fmtTime = (value) => {
   if (!value) return '—';
@@ -67,6 +68,7 @@ const ManagerScreen = () => {
   const [notifOn, setNotifOn] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [updatingApproval, setUpdatingApproval] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
 
   const managerName = user?.name || user?.firstName || 'Manager';
 
@@ -88,6 +90,9 @@ const ManagerScreen = () => {
     setExpected(preRegistered);
     setPendingGuards(pending);
     setPresentGuards(present);
+    // Fetch pending guard registrations for this site
+    const pendingViaApi = await api.get('/guards/members', { params: { status: 'Pending', site_id: siteId } }).catch(() => ({ data: [] }));
+    setPendingGuards(pendingViaApi.data || []);
     setCounts({
       total: stats.totalIn || currentVisits.length,
       visitors: stats.visitorsIn || currentVisits.filter((visit) => !String(visit.group).toLowerCase().includes('employee')).length,
@@ -219,6 +224,19 @@ const ManagerScreen = () => {
       Alert.alert('Export failed', err?.message || 'Could not export.');
     } finally {
       setExporting(false);
+    }
+  };
+
+  const approveGuard = async (guardId, action) => {
+    setApprovingId(guardId);
+    try {
+      await api.put(`/guards/members/${guardId}`, { status: action === 'approve' ? 'Current' : 'Archived' });
+      Alert.alert(action === 'approve' ? 'Approved' : 'Rejected', `Guard has been ${action === 'approve' ? 'approved and is now active' : 'rejected'}.`);
+      await loadSiteData(selectedSite?.id);
+    } catch (err) {
+      Alert.alert('Error', err?.response?.data?.error || 'Could not update guard status.');
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -448,6 +466,54 @@ const ManagerScreen = () => {
                     <Text style={s.visitSub}>
                       {visit.group} · in {fmtTime(visit.sign_in_time)} · out {fmtTime(visit.sign_out_time)}
                     </Text>
+                  </View>
+                </View>
+              ))
+            )}
+          </>
+        )}
+
+        {activeTab === 'Approvals' && (
+          <>
+            <Text style={s.sectionTitle}>Pending registrations ({pendingGuards.length})</Text>
+            <Text style={{ fontSize: 13, color: '#6b7280', marginBottom: 12 }}>
+              These guards registered via the app and are waiting for your approval.
+            </Text>
+            {pendingGuards.length === 0 ? (
+              <View style={s.emptyCard}>
+                <Text style={s.emptyText}>No pending registrations.</Text>
+              </View>
+            ) : (
+              pendingGuards.map((guard) => (
+                <View key={guard.id} style={[s.visitCard, { flexDirection: 'column', alignItems: 'flex-start', gap: 10 }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, width: '100%' }}>
+                    <View style={[s.visitAvatar, { backgroundColor: '#fef3c7' }]}>
+                      <Text style={[s.visitAvatarTxt, { color: '#92400e' }]}>{(guard.name||'?')[0].toUpperCase()}</Text>
+                    </View>
+                    <View style={s.visitMeta}>
+                      <Text style={s.visitName}>{guard.name}</Text>
+                      <Text style={s.visitSub}>{guard.email || 'No email'} · {guard.role || 'Guard'}</Text>
+                      {guard.site && <Text style={s.visitNote}>Site: {guard.site}</Text>}
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 10, width: '100%' }}>
+                    <TouchableOpacity
+                      onPress={() => approveGuard(guard.id, 'approve')}
+                      disabled={approvingId === guard.id}
+                      style={{ flex: 1, backgroundColor: '#2b4594', borderRadius: 10, paddingVertical: 10, alignItems: 'center' }}
+                    >
+                      {approvingId === guard.id
+                        ? <ActivityIndicator size="small" color="#fff" />
+                        : <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>✓ Approve</Text>
+                      }
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => approveGuard(guard.id, 'reject')}
+                      disabled={approvingId === guard.id}
+                      style={{ flex: 1, backgroundColor: '#fef2f2', borderRadius: 10, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: '#fecaca' }}
+                    >
+                      <Text style={{ color: '#ef4444', fontWeight: '700', fontSize: 14 }}>✕ Reject</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               ))

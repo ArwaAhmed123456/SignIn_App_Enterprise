@@ -38,8 +38,12 @@ const OnboardingScreen = ({ navigation }) => {
           <Text style={[styles.btnText, styles.portalBtnText]}>Connect with Invite Code</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.aboutBtn} activeOpacity={0.7}>
-          <Text style={styles.aboutText}>ⓘ  About this app</Text>
+        <TouchableOpacity
+          style={styles.aboutBtn}
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate('GuardSignup')}
+        >
+          <Text style={styles.aboutText}>✏️  Register with invite code? <Text style={{ color: BRAND_BLUE, fontWeight: '700' }}>Sign Up</Text></Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

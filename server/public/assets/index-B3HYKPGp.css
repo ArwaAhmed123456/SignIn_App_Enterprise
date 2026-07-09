@@ -566,6 +566,12 @@ video {
   top: 0px;
   bottom: 0px;
 }
+.-right-1\.5 {
+  right: -0.375rem;
+}
+.-top-1\.5 {
+  top: -0.375rem;
+}
 .-top-10 {
   top: -2.5rem;
 }
@@ -1002,6 +1008,9 @@ video {
 }
 .min-w-\[150px\] {
   min-width: 150px;
+}
+.min-w-\[16px\] {
+  min-width: 16px;
 }
 .min-w-\[170px\] {
   min-width: 170px;
@@ -1932,9 +1941,6 @@ video {
 .pt-10 {
   padding-top: 2.5rem;
 }
-.pt-12 {
-  padding-top: 3rem;
-}
 .pt-14 {
   padding-top: 3.5rem;
 }
@@ -2102,6 +2108,10 @@ video {
 .text-\[\#4f8f2f\] {
   --tw-text-opacity: 1;
   color: rgb(79 143 47 / var(--tw-text-opacity, 1));
+}
+.text-amber-600 {
+  --tw-text-opacity: 1;
+  color: rgb(217 119 6 / var(--tw-text-opacity, 1));
 }
 .text-amber-700 {
   --tw-text-opacity: 1;
@@ -2535,6 +2545,10 @@ video {
   --tw-text-opacity: 1;
   color: rgb(79 143 47 / var(--tw-text-opacity, 1));
 }
+.hover\:text-amber-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(180 83 9 / var(--tw-text-opacity, 1));
+}
 .hover\:text-cyan-700:hover {
   --tw-text-opacity: 1;
   color: rgb(14 116 144 / var(--tw-text-opacity, 1));
@@ -2722,6 +2736,16 @@ video {
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sm\:px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .sm\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
 }
 @media (min-width: 768px) {
 
@@ -2818,6 +2842,16 @@ video {
   .lg\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+
+  .lg\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .lg\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
   }
 }
 @media (min-width: 1280px) {

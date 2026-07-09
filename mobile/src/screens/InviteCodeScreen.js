@@ -77,7 +77,15 @@ const InviteCodeScreen = ({ navigation }) => {
             }
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.helpRow} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.helpRow}
+            activeOpacity={0.7}
+            onPress={() => require('react-native').Alert.alert(
+              'Where to find your code',
+              'Your 12-character invite code was sent to your email when your account was created by an administrator.\n\nCheck your inbox for a welcome email from Tripod Services or Sign In App.\n\nIf you cannot find it, contact your site manager or admin to resend it.',
+              [{ text: 'OK' }]
+            )}
+          >
             <HelpCircle size={18} color="#6b7280" />
             <Text style={styles.helpText}>Where do I find this?</Text>
           </TouchableOpacity>

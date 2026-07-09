@@ -151,8 +151,8 @@ function requireReact_production() {
     });
   }
   var userProvidedKeyEscapeRegex = /\/+/g;
-  function getElementKey(element, index) {
-    return "object" === typeof element && null !== element && null != element.key ? escape("" + element.key) : index.toString(36);
+  function getElementKey(element, index2) {
+    return "object" === typeof element && null !== element && null != element.key ? escape("" + element.key) : index2.toString(36);
   }
   function resolveThenable(thenable) {
     switch (thenable.status) {
@@ -518,12 +518,12 @@ function requireScheduler_production() {
   hasRequiredScheduler_production = 1;
   (function(exports$1) {
     function push(heap, node) {
-      var index = heap.length;
+      var index2 = heap.length;
       heap.push(node);
-      a: for (; 0 < index; ) {
-        var parentIndex = index - 1 >>> 1, parent = heap[parentIndex];
+      a: for (; 0 < index2; ) {
+        var parentIndex = index2 - 1 >>> 1, parent = heap[parentIndex];
         if (0 < compare(parent, node))
-          heap[parentIndex] = node, heap[index] = parent, index = parentIndex;
+          heap[parentIndex] = node, heap[index2] = parent, index2 = parentIndex;
         else break a;
       }
     }
@@ -535,12 +535,12 @@ function requireScheduler_production() {
       var first = heap[0], last = heap.pop();
       if (last !== first) {
         heap[0] = last;
-        a: for (var index = 0, length = heap.length, halfLength = length >>> 1; index < halfLength; ) {
-          var leftIndex = 2 * (index + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
+        a: for (var index2 = 0, length = heap.length, halfLength = length >>> 1; index2 < halfLength; ) {
+          var leftIndex = 2 * (index2 + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
           if (0 > compare(left, last))
-            rightIndex < length && 0 > compare(right, left) ? (heap[index] = right, heap[rightIndex] = last, index = rightIndex) : (heap[index] = left, heap[leftIndex] = last, index = leftIndex);
+            rightIndex < length && 0 > compare(right, left) ? (heap[index2] = right, heap[rightIndex] = last, index2 = rightIndex) : (heap[index2] = left, heap[leftIndex] = last, index2 = leftIndex);
           else if (rightIndex < length && 0 > compare(right, last))
-            heap[index] = right, heap[rightIndex] = last, index = rightIndex;
+            heap[index2] = right, heap[rightIndex] = last, index2 = rightIndex;
           else break a;
         }
       }
@@ -1130,16 +1130,16 @@ function requireReactDomClient_production() {
     data: null,
     method: null,
     action: null
-  }, valueStack = [], index = -1;
+  }, valueStack = [], index2 = -1;
   function createCursor(defaultValue) {
     return { current: defaultValue };
   }
   function pop(cursor) {
-    0 > index || (cursor.current = valueStack[index], valueStack[index] = null, index--);
+    0 > index2 || (cursor.current = valueStack[index2], valueStack[index2] = null, index2--);
   }
   function push(cursor, value2) {
-    index++;
-    valueStack[index] = cursor.current;
+    index2++;
+    valueStack[index2] = cursor.current;
     cursor.current = value2;
   }
   var contextStackCursor = createCursor(null), contextFiberStackCursor = createCursor(null), rootInstanceStackCursor = createCursor(null), hostTransitionProviderCursor = createCursor(null);
@@ -2817,7 +2817,7 @@ function requireReactDomClient_production() {
     treeForkProvider = workInProgress2;
     treeForkCount = totalChildren;
   }
-  function pushTreeId(workInProgress2, totalChildren, index2) {
+  function pushTreeId(workInProgress2, totalChildren, index3) {
     idStack[idStackIndex++] = treeContextId;
     idStack[idStackIndex++] = treeContextOverflow;
     idStack[idStackIndex++] = treeContextProvider;
@@ -2826,17 +2826,17 @@ function requireReactDomClient_production() {
     workInProgress2 = treeContextOverflow;
     var baseLength = 32 - clz32(baseIdWithLeadingBit) - 1;
     baseIdWithLeadingBit &= ~(1 << baseLength);
-    index2 += 1;
+    index3 += 1;
     var length = 32 - clz32(totalChildren) + baseLength;
     if (30 < length) {
       var numberOfOverflowBits = baseLength - baseLength % 5;
       length = (baseIdWithLeadingBit & (1 << numberOfOverflowBits) - 1).toString(32);
       baseIdWithLeadingBit >>= numberOfOverflowBits;
       baseLength -= numberOfOverflowBits;
-      treeContextId = 1 << 32 - clz32(totalChildren) + baseLength | index2 << baseLength | baseIdWithLeadingBit;
+      treeContextId = 1 << 32 - clz32(totalChildren) + baseLength | index3 << baseLength | baseIdWithLeadingBit;
       treeContextOverflow = length + workInProgress2;
     } else
-      treeContextId = 1 << length | index2 << baseLength | baseIdWithLeadingBit, treeContextOverflow = workInProgress2;
+      treeContextId = 1 << length | index3 << baseLength | baseIdWithLeadingBit, treeContextOverflow = workInProgress2;
   }
   function pushMaterializedTreeId(workInProgress2) {
     null !== workInProgress2.return && (pushTreeFork(workInProgress2, 1), pushTreeId(workInProgress2, 1, 0));
@@ -3222,9 +3222,9 @@ function requireReactDomClient_production() {
     thenable = thenable.status;
     return "fulfilled" === thenable || "rejected" === thenable;
   }
-  function trackUsedThenable(thenableState2, thenable, index2) {
-    index2 = thenableState2[index2];
-    void 0 === index2 ? thenableState2.push(thenable) : index2 !== thenable && (thenable.then(noop$1, noop$1), thenable = index2);
+  function trackUsedThenable(thenableState2, thenable, index3) {
+    index3 = thenableState2[index3];
+    void 0 === index3 ? thenableState2.push(thenable) : index3 !== thenable && (thenable.then(noop$1, noop$1), thenable = index3);
     switch (thenable.status) {
       case "fulfilled":
         return thenable.value;
@@ -3288,10 +3288,10 @@ function requireReactDomClient_production() {
   }
   var thenableState$1 = null, thenableIndexCounter$1 = 0;
   function unwrapThenable(thenable) {
-    var index2 = thenableIndexCounter$1;
+    var index3 = thenableIndexCounter$1;
     thenableIndexCounter$1 += 1;
     null === thenableState$1 && (thenableState$1 = []);
-    return trackUsedThenable(thenableState$1, thenable, index2);
+    return trackUsedThenable(thenableState$1, thenable, index3);
   }
   function coerceRef(workInProgress2, element) {
     element = element.props.ref;
@@ -4125,12 +4125,12 @@ function requireReactDomClient_production() {
     return { lastEffect: null, events: null, stores: null, memoCache: null };
   }
   function useThenable(thenable) {
-    var index2 = thenableIndexCounter;
+    var index3 = thenableIndexCounter;
     thenableIndexCounter += 1;
     null === thenableState && (thenableState = []);
-    thenable = trackUsedThenable(thenableState, thenable, index2);
-    index2 = currentlyRenderingFiber;
-    null === (null === workInProgressHook ? index2.memoizedState : workInProgressHook.next) && (index2 = index2.alternate, ReactSharedInternals.H = null === index2 || null === index2.memoizedState ? HooksDispatcherOnMount : HooksDispatcherOnUpdate);
+    thenable = trackUsedThenable(thenableState, thenable, index3);
+    index3 = currentlyRenderingFiber;
+    null === (null === workInProgressHook ? index3.memoizedState : workInProgressHook.next) && (index3 = index3.alternate, ReactSharedInternals.H = null === index3 || null === index3.memoizedState ? HooksDispatcherOnMount : HooksDispatcherOnUpdate);
     return thenable;
   }
   function use(usable) {
@@ -12522,11 +12522,11 @@ function warning(cond, message) {
 function createKey() {
   return Math.random().toString(36).substring(2, 10);
 }
-function getHistoryState(location2, index) {
+function getHistoryState(location2, index2) {
   return {
     usr: location2.state,
     key: location2.key,
-    idx: index
+    idx: index2
   };
 }
 function createLocation(current, to, state = null, key) {
@@ -12579,10 +12579,10 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options 
   let globalHistory = window2.history;
   let action = "POP";
   let listener = null;
-  let index = getIndex();
-  if (index == null) {
-    index = 0;
-    globalHistory.replaceState({ ...globalHistory.state, idx: index }, "");
+  let index2 = getIndex();
+  if (index2 == null) {
+    index2 = 0;
+    globalHistory.replaceState({ ...globalHistory.state, idx: index2 }, "");
   }
   function getIndex() {
     let state = globalHistory.state || { idx: null };
@@ -12591,8 +12591,8 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options 
   function handlePop() {
     action = "POP";
     let nextIndex = getIndex();
-    let delta = nextIndex == null ? null : nextIndex - index;
-    index = nextIndex;
+    let delta = nextIndex == null ? null : nextIndex - index2;
+    index2 = nextIndex;
     if (listener) {
       listener({ action, location: history.location, delta });
     }
@@ -12600,8 +12600,8 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options 
   function push(to, state) {
     action = "PUSH";
     let location2 = createLocation(history.location, to, state);
-    index = getIndex() + 1;
-    let historyState = getHistoryState(location2, index);
+    index2 = getIndex() + 1;
+    let historyState = getHistoryState(location2, index2);
     let url2 = history.createHref(location2);
     try {
       globalHistory.pushState(historyState, "", url2);
@@ -12618,8 +12618,8 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options 
   function replace2(to, state) {
     action = "REPLACE";
     let location2 = createLocation(history.location, to, state);
-    index = getIndex();
-    let historyState = getHistoryState(location2, index);
+    index2 = getIndex();
+    let historyState = getHistoryState(location2, index2);
     let url2 = history.createHref(location2);
     globalHistory.replaceState(historyState, "", url2);
     if (v5Compat && listener) {
@@ -12703,11 +12703,11 @@ function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
   return matches;
 }
 function flattenRoutes(routes, branches = [], parentsMeta = [], parentPath = "", _hasParentOptionalSegments = false) {
-  let flattenRoute = (route, index, hasParentOptionalSegments = _hasParentOptionalSegments, relativePath) => {
+  let flattenRoute = (route, index2, hasParentOptionalSegments = _hasParentOptionalSegments, relativePath) => {
     let meta = {
       relativePath: relativePath === void 0 ? route.path || "" : relativePath,
       caseSensitive: route.caseSensitive === true,
-      childrenIndex: index,
+      childrenIndex: index2,
       route
     };
     if (meta.relativePath.startsWith("/")) {
@@ -12746,12 +12746,12 @@ function flattenRoutes(routes, branches = [], parentsMeta = [], parentPath = "",
       routesMeta
     });
   };
-  routes.forEach((route, index) => {
+  routes.forEach((route, index2) => {
     if (route.path === "" || !route.path?.includes("?")) {
-      flattenRoute(route, index);
+      flattenRoute(route, index2);
     } else {
       for (let exploded of explodeOptionalSegments(route.path)) {
-        flattenRoute(route, index, true, exploded);
+        flattenRoute(route, index2, true, exploded);
       }
     }
   });
@@ -12795,13 +12795,13 @@ var emptySegmentValue = 1;
 var staticSegmentValue = 10;
 var splatPenalty = -2;
 var isSplat = (s2) => s2 === "*";
-function computeScore(path, index) {
+function computeScore(path, index2) {
   let segments = path.split("/");
   let initialScore = segments.length;
   if (segments.some(isSplat)) {
     initialScore += splatPenalty;
   }
-  if (index) {
+  if (index2) {
     initialScore += indexRouteValue;
   }
   return segments.filter((s2) => !isSplat(s2)).reduce(
@@ -12881,12 +12881,12 @@ function matchPath(pattern, pathname) {
   let pathnameBase = matchedPathname.replace(/(.)\/+$/, "$1");
   let captureGroups = match.slice(1);
   let params = compiledParams.reduce(
-    (memo2, { paramName, isOptional }, index) => {
+    (memo2, { paramName, isOptional }, index2) => {
       if (paramName === "*") {
-        let splatValue = captureGroups[index] || "";
+        let splatValue = captureGroups[index2] || "";
         pathnameBase = matchedPathname.slice(0, matchedPathname.length - splatValue.length).replace(/(.)\/+$/, "$1");
       }
-      const value2 = captureGroups[index];
+      const value2 = captureGroups[index2];
       if (isOptional && !value2) {
         memo2[paramName] = void 0;
       } else {
@@ -12993,7 +12993,7 @@ function getInvalidPathError(char, field, dest, path) {
 }
 function getPathContributingMatches(matches) {
   return matches.filter(
-    (match, index) => index === 0 || match.route.path && match.route.path.length > 0
+    (match, index2) => index2 === 0 || match.route.path && match.route.path.length > 0
   );
 }
 function getResolveToMatches(matches) {
@@ -13584,7 +13584,7 @@ function _renderMatches(matches, parentMatches = [], dataRouterState = null, onE
     });
   } : void 0;
   return renderedMatches.reduceRight(
-    (outlet, match, index) => {
+    (outlet, match, index2) => {
       let error;
       let shouldRenderHydrateFallback = false;
       let errorElement = null;
@@ -13593,7 +13593,7 @@ function _renderMatches(matches, parentMatches = [], dataRouterState = null, onE
         error = errors && match.route.id ? errors[match.route.id] : void 0;
         errorElement = match.route.errorElement || defaultErrorElement;
         if (renderFallback) {
-          if (fallbackIndex < 0 && index === 0) {
+          if (fallbackIndex < 0 && index2 === 0) {
             warningOnce(
               "route-fallback",
               false,
@@ -13601,13 +13601,13 @@ function _renderMatches(matches, parentMatches = [], dataRouterState = null, onE
             );
             shouldRenderHydrateFallback = true;
             hydrateFallbackElement = null;
-          } else if (fallbackIndex === index) {
+          } else if (fallbackIndex === index2) {
             shouldRenderHydrateFallback = true;
             hydrateFallbackElement = match.route.hydrateFallbackElement || null;
           }
         }
       }
-      let matches2 = parentMatches.concat(renderedMatches.slice(0, index + 1));
+      let matches2 = parentMatches.concat(renderedMatches.slice(0, index2 + 1));
       let getChildren = () => {
         let children;
         if (error) {
@@ -13634,7 +13634,7 @@ function _renderMatches(matches, parentMatches = [], dataRouterState = null, onE
           }
         );
       };
-      return dataRouterState && (match.route.ErrorBoundary || match.route.errorElement || index === 0) ? /* @__PURE__ */ reactExports.createElement(
+      return dataRouterState && (match.route.ErrorBoundary || match.route.errorElement || index2 === 0) ? /* @__PURE__ */ reactExports.createElement(
         RenderErrorBoundary,
         {
           location: dataRouterState.location,
@@ -13849,11 +13849,11 @@ function Routes({
 }
 function createRoutesFromChildren(children, parentPath = []) {
   let routes = [];
-  reactExports.Children.forEach(children, (element, index) => {
+  reactExports.Children.forEach(children, (element, index2) => {
     if (!reactExports.isValidElement(element)) {
       return;
     }
-    let treePath = [...parentPath, index];
+    let treePath = [...parentPath, index2];
     if (element.type === reactExports.Fragment) {
       routes.push.apply(
         routes,
@@ -14082,30 +14082,30 @@ async function getKeyedPrefetchLinks(matches, manifest, routeModules) {
   );
 }
 function getNewMatchesForLinks(page, nextMatches, currentMatches, manifest, location2, mode) {
-  let isNew = (match, index) => {
-    if (!currentMatches[index]) return true;
-    return match.route.id !== currentMatches[index].route.id;
+  let isNew = (match, index2) => {
+    if (!currentMatches[index2]) return true;
+    return match.route.id !== currentMatches[index2].route.id;
   };
-  let matchPathChanged = (match, index) => {
+  let matchPathChanged = (match, index2) => {
     return (
       // param change, /users/123 -> /users/456
-      currentMatches[index].pathname !== match.pathname || // splat param changed, which is not present in match.path
+      currentMatches[index2].pathname !== match.pathname || // splat param changed, which is not present in match.path
       // e.g. /files/images/avatar.jpg -> files/finances.xls
-      currentMatches[index].route.path?.endsWith("*") && currentMatches[index].params["*"] !== match.params["*"]
+      currentMatches[index2].route.path?.endsWith("*") && currentMatches[index2].params["*"] !== match.params["*"]
     );
   };
   if (mode === "assets") {
     return nextMatches.filter(
-      (match, index) => isNew(match, index) || matchPathChanged(match, index)
+      (match, index2) => isNew(match, index2) || matchPathChanged(match, index2)
     );
   }
   if (mode === "data") {
-    return nextMatches.filter((match, index) => {
+    return nextMatches.filter((match, index2) => {
       let manifestRoute = manifest.routes[match.route.id];
       if (!manifestRoute || !manifestRoute.hasLoader) {
         return false;
       }
-      if (isNew(match, index) || matchPathChanged(match, index)) {
+      if (isNew(match, index2) || matchPathChanged(match, index2)) {
         return true;
       }
       if (match.route.shouldRevalidate) {
@@ -15314,10 +15314,10 @@ function toFormData$1(obj, formData, options) {
         value2 = JSON.stringify(value2);
       } else if (utils$2.isArray(value2) && isFlatArray(value2) || (utils$2.isFileList(value2) || utils$2.endsWith(key, "[]")) && (arr = utils$2.toArray(value2))) {
         key = removeBrackets(key);
-        arr.forEach(function each(el, index) {
+        arr.forEach(function each(el, index2) {
           !(utils$2.isUndefined(el) || el === null) && formData.append(
             // eslint-disable-next-line no-nested-ternary
-            indexes === true ? renderKey([key], index, dots) : indexes === null ? key : key + "[]",
+            indexes === true ? renderKey([key], index2, dots) : indexes === null ? key : key + "[]",
             convertValue(el)
           );
         });
@@ -15548,11 +15548,11 @@ function arrayToObject(arr) {
   return obj;
 }
 function formDataToJSON(formData) {
-  function buildPath(path, value2, target, index) {
-    let name = path[index++];
+  function buildPath(path, value2, target, index2) {
+    let name = path[index2++];
     if (name === "__proto__") return true;
     const isNumericKey = Number.isFinite(+name);
-    const isLast = index >= path.length;
+    const isLast = index2 >= path.length;
     name = !name && utils$2.isArray(target) ? target.length : name;
     if (isLast) {
       if (utils$2.hasOwnProp(target, name)) {
@@ -15565,7 +15565,7 @@ function formDataToJSON(formData) {
     if (!target[name] || !utils$2.isObject(target[name])) {
       target[name] = [];
     }
-    const result = buildPath(path, value2, target[name], index);
+    const result = buildPath(path, value2, target[name], index2);
     if (result && utils$2.isArray(target[name])) {
       target[name] = arrayToObject(target[name]);
     }
@@ -17125,9 +17125,9 @@ let CancelToken$1 = class CancelToken {
     if (!this._listeners) {
       return;
     }
-    const index = this._listeners.indexOf(listener);
-    if (index !== -1) {
-      this._listeners.splice(index, 1);
+    const index2 = this._listeners.indexOf(listener);
+    if (index2 !== -1) {
+      this._listeners.splice(index2, 1);
     }
   }
   toAbortSignal() {
@@ -17307,8 +17307,12 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-const mergeClasses = (...classes) => classes.filter((className, index, array) => {
-  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
+const index = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: api
+}, Symbol.toStringTag, { value: "Module" }));
+const mergeClasses = (...classes) => classes.filter((className, index2, array) => {
+  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index2;
 }).join(" ").trim();
 const toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 const toCamelCase = (string) => string.replace(
@@ -18045,6 +18049,12 @@ const HEALTH_SAFETY_MESSAGE = `YOUR PASS MUST BE WORN AT ALL TIMES. PLEASE RETUR
 
 All visitors are subject to the Company's Health & Safety regulations. In case of fire/emergency please report to the evacuation points for a roll call. Smoking in designated areas only.`;
 const BRAND_BLUE = "#2b4594";
+const DEFAULT_GROUPS = [
+  { id: "visitor", name: "Visitor" },
+  { id: "employee", name: "Employee" },
+  { id: "delivery", name: "Delivery" },
+  { id: "contractor", name: "Contractor" }
+];
 const MobileForm = () => {
   const navigate = useNavigate();
   const [project, setProject] = reactExports.useState(null);
@@ -18084,7 +18094,24 @@ const MobileForm = () => {
   }, [navigate]);
   reactExports.useEffect(() => {
     if (!project?.id) return;
-    api.get("/visitor-groups", { params: { project_id: project.id } }).then((r) => setGroups(r.data || [])).catch(() => setGroups([]));
+    api.get("/visitor-groups", { params: { project_id: project.id } }).then((r) => {
+      const fromApi = Array.isArray(r.data) ? r.data : [];
+      const normalized = fromApi.map((g2) => ({
+        ...g2,
+        id: g2?.id || g2?._id || g2?.name,
+        name: g2?.name || "Visitor"
+      }));
+      const merged = [...DEFAULT_GROUPS, ...normalized].reduce((acc, g2) => {
+        const key = String(g2.name || "").trim().toLowerCase();
+        if (!key) return acc;
+        if (!acc.seen.has(key)) {
+          acc.seen.add(key);
+          acc.items.push(g2);
+        }
+        return acc;
+      }, { seen: /* @__PURE__ */ new Set(), items: [] }).items;
+      setGroups(merged);
+    }).catch(() => setGroups(DEFAULT_GROUPS));
   }, [project]);
   reactExports.useEffect(() => {
     if (!project?.id) return;
@@ -26607,9 +26634,9 @@ class PngDecoder extends IOBuffer {
       case DisposeOpType.BACKGROUND:
         for (let row = 0; row < this._png.height; row++) {
           for (let col = 0; col < this._png.width; col++) {
-            const index = (row * frame.width + col) * this._png.channels;
+            const index2 = (row * frame.width + col) * this._png.channels;
             for (let channel = 0; channel < this._png.channels; channel++) {
-              imageFrame.data[index + channel] = 0;
+              imageFrame.data[index2 + channel] = 0;
             }
           }
         }
@@ -26624,17 +26651,17 @@ class PngDecoder extends IOBuffer {
   addFrameDataToCanvas(imageFrame, frame) {
     const maxValue = 1 << this._png.depth;
     const calculatePixelIndices = (row, col) => {
-      const index = ((row + frame.yOffset) * this._png.width + frame.xOffset + col) * this._png.channels;
+      const index2 = ((row + frame.yOffset) * this._png.width + frame.xOffset + col) * this._png.channels;
       const frameIndex = (row * frame.width + col) * this._png.channels;
-      return { index, frameIndex };
+      return { index: index2, frameIndex };
     };
     switch (frame.blendOp) {
       case BlendOpType.SOURCE:
         for (let row = 0; row < frame.height; row++) {
           for (let col = 0; col < frame.width; col++) {
-            const { index, frameIndex } = calculatePixelIndices(row, col);
+            const { index: index2, frameIndex } = calculatePixelIndices(row, col);
             for (let channel = 0; channel < this._png.channels; channel++) {
-              imageFrame.data[index + channel] = frame.data[frameIndex + channel];
+              imageFrame.data[index2 + channel] = frame.data[frameIndex + channel];
             }
           }
         }
@@ -26643,12 +26670,12 @@ class PngDecoder extends IOBuffer {
       case BlendOpType.OVER:
         for (let row = 0; row < frame.height; row++) {
           for (let col = 0; col < frame.width; col++) {
-            const { index, frameIndex } = calculatePixelIndices(row, col);
+            const { index: index2, frameIndex } = calculatePixelIndices(row, col);
             for (let channel = 0; channel < this._png.channels; channel++) {
               const sourceAlpha = frame.data[frameIndex + this._png.channels - 1] / maxValue;
               const foregroundValue = channel % (this._png.channels - 1) === 0 ? 1 : frame.data[frameIndex + channel];
-              const value2 = Math.floor(sourceAlpha * foregroundValue + (1 - sourceAlpha) * imageFrame.data[index + channel]);
-              imageFrame.data[index + channel] += value2;
+              const value2 = Math.floor(sourceAlpha * foregroundValue + (1 - sourceAlpha) * imageFrame.data[index2 + channel]);
+              imageFrame.data[index2 + channel] += value2;
             }
           }
         }
@@ -33159,7 +33186,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-7sAKeSYz.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DqM5ixTq.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -38859,7 +38886,7 @@ function parse_BrtColor(data) {
   var out = {};
   var d2 = data.read_shift(1);
   var xColorType = d2 >>> 1;
-  var index = data.read_shift(1);
+  var index2 = data.read_shift(1);
   var nTS = data.read_shift(2, "i");
   var bR = data.read_shift(1);
   var bG = data.read_shift(1);
@@ -38870,15 +38897,15 @@ function parse_BrtColor(data) {
       out.auto = 1;
       break;
     case 1:
-      out.index = index;
-      var icv = XLSIcv[index];
+      out.index = index2;
+      var icv = XLSIcv[index2];
       if (icv) out.rgb = rgb2Hex(icv);
       break;
     case 2:
       out.rgb = rgb2Hex([bR, bG, bB]);
       break;
     case 3:
-      out.theme = index;
+      out.theme = index2;
       break;
   }
   if (nTS != 0) out.tint = nTS > 0 ? nTS / 32767 : nTS / 32768;
@@ -66260,6 +66287,7 @@ const AdminLayout = () => {
   const [supportOpen, setSupportOpen] = reactExports.useState(false);
   const [manageOpen, setManageOpen] = reactExports.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = reactExports.useState(false);
+  const [pendingCount, setPendingCount] = reactExports.useState(0);
   const profileRef = reactExports.useRef(null);
   const supportRef = reactExports.useRef(null);
   const manageRef = reactExports.useRef(null);
@@ -66268,6 +66296,22 @@ const AdminLayout = () => {
   reactExports.useEffect(() => {
     setMobileMenuOpen(false);
   }, [location2.pathname]);
+  reactExports.useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const { default: api2 } = await __vitePreload(async () => {
+          const { default: api3 } = await Promise.resolve().then(() => index);
+          return { default: api3 };
+        }, true ? void 0 : void 0);
+        const res = await api2.get("/guards/members?status=Pending");
+        setPendingCount((res.data || []).length);
+      } catch {
+      }
+    };
+    fetchPending();
+    const interval = setInterval(fetchPending, 3e4);
+    return () => clearInterval(interval);
+  }, []);
   const firstName = localStorage.getItem("adminFirstName") || "";
   const lastName = localStorage.getItem("adminLastName") || "";
   const adminEmail = localStorage.getItem("admin_remember_email") || "";
@@ -66413,6 +66457,21 @@ const AdminLayout = () => {
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18, strokeWidth: 1.75 }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Evacuation" })
+              ]
+            }
+          ),
+          pendingCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            NavLink,
+            {
+              to: "/admin/people",
+              className: "relative flex flex-col items-center justify-center gap-0.5 text-amber-600 hover:text-amber-700 transition-colors",
+              title: `${pendingCount} pending approval${pendingCount > 1 ? "s" : ""}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Bell, { size: 18, strokeWidth: 1.75 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1", children: pendingCount })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Approvals" })
               ]
             }
           ),
@@ -66574,12 +66633,39 @@ const AdminLayout = () => {
               " Support"
             ]
           }
-        )
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 mt-2 border-t border-slate-200 space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            NavLink,
+            {
+              to: "/admin/profile",
+              className: ({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-[#2b4594]/10 text-[#2b4594]" : "text-slate-600 hover:bg-slate-50"}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 18 }),
+                " Profile"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => {
+                setMobileMenuOpen(false);
+                handleLogout();
+              },
+              className: "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold text-slate-600 hover:bg-slate-50",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 18 }),
+                " Log out"
+              ]
+            }
+          )
+        ] })
       ] }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 overflow-auto relative", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed bottom-6 right-6 z-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-10 h-10 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-full shadow-lg flex items-center justify-center transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 18 }) }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed bottom-6 right-6 z-50 hidden sm:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-10 h-10 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-full shadow-lg flex items-center justify-center transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { size: 18 }) }) })
     ] })
   ] });
 };
@@ -68130,7 +68216,7 @@ const ActivityPage = () => {
   const PERSONAL_FIELD_COLS = ["Email", "Mobile", "Role"];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full overflow-auto bg-slate-50", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Fe$1, { position: "top-right" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-7xl flex-col gap-6 px-8 pt-12 pb-8", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-8 pt-8 pb-8", children: [
       sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex flex-col items-center gap-4 text-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 rounded-full bg-[#2b4594]/10 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "28", height: "28", viewBox: "0 0 24 24", fill: "none", stroke: "#2b4594", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" }),
@@ -68154,7 +68240,7 @@ const ActivityPage = () => {
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl font-semibold tracking-tight text-slate-800", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-slate-800", children: [
           "Hi ",
           adminName,
           ", here's the latest at"
@@ -68398,7 +68484,7 @@ const ActivityPage = () => {
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-x-auto", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative rounded-2xl border border-slate-200 bg-white shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-x-auto", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[900px] text-left text-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-10 px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -68532,7 +68618,7 @@ const ActivityPage = () => {
             )
           ] }),
           loadingVisits && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-12 text-center text-sm text-slate-500", children: "Loading visits..." })
-        ] })
+        ] }) })
       ] }),
       activeTab === "prereg" && selectedSiteId && /* @__PURE__ */ jsxRuntimeExports.jsx(
         PreRegTab,
@@ -69301,20 +69387,20 @@ const qrcode = function(typeNumber, errorCorrectionLevel) {
       totalCodeCount += rsBlocks[i2].totalCount;
     }
     const data = new Array(totalCodeCount);
-    let index = 0;
+    let index2 = 0;
     for (let i2 = 0; i2 < maxDcCount; i2 += 1) {
       for (let r = 0; r < rsBlocks.length; r += 1) {
         if (i2 < dcdata[r].length) {
-          data[index] = dcdata[r][i2];
-          index += 1;
+          data[index2] = dcdata[r][i2];
+          index2 += 1;
         }
       }
     }
     for (let i2 = 0; i2 < maxEcCount; i2 += 1) {
       for (let r = 0; r < rsBlocks.length; r += 1) {
         if (i2 < ecdata[r].length) {
-          data[index] = ecdata[r][i2];
-          index += 1;
+          data[index2] = ecdata[r][i2];
+          index2 += 1;
         }
       }
     }
@@ -69985,8 +70071,8 @@ const qrPolynomial = function(num, shift) {
     return _num2;
   })();
   const _this = {};
-  _this.getAt = function(index) {
-    return _num[index];
+  _this.getAt = function(index2) {
+    return _num[index2];
   };
   _this.getLength = function() {
     return _num.length;
@@ -70270,9 +70356,9 @@ const qrBitBuffer = function() {
   _this.getBuffer = function() {
     return _buffer;
   };
-  _this.getAt = function(index) {
-    const bufIndex = Math.floor(index / 8);
-    return (_buffer[bufIndex] >>> 7 - index % 8 & 1) == 1;
+  _this.getAt = function(index2) {
+    const bufIndex = Math.floor(index2 / 8);
+    return (_buffer[bufIndex] >>> 7 - index2 % 8 & 1) == 1;
   };
   _this.put = function(num, length) {
     for (let i2 = 0; i2 < length; i2 += 1) {
@@ -75616,13 +75702,13 @@ const SupportPage = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setShowChat(false), className: "text-slate-700 hover:text-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 16 }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-h-64 flex-1 space-y-2 overflow-y-auto p-3", children: [
-        messages2.map((message, index) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `flex ${message.from === "user" ? "justify-end" : "justify-start"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        messages2.map((message, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `flex ${message.from === "user" ? "justify-end" : "justify-start"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             className: `max-w-[85%] rounded-lg px-3 py-2 text-sm ${message.from === "user" ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-700"}`,
             children: message.text
           }
-        ) }, `${message.from}-${index}`)),
+        ) }, `${message.from}-${index2}`)),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: sendMessage, className: "flex gap-2 border-t border-slate-200 p-3", children: [

@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ActivityIndicator,
-    ScrollView, Alert, Image, Animated, StatusBar
+    ScrollView, Alert, Image, Animated, StatusBar, Modal, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shield, Mail, Lock, User, Phone, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
+import { Shield, Mail, Lock, User, Phone, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle, Building2, ChevronDown } from 'lucide-react-native';
 import api from '../services/api';
 
 const GuardSignup = ({ navigation }) => {
@@ -13,33 +13,36 @@ const GuardSignup = ({ navigation }) => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
-    // Focus states
+    const [sites, setSites] = useState([]);
+    const [selectedSite, setSelectedSite] = useState(null);
+    const [siteModalOpen, setSiteModalOpen] = useState(false);
     const [focus, setFocus] = useState({ name: false, email: false, phone: false, password: false, confirm: false });
+
+    useEffect(() => {
+        // Load available sites/companies for registration
+        api.get('/projects').then(r => setSites(r.data || [])).catch(() => setSites([]));
+    }, []);
 
     const handleSignup = async () => {
         const { name, email, password, confirmPassword } = formData;
-        if (!name || !email || !password || !confirmPassword) {
-            setError('All fields are required');
-            return;
-        }
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters');
-            return;
-        }
+        if (!name || !email || !password || !confirmPassword) { setError('All fields are required'); return; }
+        if (password !== confirmPassword) { setError('Passwords do not match'); return; }
+        if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
         setLoading(true);
         setError('');
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanName = name.trim();
         try {
-            await api.post('/guards/signup', { name: cleanName, email: cleanEmail, password, phone: formData.phone.trim() || undefined });
-            Alert.alert('Account Created!', 'You can now sign in with your credentials.', [
-                { text: 'Sign In', onPress: () => navigation.navigate('GuardLogin') }
-            ]);
+            await api.post('/guards/signup', {
+                name: name.trim(),
+                email: email.trim().toLowerCase(),
+                password,
+                phone: formData.phone.trim() || undefined,
+                project_id: selectedSite?.id || undefined,
+            });
+            Alert.alert(
+                'Account Created!',
+                'Your account is pending manager approval. You will be able to log in once approved.',
+                [{ text: 'OK', onPress: () => navigation.navigate('GuardLogin') }]
+            );
         } catch (err) {
             setError(err.response?.data?.error || 'Registration failed. Please try again.');
         } finally {
@@ -148,6 +151,59 @@ const GuardSignup = ({ navigation }) => {
                     borderColor: '#e2e8f0',
                     marginBottom: 20,
                 }}>
+                {/* Company / Site selector */}
+                    <View style={{ marginBottom: 16 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>
+                            Company / Site *
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => setSiteModalOpen(true)}
+                            style={{
+                                flexDirection: 'row', alignItems: 'center',
+                                borderWidth: 2, borderColor: selectedSite ? '#2b4594' : '#e2e8f0',
+                                borderRadius: 14, backgroundColor: selectedSite ? '#f0f4ff' : '#f8fafc',
+                                paddingHorizontal: 16, paddingVertical: 14,
+                            }}
+                        >
+                            <Building2 size={18} color={selectedSite ? '#2b4594' : '#94a3b8'} />
+                            <Text style={{ flex: 1, marginLeft: 12, fontSize: 15, color: selectedSite ? '#0f172a' : '#c8d0dc', fontWeight: selectedSite ? '600' : '400' }}>
+                                {selectedSite ? selectedSite.name : 'Select your company / site'}
+                            </Text>
+                            <ChevronDown size={16} color="#94a3b8" />
+                        </TouchableOpacity>
+                        {/* Site picker modal */}
+                        <Modal visible={siteModalOpen} transparent animationType="slide" onRequestClose={() => setSiteModalOpen(false)}>
+                            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+                                <View style={{ backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 40, maxHeight: '60%' }}>
+                                    <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+                                        <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select Company / Site</Text>
+                                    </View>
+                                    <FlatList
+                                        data={sites}
+                                        keyExtractor={item => item.id}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                onPress={() => { setSelectedSite(item); setSiteModalOpen(false); }}
+                                                style={{ paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                                            >
+                                                <Text style={{ fontSize: 16, color: selectedSite?.id === item.id ? '#2b4594' : '#111827', fontWeight: selectedSite?.id === item.id ? '700' : '400' }}>{item.name}</Text>
+                                                {selectedSite?.id === item.id && <CheckCircle size={18} color="#2b4594" />}
+                                            </TouchableOpacity>
+                                        )}
+                                        ListEmptyComponent={
+                                            <View style={{ padding: 24, alignItems: 'center' }}>
+                                                <Text style={{ color: '#9ca3af', fontSize: 14 }}>No sites found. Contact your administrator.</Text>
+                                            </View>
+                                        }
+                                    />
+                                    <TouchableOpacity onPress={() => setSiteModalOpen(false)} style={{ margin: 16, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 15, fontWeight: '600', color: '#6b7280' }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+                    </View>
+
                     {/* Full Name */}
                     <View style={{ marginBottom: 16 }}>
                         <Text style={{ fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8, marginLeft: 2 }}>

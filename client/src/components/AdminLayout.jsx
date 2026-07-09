@@ -13,6 +13,7 @@ const AdminLayout = () => {
   const [supportOpen, setSupportOpen] = useState(false);
   const [manageOpen,  setManageOpen]  = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const profileRef    = useRef(null);
   const supportRef    = useRef(null);
   const manageRef     = useRef(null);
@@ -22,6 +23,20 @@ const AdminLayout = () => {
 
   // Close mobile menu on route change
   useEffect(() => { setMobileMenuOpen(false); }, [location.pathname]);
+
+  // Poll for pending guard approvals every 30 seconds
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const { default: api } = await import('../api');
+        const res = await api.get('/guards/members?status=Pending');
+        setPendingCount((res.data || []).length);
+      } catch { /* silently fail */ }
+    };
+    fetchPending();
+    const interval = setInterval(fetchPending, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const firstName    = localStorage.getItem('adminFirstName') || '';
   const lastName     = localStorage.getItem('adminLastName')  || '';
@@ -150,6 +165,22 @@ const AdminLayout = () => {
               <ShieldCheck size={18} strokeWidth={1.75} />
               <span className="text-[10px] font-semibold">Evacuation</span>
             </NavLink>
+
+            {/* Pending approvals bell — only shows when there are pending guards */}
+            {pendingCount > 0 && (
+              <NavLink to="/admin/people"
+                className="relative flex flex-col items-center justify-center gap-0.5 text-amber-600 hover:text-amber-700 transition-colors"
+                title={`${pendingCount} pending approval${pendingCount > 1 ? 's' : ''}`}
+              >
+                <div className="relative">
+                  <Bell size={18} strokeWidth={1.75} />
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                    {pendingCount}
+                  </span>
+                </div>
+                <span className="text-[10px] font-semibold">Approvals</span>
+              </NavLink>
+            )}
 
             <div className="relative" ref={supportRef}>
               <button onClick={() => setSupportOpen(o => !o)}
