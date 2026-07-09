@@ -517,7 +517,7 @@ function makeDefaultSignOutFields(groups) {
 
 // ── Site settings view (tabbed) — v2 ─────────────────────────────────────────
 function SiteSettings({ site, groups, onBack, onDeleted }) {
-  const TABS = ['Details','Sign in & out flow','Devices & QR posters','Evacuation setup','On-site report','Privacy'];
+  const TABS = ['Details','Tablet display','Sign in & out flow','Devices & QR posters','Evacuation setup','On-site report','Privacy'];
   const [tab, setTab]               = useState('Details');
   const [siteName, setSiteName]     = useState(site.name);
   const [advOpen, setAdvOpen]       = useState(false);
@@ -550,6 +550,15 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [allSites, setAllSites] = useState([site]);
   const [currentSite, setCurrentSite] = useState(site);
   const [saving, setSaving] = useState(false);
+
+  // ── Tablet display state ─────────────────────────────────
+  const [tabletLogo, setTabletLogo]                 = useState(null); // base64 data url
+  const [tabletWelcome, setTabletWelcome]           = useState('Welcome');
+  const [tabletSubtitle, setTabletSubtitle]         = useState('Please sign in below');
+  const [tabletTheme, setTabletTheme]               = useState('#2b4594');
+  const [tabletScreensaver, setTabletScreensaver]   = useState(true);
+  const [tabletScreensaverMins, setTabletScreensaverMins] = useState(5);
+  const [tabletSaving, setTabletSaving]             = useState(false);
 
   useEffect(() => {
     api.get('/projects').then(r => setAllSites(r.data || [site])).catch(() => {});
@@ -917,6 +926,248 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
               ))}</tbody></table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── TABLET DISPLAY TAB ──────────────────────────────── */}
+      {tab === 'Tablet display' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          {/* Left column — settings */}
+          <div className="space-y-6">
+
+            {/* Branding */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
+              <h2 className="text-base font-bold text-slate-800">Branding</h2>
+
+              {/* Logo upload */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Logo</label>
+                <div className="flex items-center gap-4">
+                  {tabletLogo
+                    ? <img src={tabletLogo} alt="logo" className="h-16 w-16 rounded-xl object-contain border border-slate-200 bg-white p-1" />
+                    : <div className="h-16 w-16 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 text-xs text-center leading-tight">No logo</div>
+                  }
+                  <div className="flex flex-col gap-2">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = ev => setTabletLogo(ev.target.result);
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                      Upload logo
+                    </label>
+                    {tabletLogo && (
+                      <button
+                        type="button"
+                        onClick={() => setTabletLogo(null)}
+                        className="text-xs text-red-500 hover:underline text-left"
+                      >
+                        Remove logo
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-slate-400">PNG or JPG recommended. Displays at the top of the tablet sign-in screen.</p>
+              </div>
+
+              {/* Theme colour */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Theme colour</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={tabletTheme}
+                    onChange={e => setTabletTheme(e.target.value)}
+                    className="h-10 w-10 cursor-pointer rounded-lg border border-slate-300 p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={tabletTheme}
+                    onChange={e => setTabletTheme(e.target.value)}
+                    className="w-32 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]"
+                    placeholder="#2b4594"
+                  />
+                  {/* Quick presets */}
+                  <div className="flex gap-2">
+                    {['#2b4594','#16a34a','#dc2626','#7c3aed','#0891b2','#ea580c'].map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        title={c}
+                        onClick={() => setTabletTheme(c)}
+                        className="h-7 w-7 rounded-full border-2 transition-transform hover:scale-110"
+                        style={{ background: c, borderColor: tabletTheme === c ? '#1e293b' : 'transparent' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Welcome message */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+              <h2 className="text-base font-bold text-slate-800">Welcome message</h2>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Heading</label>
+                <input
+                  value={tabletWelcome}
+                  onChange={e => setTabletWelcome(e.target.value)}
+                  maxLength={60}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+                  placeholder="Welcome"
+                />
+                <p className="mt-1 text-xs text-slate-400">{tabletWelcome.length}/60 characters</p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Subtitle</label>
+                <input
+                  value={tabletSubtitle}
+                  onChange={e => setTabletSubtitle(e.target.value)}
+                  maxLength={100}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+                  placeholder="Please sign in below"
+                />
+                <p className="mt-1 text-xs text-slate-400">{tabletSubtitle.length}/100 characters</p>
+              </div>
+            </div>
+
+            {/* Screensaver */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-bold text-slate-800">Screensaver</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Dims the tablet after a period of inactivity</p>
+                </div>
+                <div
+                  onClick={() => setTabletScreensaver(v => !v)}
+                  className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? 'bg-[#2b4594]' : 'bg-slate-300'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? 'translate-x-6' : 'translate-x-1'}`} />
+                </div>
+              </div>
+              {tabletScreensaver && (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Idle timeout (minutes)</label>
+                  <select
+                    value={tabletScreensaverMins}
+                    onChange={e => setTabletScreensaverMins(Number(e.target.value))}
+                    className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+                  >
+                    {[1, 2, 5, 10, 15, 30].map(m => (
+                      <option key={m} value={m}>{m} minute{m !== 1 ? 's' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                disabled={tabletSaving}
+                onClick={async () => {
+                  setTabletSaving(true);
+                  // Persist to site settings via a generic key-value store on the site
+                  try {
+                    await api.put(`/projects/${currentSite.id}`, {
+                      name: currentSite.name,
+                      code: currentSite.code,
+                      tabletSettings: {
+                        logo: tabletLogo,
+                        welcome: tabletWelcome,
+                        subtitle: tabletSubtitle,
+                        theme: tabletTheme,
+                        screensaver: tabletScreensaver,
+                        screensaverMins: tabletScreensaverMins,
+                      },
+                    });
+                    // Persist locally too so public kiosk can read it
+                    localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
+                      logo: tabletLogo,
+                      welcome: tabletWelcome,
+                      subtitle: tabletSubtitle,
+                      theme: tabletTheme,
+                      screensaver: tabletScreensaver,
+                      screensaverMins: tabletScreensaverMins,
+                    }));
+                  } catch { /* silently store locally */ }
+                  finally { setTabletSaving(false); }
+                  // Always save to localStorage as fallback
+                  localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
+                    logo: tabletLogo,
+                    welcome: tabletWelcome,
+                    subtitle: tabletSubtitle,
+                    theme: tabletTheme,
+                    screensaver: tabletScreensaver,
+                    screensaverMins: tabletScreensaverMins,
+                  }));
+                  toast.success('Tablet display settings saved');
+                  setTabletSaving(false);
+                }}
+                className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold"
+              >
+                {tabletSaving ? 'Saving…' : 'Save changes'}
+              </button>
+            </div>
+          </div>
+
+          {/* Right column — live preview */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-base font-bold text-slate-800">Preview</h2>
+            <div
+              className="rounded-2xl overflow-hidden shadow-xl border border-slate-200 aspect-[3/4] flex flex-col"
+              style={{ background: tabletTheme }}
+            >
+              {/* Header bar */}
+              <div className="flex items-center justify-center pt-8 pb-4 px-6">
+                {tabletLogo
+                  ? <img src={tabletLogo} alt="logo" className="h-14 object-contain" />
+                  : (
+                    <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/>
+                      </svg>
+                    </div>
+                  )
+                }
+              </div>
+
+              {/* Welcome text */}
+              <div className="text-center px-6 pb-6">
+                <p className="text-2xl font-bold text-white truncate">{tabletWelcome || 'Welcome'}</p>
+                <p className="text-sm text-white/70 mt-1 truncate">{tabletSubtitle || 'Please sign in below'}</p>
+              </div>
+
+              {/* Mock sign-in card */}
+              <div className="mx-4 flex-1 bg-white rounded-2xl p-5 flex flex-col gap-3">
+                <div className="h-3 bg-slate-100 rounded-full w-1/3" />
+                <div className="h-8 bg-slate-100 rounded-lg" />
+                <div className="h-3 bg-slate-100 rounded-full w-1/3 mt-2" />
+                <div className="h-8 bg-slate-100 rounded-lg" />
+                <div className="flex-1" />
+                <div
+                  className="h-10 rounded-lg flex items-center justify-center"
+                  style={{ background: tabletTheme }}
+                >
+                  <span className="text-white text-sm font-bold">Sign in</span>
+                </div>
+              </div>
+
+              {/* Bottom bar */}
+              <div className="h-6 flex items-center justify-center">
+                <div className="w-12 h-1.5 rounded-full bg-white/30" />
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 text-center">This is how your tablet sign-in screen will look</p>
+          </div>
         </div>
       )}
 
