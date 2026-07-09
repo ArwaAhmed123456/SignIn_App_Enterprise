@@ -168,6 +168,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         notes: notes.trim(),
         expectedDate: `${arrivalDate}T${arrivalTime}`,
         visitorGroupId: selectedGroupId,
+        visitorGroupName: selectedGroup?.name || undefined,
         sendInvitation: sendInvite,
       });
 
@@ -340,7 +341,8 @@ const s = StyleSheet.create({
   },
   backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#111827' },
-  formWrap: { padding: 20, paddingBottom: 40 },
+  // Extra bottom padding so the submit button isn't hidden behind the tab bar on smaller screens
+  formWrap: { padding: 20, paddingBottom: 120 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 16 },
   inputGroup: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 6 },

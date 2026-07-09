@@ -285,6 +285,24 @@ const AdminLayout = () => {
                 }>
                 <HelpCircle size={18} /> Support
               </NavLink>
+
+              {/* Account shortcuts (mobile) */}
+              <div className="pt-2 mt-2 border-t border-slate-200 space-y-1">
+                <NavLink to="/admin/profile"
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${
+                      isActive ? 'bg-[#2b4594]/10 text-[#2b4594]' : 'text-slate-600 hover:bg-slate-50'
+                    }`
+                  }>
+                  <User size={18} /> Profile
+                </NavLink>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  <LogOut size={18} /> Log out
+                </button>
+              </div>
             </nav>
           </div>
         )}
@@ -293,7 +311,7 @@ const AdminLayout = () => {
       {/* ── Page content ─────────────────────────────────────────── */}
       <main className="flex-1 overflow-auto relative">
         <Outlet />
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-6 right-6 z-50 hidden sm:block">
           <button className="w-10 h-10 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-full shadow-lg flex items-center justify-center transition-colors">
             <MessageSquare size={18} />
           </button>

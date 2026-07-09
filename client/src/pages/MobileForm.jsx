@@ -13,6 +13,13 @@ All visitors are subject to the Company's Health & Safety regulations. In case o
 
 const BRAND_BLUE = '#2b4594';
 
+const DEFAULT_GROUPS = [
+    { id: 'visitor', name: 'Visitor' },
+    { id: 'employee', name: 'Employee' },
+    { id: 'delivery', name: 'Delivery' },
+    { id: 'contractor', name: 'Contractor' },
+];
+
 const MobileForm = () => {
     const navigate = useNavigate();
     const [project, setProject] = useState(null);
@@ -57,8 +64,29 @@ const MobileForm = () => {
     useEffect(() => {
         if (!project?.id) return;
         api.get('/visitor-groups', { params: { project_id: project.id } })
-            .then(r => setGroups(r.data || []))
-            .catch(() => setGroups([]));
+            .then(r => {
+                const fromApi = Array.isArray(r.data) ? r.data : [];
+                const normalized = fromApi.map(g => ({
+                    ...g,
+                    id: g?.id || g?._id || g?.name,
+                    name: g?.name || 'Visitor'
+                }));
+
+                // Ensure the group selection always offers the common options,
+                // even if the database only has a single custom group (e.g. "Guard").
+                const merged = [...DEFAULT_GROUPS, ...normalized].reduce((acc, g) => {
+                    const key = String(g.name || '').trim().toLowerCase();
+                    if (!key) return acc;
+                    if (!acc.seen.has(key)) {
+                        acc.seen.add(key);
+                        acc.items.push(g);
+                    }
+                    return acc;
+                }, { seen: new Set(), items: [] }).items;
+
+                setGroups(merged);
+            })
+            .catch(() => setGroups(DEFAULT_GROUPS));
     }, [project]);
 
     // ── Load members for the visiting dropdown ───────────────────────

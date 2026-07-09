@@ -15,9 +15,10 @@ const verifyAdmin = (req, res, next) => {
   if (!auth) return res.status(403).json({ error: 'No token provided' });
   try {
     const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
-    if (!['admin', 'superadmin', 'guard', 'manager'].includes(d.role))
+    const role = String(d.role || '').toLowerCase();
+    if (!['admin', 'superadmin', 'guard', 'manager'].includes(role))
       return res.status(403).json({ error: 'Access denied' });
-    req.user = d;
+    req.user = { ...d, role };
     next();
   } catch { res.status(401).json({ error: 'Unauthorized' }); }
 };

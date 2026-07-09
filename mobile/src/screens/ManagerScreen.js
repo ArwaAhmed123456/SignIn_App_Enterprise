@@ -6,22 +6,27 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, Users, X } from 'lucide-react-native';
+import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
 import {
   getAccessibleSites,
+  getPendingGuards,
   getPreRegistrations,
+  getPresentGuards,
+  updateGuardApproval,
   getVisits,
   getVisitStats,
 } from '../services/enterprisePortal';
 
-const TABS = ['Overview', 'On Site', 'Signed Out', 'Notifications'];
+const TABS = ['Overview', 'On Site', 'Signed Out', 'Notifications', 'Guards'];
 
 const fmtTime = (value) => {
   if (!value) return '—';
@@ -54,11 +59,14 @@ const ManagerScreen = () => {
   const [onSite, setOnSite] = useState([]);
   const [signedOut, setSignedOut] = useState([]);
   const [expected, setExpected] = useState([]);
+  const [pendingGuards, setPendingGuards] = useState([]);
+  const [presentGuards, setPresentGuards] = useState([]);
   const [counts, setCounts] = useState({ total: 0, visitors: 0, employees: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifOn, setNotifOn] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [updatingApproval, setUpdatingApproval] = useState(null);
 
   const managerName = user?.name || user?.firstName || 'Manager';
 
@@ -66,16 +74,20 @@ const ManagerScreen = () => {
     const siteId = siteIdOverride || selectedSite?.id;
     if (!siteId) return;
 
-    const [currentVisits, signedOutVisits, preRegistered, stats] = await Promise.all([
+    const [currentVisits, signedOutVisits, preRegistered, stats, pending, present] = await Promise.all([
       getVisits({ siteId, status: 'In' }).catch(() => []),
       getVisits({ siteId, status: 'Out' }).catch(() => []),
       getPreRegistrations({ siteId, status: 'Pending' }).catch(() => []),
       getVisitStats(siteId).catch(() => ({ totalIn: 0, visitorsIn: 0, employeesIn: 0 })),
+      getPendingGuards({ siteId }).catch(() => []),
+      getPresentGuards({ siteId }).catch(() => []),
     ]);
 
     setOnSite(currentVisits);
     setSignedOut(signedOutVisits);
     setExpected(preRegistered);
+    setPendingGuards(pending);
+    setPresentGuards(present);
     setCounts({
       total: stats.totalIn || currentVisits.length,
       visitors: stats.visitorsIn || currentVisits.filter((visit) => !String(visit.group).toLowerCase().includes('employee')).length,
@@ -120,9 +132,54 @@ const ManagerScreen = () => {
     try { return new Date(val).toLocaleString('en-GB'); } catch { return val; }
   };
 
-  const buildCSV = (rows, headers) => {
-    const esc = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
-    return [headers.map(esc).join(','), ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\n');
+  const safeFilename = (name) =>
+    String(name || 'export')
+      .replace(/[\\/:*?"<>|]+/g, '-')
+      .replace(/\s+/g, '_')
+      .slice(0, 140);
+
+  const escapeHtml = (value) =>
+    String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+  const buildHtmlTable = (rows, headers) => {
+    const th = headers.map((h) => `<th style="text-align:left;padding:10px;border:1px solid #e5e7eb;background:#f8fafc">${escapeHtml(h)}</th>`).join('');
+    const tr = rows
+      .map((r) => `<tr>${headers.map((h) => `<td style="padding:10px;border:1px solid #e5e7eb">${escapeHtml(r[h])}</td>`).join('')}</tr>`)
+      .join('');
+    return `<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
+  };
+
+  const shareExcel = async ({ title, headers, rows, filenameBase }) => {
+    const table = buildHtmlTable(rows, headers);
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><h2 style="font-family:Arial,sans-serif">${escapeHtml(title)}</h2>${table}</body></html>`;
+    const uri = `${FileSystem.cacheDirectory}${safeFilename(filenameBase)}.xls`;
+    await FileSystem.writeAsStringAsync(uri, html, { encoding: FileSystem.EncodingType.UTF8 });
+    await Sharing.shareAsync(uri, {
+      mimeType: 'application/vnd.ms-excel',
+      dialogTitle: 'Export (Excel)',
+    });
+  };
+
+  const sharePdf = async ({ title, headers, rows, filenameBase }) => {
+    const table = buildHtmlTable(rows, headers);
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8" />
+      <style>
+        body{font-family:Arial,sans-serif;padding:24px;color:#111827}
+        h2{margin:0 0 12px 0}
+        p{margin:0 0 18px 0;color:#6b7280}
+      </style>
+    </head><body><h2>${escapeHtml(title)}</h2><p>Generated: ${escapeHtml(new Date().toLocaleString('en-GB'))}</p>${table}</body></html>`;
+    const { uri } = await Print.printToFileAsync({ html });
+    await Sharing.shareAsync(uri, {
+      mimeType: 'application/pdf',
+      dialogTitle: 'Export (PDF)',
+      UTI: 'com.adobe.pdf',
+    });
   };
 
   const handleExport = async (format) => {
@@ -138,45 +195,44 @@ const ManagerScreen = () => {
     try {
       const siteName = selectedSite?.name || 'Site';
       const dateStr  = new Date().toLocaleDateString('en-GB');
+      const title = `Manager Report — ${siteName} — ${activeTab}`;
+      const filenameBase = `${siteName}-${activeTab}-${dateStr}`;
 
-      if (format === 'csv') {
-        const headers = activeTab === 'Notifications'
-          ? ['Name', 'Group', 'Sign In', 'Checked in by']
-          : ['Name', 'Group', 'Sign In', 'Sign Out'];
-        const rows = list.map(item => ({
-          Name:           item.name || '',
-          Group:          item.group || '',
-          'Sign In':      fmtExportTime(item.sign_in_time || item.expected_date),
-          'Sign Out':     fmtExportTime(item.sign_out_time),
-          'Checked in by': item.checked_in_by || '',
-        }));
-        await Share.share({
-          message: buildCSV(rows, headers),
-          title: `${siteName} — ${activeTab} — ${dateStr}.csv`,
-        });
+      const headers = activeTab === 'Notifications'
+        ? ['Name', 'Group', 'Sign In', 'Checked in by']
+        : ['Name', 'Group', 'Sign In', 'Sign Out'];
+
+      const rows = list.map(item => ({
+        Name:           item.name || '',
+        Group:          item.group || '',
+        'Sign In':      fmtExportTime(item.sign_in_time || item.expected_date),
+        'Sign Out':     fmtExportTime(item.sign_out_time),
+        'Checked in by': item.checked_in_by || '',
+      }));
+
+      if (format === 'excel') {
+        await shareExcel({ title, headers, rows, filenameBase });
       } else {
-        const divider = '─'.repeat(48);
-        const lines = [
-          `MANAGER REPORT — ${siteName.toUpperCase()}`,
-          `Tab: ${activeTab}   Date: ${dateStr}`,
-          divider,
-          ...list.map((item, i) =>
-            `${i + 1}. ${item.name} [${item.group || 'Visitor'}]\n   In: ${fmtExportTime(item.sign_in_time || item.expected_date)}${item.sign_out_time ? '  Out: ' + fmtExportTime(item.sign_out_time) : ''}`
-          ),
-          divider,
-          `Total: ${list.length} record(s)`,
-        ];
-        await Share.share({
-          message: lines.join('\n'),
-          title: `${siteName} — ${activeTab} — ${dateStr}.txt`,
-        });
+        await sharePdf({ title, headers, rows, filenameBase });
       }
     } catch (err) {
-      if (err?.message !== 'User did not share') {
-        Alert.alert('Export failed', err?.message || 'Could not export.');
-      }
+      Alert.alert('Export failed', err?.message || 'Could not export.');
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleApproval = async (guardId, status) => {
+    const siteId = selectedSite?.id;
+    if (!guardId) return;
+    setUpdatingApproval(`${guardId}:${status}`);
+    try {
+      await updateGuardApproval({ guardId, status });
+      await loadSiteData(siteId);
+    } catch (err) {
+      Alert.alert('Update failed', err?.response?.data?.error || err?.message || 'Could not update approval status.');
+    } finally {
+      setUpdatingApproval(null);
     }
   };
 
@@ -212,8 +268,8 @@ const ManagerScreen = () => {
               'Export',
               'Choose export format',
               [
-                { text: 'CSV (Excel)', onPress: () => handleExport('csv') },
-                { text: 'Text Report', onPress: () => handleExport('pdf') },
+                { text: 'Excel (.xls)', onPress: () => handleExport('excel') },
+                { text: 'PDF', onPress: () => handleExport('pdf') },
                 { text: 'Cancel', style: 'cancel' },
               ]
             )}
@@ -432,6 +488,85 @@ const ManagerScreen = () => {
             )}
           </>
         )}
+
+        {activeTab === 'Guards' && (
+          <>
+            <View style={s.sectionRow}>
+              <Text style={s.sectionTitle}>Pending guard approvals</Text>
+              <TouchableOpacity onPress={load}>
+                <RefreshCw size={18} color="#9ca3af" />
+              </TouchableOpacity>
+            </View>
+
+            {pendingGuards.length === 0 ? (
+              <View style={s.emptyCard}>
+                <Text style={s.emptyText}>No guards waiting for approval.</Text>
+              </View>
+            ) : (
+              pendingGuards.map((g) => (
+                <View key={g.id} style={s.visitCard}>
+                  <View style={s.visitAvatar}>
+                    <Text style={s.visitAvatarTxt}>{(g.name || 'G')[0]?.toUpperCase()}</Text>
+                  </View>
+                  <View style={s.visitMeta}>
+                    <Text style={s.visitName}>{g.name || 'Guard'}</Text>
+                    <Text style={s.visitSub}>{g.email || ''}</Text>
+                    <Text style={s.visitNote}>Approval required</Text>
+                  </View>
+
+                  <View style={s.approvalActions}>
+                    <TouchableOpacity
+                      onPress={() => handleApproval(g.id, 'approved')}
+                      style={[s.approveBtn, updatingApproval === `${g.id}:approved` && { opacity: 0.7 }]}
+                      disabled={Boolean(updatingApproval)}
+                    >
+                      {updatingApproval === `${g.id}:approved`
+                        ? <ActivityIndicator size="small" color="#fff" />
+                        : <Text style={s.approveBtnTxt}>Approve</Text>}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => handleApproval(g.id, 'rejected')}
+                      style={[s.rejectBtn, updatingApproval === `${g.id}:rejected` && { opacity: 0.7 }]}
+                      disabled={Boolean(updatingApproval)}
+                    >
+                      {updatingApproval === `${g.id}:rejected`
+                        ? <ActivityIndicator size="small" color="#fff" />
+                        : <Text style={s.rejectBtnTxt}>Reject</Text>}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
+            )}
+
+            <View style={[s.sectionRow, s.sectionTopSpacing]}>
+              <Text style={s.sectionTitle}>Guards present on site</Text>
+              <TouchableOpacity onPress={load}>
+                <RefreshCw size={18} color="#9ca3af" />
+              </TouchableOpacity>
+            </View>
+
+            {presentGuards.length === 0 ? (
+              <View style={s.emptyCard}>
+                <Text style={s.emptyText}>No guards currently signed in.</Text>
+              </View>
+            ) : (
+              presentGuards.map((g) => (
+                <View key={g.id} style={s.visitCard}>
+                  <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
+                    <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{(g.name || 'G')[0]?.toUpperCase()}</Text>
+                    <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
+                  </View>
+                  <View style={s.visitMeta}>
+                    <Text style={s.visitName}>{g.name || 'Guard'}</Text>
+                    <Text style={s.visitSub}>Signed in {fmtTime(g.check_in_time)}</Text>
+                    {g.email ? <Text style={s.visitNote}>{g.email}</Text> : null}
+                  </View>
+                </View>
+              ))
+            )}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -506,7 +641,8 @@ const s = StyleSheet.create({
   tabActive: { borderBottomWidth: 2, borderBottomColor: '#2b4594' },
   tabText: { fontSize: 14, fontWeight: '500', color: '#6b7280' },
   tabTextActive: { color: '#2b4594', fontWeight: '700' },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  // Extra bottom padding so lists/buttons aren't hidden behind bottom tabs
+  scrollContent: { padding: 16, paddingBottom: 120 },
   countGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   countCard: {
     flex: 1,
@@ -551,6 +687,11 @@ const s = StyleSheet.create({
   visitNote: { fontSize: 12, color: '#2b4594', marginTop: 3 },
   pendingBadge: { backgroundColor: '#fef3c7', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   pendingBadgeTxt: { fontSize: 12, fontWeight: '600', color: '#92400e' },
+  approvalActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  approveBtn: { backgroundColor: '#2b4594', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, minWidth: 86, alignItems: 'center' },
+  approveBtnTxt: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  rejectBtn: { backgroundColor: '#ef4444', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, minWidth: 76, alignItems: 'center' },
+  rejectBtnTxt: { color: '#fff', fontSize: 12, fontWeight: '700' },
   emptyCard: {
     backgroundColor: '#fff',
     borderRadius: 12,

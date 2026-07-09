@@ -10,6 +10,10 @@ const memberSchema = new mongoose.Schema({
   role:               { type: String, default: 'Employee' },
   // mobileRole = what tab/view they see in the companion app
   mobileRole:         { type: String, enum: ['employee','guard','manager','admin'], default: 'employee' },
+  // approvalStatus is mainly for guards created via mobile signup flow
+  approvalStatus:     { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved' },
+  approvedAt:         { type: Date },
+  approvedBy:         { type: mongoose.Schema.Types.ObjectId, ref: 'Member' },
   status:             { type: String, enum: ['Current','Upcoming','Archived'], default: 'Current' },
   startDate:          { type: Date },
   endDate:            { type: Date },

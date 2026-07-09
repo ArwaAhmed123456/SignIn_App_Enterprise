@@ -5,6 +5,7 @@ const jwt      = require('jsonwebtoken');
 const Member   = require('../models/Member');
 const Site = require('../models/Site'); // sites are stored in Project collection
 const VisitorGroup = require('../models/VisitorGroup');
+const ActivityLog = require('../models/ActivityLog');
 const { sendMobileInviteEmail } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
@@ -28,6 +29,23 @@ const verifyAdmin = (req, res, next) => {
     req.user = decoded;
     next();
   } catch { res.status(401).json({ error: 'Unauthorized' }); }
+};
+
+// For mobile manager controls (approve guards, presence, etc.)
+const verifyManagerOrAdmin = (req, res, next) => {
+  const auth = req.headers['authorization'];
+  if (!auth) return res.status(403).json({ error: 'No token provided' });
+  try {
+    const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    const role = String(decoded.role || '').toLowerCase();
+    if (!['manager', 'admin', 'superadmin'].includes(role)) {
+      return res.status(403).json({ error: 'Manager access required' });
+    }
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 };
 
 const fmtMember = async (m) => {
@@ -64,7 +82,16 @@ router.post('/signup', async (req, res) => {
     const existing = await Member.findOne({ email });
     if (existing) return res.status(400).json({ error: 'Email already exists' });
     const hashed = await bcrypt.hash(password, 10);
-    await Member.create({ firstName: name, email, password: hashed, phone: phone||null, siteId: project_id||null, role: 'guard' });
+    await Member.create({
+      firstName: name,
+      email,
+      password: hashed,
+      phone: phone || null,
+      siteId: project_id || null,
+      role: 'guard',
+      mobileRole: 'guard',
+      approvalStatus: 'pending',
+    });
     res.status(201).json({ success: true });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
@@ -78,26 +105,121 @@ router.post('/login', async (req, res) => {
     if (!guard || !guard.password) return res.status(401).json({ error: 'Invalid credentials' });
     const valid = await bcrypt.compare(password, guard.password);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+
+    const mobileRole = guard.mobileRole || deriveMobileRole(guard.role);
+    if (mobileRole === 'guard' && guard.approvalStatus && guard.approvalStatus !== 'approved') {
+      return res.status(403).json({ error: 'Your account is pending manager approval.' });
+    }
+
     const token = jwt.sign(
-      { id: guard._id, email: guard.email, name: guard.firstName, role: guard.role||'guard',
-        permissions: guard.permissions ? JSON.parse(guard.permissions) : null },
+      {
+        id: guard._id,
+        email: guard.email,
+        name: guard.firstName,
+        role: mobileRole,                 // normalized for API permissions
+        memberRole: guard.role || null,    // original role label (Employee/Manager/etc.)
+        project_id: guard.siteId || null,  // used by mobile flows
+        permissions: guard.permissions ? JSON.parse(guard.permissions) : null,
+      },
       JWT_SECRET, { expiresIn: '24h' }
     );
-    // Look up site name so mobile app knows which company this guard belongs to
-    const siteDoc = guard.siteId ? await Site.findById(guard.siteId).lean() : null;
     res.json({
       success: true,
       token,
       user: {
-        name:         guard.firstName,
-        email:        guard.email,
-        phone:        guard.phone || null,
-        role:         guard.role || 'guard',
-        project_id:   guard.siteId || null,
-        organization: siteDoc?.name || null,   // ← company name for display
+        id: guard._id,
+        name: guard.firstName,
+        email: guard.email,
+        phone: guard.phone || null,
+        role: mobileRole,
+        mobileRole,
+        memberRole: guard.role || null,
+        project_id: guard.siteId,
+        approvalStatus: guard.approvalStatus || 'approved',
       }
     });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
+});
+
+// ── Manager: guard approval queue ─────────────────────────────────────
+// GET /api/guards/pending?site_id=
+router.get('/pending', verifyManagerOrAdmin, async (req, res) => {
+  try {
+    const siteId = req.query.site_id || req.user?.project_id || null;
+    const filter = { mobileRole: 'guard', approvalStatus: 'pending' };
+    if (siteId) filter.siteId = siteId;
+    const guards = await Member.find(filter).sort({ createdAt: -1 }).lean();
+    res.json(await Promise.all(guards.map(fmtMember)));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// PUT /api/guards/:id/approval  { status: 'approved'|'rejected' }
+router.put('/:id/approval', verifyManagerOrAdmin, async (req, res) => {
+  const status = String(req.body?.status || '').toLowerCase();
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: 'status must be approved or rejected' });
+  }
+  try {
+    const updates = {
+      approvalStatus: status,
+      approvedAt: status === 'approved' ? new Date() : null,
+      approvedBy: status === 'approved' ? req.user?.id : null,
+    };
+    const member = await Member.findByIdAndUpdate(req.params.id, updates, { new: true }).lean();
+    if (!member) return res.status(404).json({ error: 'Guard not found' });
+    res.json({ success: true, guard: await fmtMember(member) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── Manager: guards currently on site ─────────────────────────────────
+// GET /api/guards/present?site_id=
+router.get('/present', verifyManagerOrAdmin, async (req, res) => {
+  try {
+    const siteId = req.query.site_id || req.user?.project_id || null;
+    if (!siteId) return res.json([]);
+
+    const guards = await Member.find({
+      siteId,
+      mobileRole: 'guard',
+      approvalStatus: { $ne: 'rejected' },
+    }).select('_id firstName lastName email phone').lean();
+    const guardIds = guards.map(g => g._id);
+
+    const activeLogs = await ActivityLog.find({
+      siteId,
+      timeOut: null,
+      $or: [
+        { memberId: { $in: guardIds } },
+        { userType: { $regex: /guard|security/i } },
+      ],
+    }).sort({ checkIn: -1 }).lean();
+
+    const guardMap = Object.fromEntries(guards.map(g => [String(g._id), g]));
+
+    const result = activeLogs.map((log) => {
+      const m = log.memberId ? guardMap[String(log.memberId)] : null;
+      return {
+        id: log._id,
+        member_id: log.memberId || null,
+        name: m ? `${m.firstName} ${m.lastName || ''}`.trim() : log.name,
+        email: m?.email || null,
+        phone: m?.phone || null,
+        check_in_time: log.checkIn,
+        group: log.userType || 'Guard',
+      };
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // ── List guards ──────────────────────────────────────────────────────

@@ -122,7 +122,7 @@ const GuardSignup = ({ navigation }) => {
                     }}>
                         <Shield size={12} color="#2b4594" />
                         <Text style={{ color: '#2b4594', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' }}>
-                            Manager Portal
+                            Enterprise Portal
                         </Text>
                     </View>
 
@@ -130,7 +130,7 @@ const GuardSignup = ({ navigation }) => {
                         Create Account
                     </Text>
                     <Text style={{ fontSize: 14, color: '#64748b', fontWeight: '500', textAlign: 'center' }}>
-                        Register to manage your site
+                        Register for site access
                     </Text>
                 </View>
 

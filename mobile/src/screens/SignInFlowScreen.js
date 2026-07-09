@@ -199,7 +199,8 @@ const s = StyleSheet.create({
   thankText:     { fontSize: 20, fontWeight: '600', color: '#111827' },
   signOutRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 14, marginBottom: 40, backgroundColor: '#ffffff' },
   signOutText:   { fontSize: 16, fontWeight: '600', color: '#111827' },
-  confirmWrap:   { flex: 1, justifyContent: 'flex-end', paddingHorizontal: 20, paddingBottom: 40 },
+  // Extra bottom padding so the confirm sheet isn't hidden behind system gestures / tab bars
+  confirmWrap:   { flex: 1, justifyContent: 'flex-end', paddingHorizontal: 20, paddingBottom: 80 },
   confirmCard:   { backgroundColor: '#ffffff', borderRadius: 20, padding: 24, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 20, elevation: 8 },
   confirmTitle:  { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 12 },
   confirmBody:   { fontSize: 15, color: '#4b5563', lineHeight: 22, marginBottom: 24 },

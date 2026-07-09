@@ -49,6 +49,7 @@ const EmployeeTabs = () => (
   <Tab.Navigator screenOptions={TAB_STYLE}>
     <Tab.Screen name="Today"        component={TodayScreen}      options={{ tabBarIcon: ({ color }) => <CheckCircle  color={color} size={26} /> }} />
     <Tab.Screen name="Calendar"     component={CalendarScreen}   options={{ tabBarIcon: ({ color }) => <CalendarIcon color={color} size={26} /> }} />
+    <Tab.Screen name="Messages"     component={MessagesScreen}   options={{ tabBarIcon: ({ color }) => <MessageCircle  color={color} size={26} /> }} />
     <Tab.Screen name="EvacuationTab"component={EvacuationScreen} options={{ tabBarIcon: ({ color }) => <ShieldCheck  color={color} size={26} /> }} />
     <Tab.Screen name="Profile"      component={ProfileScreen}    options={{ tabBarIcon: ({ color }) => <User         color={color} size={26} /> }} />
   </Tab.Navigator>
@@ -76,10 +77,10 @@ const GuardTabs = () => (
 
 // ── Role-based main tab selection ────────────────────────────────────────────
 const getRoleNavigator = (role) => {
-  const r = (role || '').toLowerCase();
-  if (r === 'manager')                                              return ManagerTabs;
-  if (r === 'guard' || r === 'security' || r === 'securityguard')  return GuardTabs;
-  if (r === 'admin' || r === 'superadmin')                         return ManagerTabs; // admins see manager view
+  const r = String(role || '').toLowerCase();
+  if (r.includes('manager') || r.includes('supervisor')) return ManagerTabs;
+  if (r.includes('guard') || r.includes('security')) return GuardTabs;
+  if (r.includes('admin')) return ManagerTabs; // admins see manager view
   return EmployeeTabs;
 };
 
@@ -94,7 +95,8 @@ const Navigation = () => {
     );
   }
 
-  const MainTabs = user ? getRoleNavigator(user.role || user.group) : null;
+  // Prefer normalized mobileRole (server-provided), fall back to role/group.
+  const MainTabs = user ? getRoleNavigator(user.mobileRole || user.role || user.group) : null;
 
   return (
     <NavigationContainer>

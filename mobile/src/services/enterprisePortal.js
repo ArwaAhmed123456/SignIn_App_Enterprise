@@ -99,7 +99,28 @@ export const getVisitorGroups = async (siteId) => {
   try {
     const response = await api.get('/visitor-groups', { params: { project_id: siteId } });
     const groups = response?.data || [];
-    return groups.length ? groups : defaultGroups;
+
+    // Ensure we always provide a sensible set of options for check-in / pre-registration.
+    // Some databases might have only one group configured (e.g. "Guard"), which should
+    // not remove the default options like Visitor/Employee/Delivery/Contractor.
+    const normalize = (g) => ({
+      ...g,
+      id: g?.id || g?._id || g?.name,
+      name: g?.name || 'Visitor',
+    });
+
+    const merged = [...defaultGroups, ...groups.map(normalize)]
+      .filter((g) => g && g.name)
+      .reduce((acc, g) => {
+        const key = String(g.name).trim().toLowerCase();
+        if (!acc.seen.has(key)) {
+          acc.seen.add(key);
+          acc.items.push(g);
+        }
+        return acc;
+      }, { seen: new Set(), items: [] }).items;
+
+    return merged.length ? merged : defaultGroups;
   } catch {
     return defaultGroups;
   }
@@ -133,6 +154,7 @@ export const createPreRegistration = async ({
   notes,
   expectedDate,
   visitorGroupId,
+  visitorGroupName,
   sendInvitation,
 }) => {
   const response = await api.post('/pre-registrations', {
@@ -142,8 +164,30 @@ export const createPreRegistration = async ({
     phone: phone || undefined,
     notes: notes || undefined,
     expected_date: expectedDate,
+    // Send both: API will accept either a real VisitorGroup ObjectId or a label.
     visitor_group_id: visitorGroupId || undefined,
+    visitor_group_name: visitorGroupName || undefined,
     send_invitation: Boolean(sendInvitation && email),
   });
   return response?.data;
+};
+
+// ── Manager controls (mobile) ─────────────────────────────────────────
+export const getPendingGuards = async ({ siteId }) => {
+  const response = await api.get('/guards/pending', {
+    params: { site_id: siteId || undefined },
+  });
+  return response?.data || [];
+};
+
+export const updateGuardApproval = async ({ guardId, status }) => {
+  const response = await api.put(`/guards/${guardId}/approval`, { status });
+  return response?.data;
+};
+
+export const getPresentGuards = async ({ siteId }) => {
+  const response = await api.get('/guards/present', {
+    params: { site_id: siteId || undefined },
+  });
+  return response?.data || [];
 };

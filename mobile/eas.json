@@ -31,8 +31,7 @@
         "buildType": "app-bundle"
       },
       "ios": {
-        "buildConfiguration": "Release",
-        "image": "latest"
+        "buildConfiguration": "Release"
       },
       "channel": "production"
     }

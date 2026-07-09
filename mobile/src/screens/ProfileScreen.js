@@ -65,7 +65,8 @@ const ProfileScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ flex: 1, paddingHorizontal: 12 }} contentContainerStyle={{ paddingBottom: 40, paddingTop: 8 }}>
+      {/* Extra bottom padding so content (e.g., Log Out) is not hidden behind the bottom tab bar */}
+      <ScrollView style={{ flex: 1, paddingHorizontal: 12 }} contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}>
 
         {/* Profile card */}
         <Card>
@@ -114,7 +115,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
             <Text style={{ fontSize: 15, color: T1 }}>Enable auto sign in/out</Text>
-            <Switch value={autoSignIn} onValueChange={setAutoSignIn} trackColor={{ true: '#4ade80', false: '#3a3a3c' }} thumbColor="#fff" />
+            <Switch value={autoSignIn} onValueChange={setAutoSignIn} trackColor={{ true: '#2b4594', false: '#3a3a3c' }} thumbColor="#fff" />
           </View>
         </Card>
 
@@ -126,7 +127,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
             <Text style={{ fontSize: 15, color: T1 }}>Enable auto reminder</Text>
-            <Switch value={autoReminder} onValueChange={setAutoReminder} trackColor={{ true: '#4ade80', false: '#3a3a3c' }} thumbColor="#fff" />
+            <Switch value={autoReminder} onValueChange={setAutoReminder} trackColor={{ true: '#2b4594', false: '#3a3a3c' }} thumbColor="#fff" />
           </View>
         </Card>
 
@@ -150,7 +151,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: BD }}>
             <Text style={{ fontSize: 15, color: T1 }}>Host notifications</Text>
-            <Switch value={hostNotifs} onValueChange={setHostNotifs} trackColor={{ true: '#4ade80', false: '#3a3a3c' }} thumbColor="#fff" />
+            <Switch value={hostNotifs} onValueChange={setHostNotifs} trackColor={{ true: '#2b4594', false: '#3a3a3c' }} thumbColor="#fff" />
           </View>
           <View style={{ paddingHorizontal: 16, paddingVertical: 14 }}>
             <Text style={{ fontSize: 16, fontWeight: '700', color: T1, marginBottom: 4 }}>Notification Type</Text>
@@ -189,7 +190,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
             <Text style={{ fontSize: 15, color: T1 }}>Show map on today tab</Text>
-            <Switch value={showMap} onValueChange={setShowMap} trackColor={{ true: '#4ade80', false: '#3a3a3c' }} thumbColor="#fff" />
+            <Switch value={showMap} onValueChange={setShowMap} trackColor={{ true: '#2b4594', false: '#3a3a3c' }} thumbColor="#fff" />
           </View>
         </Card>
 

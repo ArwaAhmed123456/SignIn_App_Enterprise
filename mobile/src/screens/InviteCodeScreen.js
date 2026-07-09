@@ -6,9 +6,11 @@ import {
 import { ArrowLeft, HelpCircle } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 
+const BLUE = '#2b4594';
+
 const InviteCodeScreen = ({ navigation }) => {
   const { activateMobile } = useAuth();
-  const [code, setCode]     = useState('');
+  const [code, setCode]       = useState('');
   const [loading, setLoading] = useState(false);
 
   const formatCode = (raw) => {
@@ -27,14 +29,12 @@ const InviteCodeScreen = ({ navigation }) => {
       return;
     }
     setLoading(true);
-    // Generate a random device ID
     const deviceId = Math.random().toString(36).slice(2, 18).toUpperCase();
     const result = await activateMobile(clean, deviceId);
     setLoading(false);
     if (!result.success) {
       Alert.alert('Connection failed', result.message || 'Invalid or expired code. Please try again.');
     }
-    // On success AuthContext sets user → App.js navigates to MainTabs automatically
   };
 
   return (
@@ -50,6 +50,10 @@ const InviteCodeScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.body}>
+          <Text style={styles.desc}>
+            Enter the 12-character code from your welcome email to connect this device.
+          </Text>
+
           <TextInput
             value={code}
             onChangeText={handleChange}
@@ -68,7 +72,7 @@ const InviteCodeScreen = ({ navigation }) => {
             activeOpacity={0.85}
           >
             {loading
-              ? <ActivityIndicator color="#111827" />
+              ? <ActivityIndicator color="#ffffff" />
               : <Text style={styles.btnText}>Connect</Text>
             }
           </TouchableOpacity>
@@ -88,12 +92,37 @@ const styles = StyleSheet.create({
   header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   backBtn:     { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#111827' },
-  body:        { flex: 1, paddingHorizontal: 24, paddingTop: 48 },
-  input:       { borderWidth: 1.5, borderColor: '#4ade80', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 20, fontWeight: '700', letterSpacing: 4, color: '#111827', textAlign: 'center', marginBottom: 20, backgroundColor: '#f9fafb' },
-  btn:         { backgroundColor: '#4ade80', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 24 },
-  btnText:     { fontSize: 17, fontWeight: '700', color: '#111827' },
-  helpRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  helpText:    { fontSize: 15, color: '#6b7280' },
+  body:        { flex: 1, paddingHorizontal: 24, paddingTop: 40 },
+  desc:        { fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 32, lineHeight: 20 },
+  input: {
+    borderWidth: 2,
+    borderColor: BLUE,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: 5,
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 20,
+    backgroundColor: '#f0f4ff',
+  },
+  btn: {
+    backgroundColor: BLUE,
+    borderRadius: 14,
+    paddingVertical: 17,
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: BLUE,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  btnText:  { fontSize: 17, fontWeight: '700', color: '#ffffff' },
+  helpRow:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  helpText: { fontSize: 15, color: '#6b7280' },
 });
 
 export default InviteCodeScreen;

@@ -1,6 +1,7 @@
 const express          = require('express');
 const router           = express.Router();
 const jwt              = require('jsonwebtoken');
+const mongoose         = require('mongoose');
 const PreRegistration  = require('../models/PreRegistration');
 const ActivityLog      = require('../models/ActivityLog');
 const Site             = require('../models/Site');
@@ -13,10 +14,11 @@ const verifyAdmin = (req, res, next) => {
   if (!auth) return res.status(403).json({ error: 'No token' });
   try {
     const d = jwt.verify(auth.split(' ')[1], JWT_SECRET);
-    if (!['admin', 'superadmin', 'guard', 'manager'].includes(d.role)) {
+    const role = String(d.role || '').toLowerCase();
+    if (!['admin', 'superadmin', 'guard', 'manager'].includes(role)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    req.user = d;
+    req.user = { ...d, role };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -40,13 +42,32 @@ const verifyStrictAdmin = (req, res, next) => {
 
 const fmt = (p) => ({
   id: p._id, name: p.name, email: p.email, phone: p.phone, notes: p.notes,
-  expected_date: p.expectedDate, site_id: p.siteId, visitor_group_id: p.visitorGroupId,
+  expected_date: p.expectedDate,
+  site_id: p.siteId,
+  visitor_group_id: p.visitorGroupId,
+  visitor_group_name: p.visitorGroupName,
   member_id: p.memberId, status: p.status, created_at: p.createdAt,
 });
 
 const resolveFirst = async (siteId) => {
   if (siteId && siteId !== 'all') return siteId;
   const s = await Site.findOne().sort({createdAt:1}).lean(); return s?._id||null;
+};
+
+const normalizeVisitorGroup = ({ visitor_group_id, visitor_group_name }) => {
+  // visitor_group_id must be a valid Mongo ObjectId for visitorGroupId field.
+  // If mobile sends a label like "Visitor", store it as visitorGroupName instead.
+  if (visitor_group_id && mongoose.isValidObjectId(visitor_group_id)) {
+    return { visitorGroupId: visitor_group_id, visitorGroupName: undefined };
+  }
+  if (visitor_group_name && String(visitor_group_name).trim()) {
+    return { visitorGroupId: null, visitorGroupName: String(visitor_group_name).trim() };
+  }
+  // Backward compat: if a non-objectid string was passed in visitor_group_id, treat it as name.
+  if (visitor_group_id && String(visitor_group_id).trim()) {
+    return { visitorGroupId: null, visitorGroupName: String(visitor_group_id).trim() };
+  }
+  return { visitorGroupId: null, visitorGroupName: undefined };
 };
 
 router.get('/', verifyAdmin, async (req,res) => {
@@ -63,26 +84,67 @@ router.get('/', verifyAdmin, async (req,res) => {
 });
 
 router.post('/', verifyAdmin, async (req,res) => {
-  const { site_id, name, email, phone, notes, expected_date, visitor_group_id, member_id, send_invitation } = req.body;
+  const { site_id, name, email, phone, notes, expected_date, visitor_group_id, visitor_group_name, member_id, send_invitation } = req.body;
   if (!name) return res.status(400).json({error:'name is required'});
   try {
     const sid = await resolveFirst(site_id);
     if (!sid) return res.status(400).json({error:'No site found'});
-    const item = await PreRegistration.create({ siteId:sid, name, email:email||null, phone:phone||null, notes:notes||null, expectedDate: expected_date?new Date(expected_date):null, visitorGroupId:visitor_group_id||null, memberId:member_id||null, status:'Pending' });
-    if (send_invitation && email) { const site = await Site.findById(sid).lean(); await sendPreRegistrationInviteEmail({email, name, siteName: site?.name, expectedDate: item.expectedDate, notes: item.notes}).catch(()=>{}); }
+
+    const group = normalizeVisitorGroup({ visitor_group_id, visitor_group_name });
+    const expected = expected_date ? new Date(expected_date) : null;
+    if (expected_date && Number.isNaN(expected?.getTime?.())) {
+      return res.status(400).json({ error: 'Invalid expected_date' });
+    }
+
+    const item = await PreRegistration.create({
+      siteId: sid,
+      name,
+      email: email || null,
+      phone: phone || null,
+      notes: notes || null,
+      expectedDate: expected,
+      visitorGroupId: group.visitorGroupId || null,
+      visitorGroupName: group.visitorGroupName || undefined,
+      memberId: member_id || null,
+      status: 'Pending'
+    });
+    // Send email asynchronously so the API responds fast (important for mobile UX)
+    if (send_invitation && email) {
+      setImmediate(async () => {
+        try {
+          const site = await Site.findById(sid).lean();
+          await sendPreRegistrationInviteEmail({
+            email,
+            name,
+            siteName: site?.name,
+            expectedDate: item.expectedDate,
+            notes: item.notes,
+          });
+        } catch (e) {
+          console.error('Pre-registration email failed:', e?.message || e);
+        }
+      });
+    }
     res.status(201).json({success:true, pre_registration: fmt(item)});
   } catch(err){ console.error(err); res.status(500).json({error:'Server error'}); }
 });
 
 router.put('/:id', verifyAdmin, async (req,res) => {
-  const { name, email, phone, notes, expected_date, visitor_group_id, status } = req.body;
+  const { name, email, phone, notes, expected_date, visitor_group_id, visitor_group_name, status } = req.body;
   const u={};
   if(name!==undefined)            u.name=name;
   if(email!==undefined)           u.email=email;
   if(phone!==undefined)           u.phone=phone;
   if(notes!==undefined)           u.notes=notes;
   if(expected_date!==undefined)   u.expectedDate=expected_date?new Date(expected_date):null;
-  if(visitor_group_id!==undefined)u.visitorGroupId=visitor_group_id;
+  if (expected_date !== undefined && expected_date && Number.isNaN(u.expectedDate?.getTime?.())) {
+    return res.status(400).json({ error: 'Invalid expected_date' });
+  }
+  if(visitor_group_id!==undefined || visitor_group_name!==undefined) {
+    const group = normalizeVisitorGroup({ visitor_group_id, visitor_group_name });
+    u.visitorGroupId = group.visitorGroupId || null;
+    u.visitorGroupName = group.visitorGroupName || undefined;
+  }
   if(status!==undefined)          u.status=status;
   try {
     const item = await PreRegistration.findByIdAndUpdate(req.params.id, u, {new:true}).lean();
@@ -103,7 +165,14 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
     const now=new Date(); const dateStr=now.toISOString().split('T')[0];
     const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     let groupName = 'Visitor';
-    if (prereg.visitorGroupId) { const g = await VisitorGroup.findById(prereg.visitorGroupId).lean(); if(g) groupName=g.name; }
+    if (prereg.visitorGroupName) groupName = prereg.visitorGroupName;
+    if (prereg.visitorGroupId) {
+      // Ignore invalid ObjectId values safely (CastError)
+      try {
+        const g = await VisitorGroup.findById(prereg.visitorGroupId).lean();
+        if (g) groupName = g.name;
+      } catch {}
+    }
     
     const isGuard = req.user && ['guard', 'security'].includes(req.user.role);
     const guardName = req.user ? (req.user.name || req.user.firstName || 'Guard') : 'Guard';

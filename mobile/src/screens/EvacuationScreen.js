@@ -121,7 +121,7 @@ const EvacuationScreen = () => {
         /* ── Active evacuation ── */
         <ScrollView
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadEvacuation(); }} tintColor="#ef4444" />}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
           {/* Progress banner */}
           <View style={[s.banner, safeCount === total && total > 0 ? s.bannerGreen : s.bannerRed]}>

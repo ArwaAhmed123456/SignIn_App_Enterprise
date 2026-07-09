@@ -7,7 +7,6 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   TextInput,
@@ -16,6 +15,9 @@ import {
 } from 'react-native';
 import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
 import {
   getAccessibleSites,
   getPreRegistrations,
@@ -196,16 +198,59 @@ const SecurityGuardScreen = ({ navigation }) => {
   };
 
   // ── Export helpers ─────────────────────────────────────────────────────────
-  const buildCSV = (rows, headers) => {
-    const escape = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
-    const headerLine = headers.map(escape).join(',');
-    const lines = rows.map(row => headers.map(h => escape(row[h])).join(','));
-    return [headerLine, ...lines].join('\n');
-  };
-
   const fmtExportTime = (val) => {
     if (!val) return '';
     try { return new Date(val).toLocaleString('en-GB'); } catch { return val; }
+  };
+
+  const safeFilename = (name) =>
+    String(name || 'export')
+      .replace(/[\\/:*?"<>|]+/g, '-')
+      .replace(/\s+/g, '_')
+      .slice(0, 140);
+
+  const escapeHtml = (value) =>
+    String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+  const buildHtmlTable = (rows, headers) => {
+    const th = headers.map((h) => `<th style="text-align:left;padding:10px;border:1px solid #e5e7eb;background:#f8fafc">${escapeHtml(h)}</th>`).join('');
+    const tr = rows
+      .map((r) => `<tr>${headers.map((h) => `<td style="padding:10px;border:1px solid #e5e7eb">${escapeHtml(r[h])}</td>`).join('')}</tr>`)
+      .join('');
+    return `<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
+  };
+
+  const shareExcel = async ({ title, headers, rows, filenameBase }) => {
+    const table = buildHtmlTable(rows, headers);
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><h2 style="font-family:Arial,sans-serif">${escapeHtml(title)}</h2>${table}</body></html>`;
+    const uri = `${FileSystem.cacheDirectory}${safeFilename(filenameBase)}.xls`;
+    await FileSystem.writeAsStringAsync(uri, html, { encoding: FileSystem.EncodingType.UTF8 });
+    await Sharing.shareAsync(uri, {
+      mimeType: 'application/vnd.ms-excel',
+      dialogTitle: 'Export (Excel)',
+    });
+  };
+
+  const sharePdf = async ({ title, headers, rows, filenameBase }) => {
+    const table = buildHtmlTable(rows, headers);
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8" />
+      <style>
+        body{font-family:Arial,sans-serif;padding:24px;color:#111827}
+        h2{margin:0 0 12px 0}
+        p{margin:0 0 18px 0;color:#6b7280}
+      </style>
+    </head><body><h2>${escapeHtml(title)}</h2><p>Generated: ${escapeHtml(new Date().toLocaleString('en-GB'))}</p>${table}</body></html>`;
+    const { uri } = await Print.printToFileAsync({ html });
+    await Sharing.shareAsync(uri, {
+      mimeType: 'application/pdf',
+      dialogTitle: 'Export (PDF)',
+      UTI: 'com.adobe.pdf',
+    });
   };
 
   const handleExport = async (format) => {
@@ -222,50 +267,29 @@ const SecurityGuardScreen = ({ navigation }) => {
       const siteName = selectedSite?.name || 'Site';
       const tabName  = activeTab;
       const dateStr  = new Date().toLocaleDateString('en-GB');
+      const title = `Security Report — ${siteName} — ${tabName}`;
+      const filenameBase = `${siteName}-${tabName}-${dateStr}`;
 
-      if (format === 'csv') {
-        const headers = activeTab === 'Pre-register'
-          ? ['Name', 'Expected', 'Notes']
-          : ['Name', 'Group', 'Sign In', 'Sign Out'];
+      const headers = activeTab === 'Pre-register'
+        ? ['Name', 'Expected', 'Notes']
+        : ['Name', 'Group', 'Sign In', 'Sign Out'];
 
-        const rows = list.map(item => ({
-          Name:      item.name || '',
-          Group:     item.group || '',
-          'Sign In': fmtExportTime(item.sign_in_time),
-          'Sign Out':fmtExportTime(item.sign_out_time),
-          Expected:  fmtExportTime(item.expected_date),
-          Notes:     item.notes || '',
-        }));
-        const csv = buildCSV(rows, headers);
-        await Share.share({
-          message: csv,
-          title: `${siteName} — ${tabName} — ${dateStr}.csv`,
-        });
+      const rows = list.map(item => ({
+        Name:      item.name || '',
+        Group:     item.group || '',
+        'Sign In': fmtExportTime(item.sign_in_time),
+        'Sign Out':fmtExportTime(item.sign_out_time),
+        Expected:  fmtExportTime(item.expected_date),
+        Notes:     item.notes || '',
+      }));
+
+      if (format === 'excel') {
+        await shareExcel({ title, headers, rows, filenameBase });
       } else {
-        // Plain-text PDF-style report shared as text
-        const divider = '─'.repeat(48);
-        const lines = [
-          `SIGN IN APP — ${siteName.toUpperCase()}`,
-          `Tab: ${tabName}   Exported: ${dateStr}`,
-          divider,
-          ...list.map((item, i) => {
-            if (activeTab === 'Pre-register') {
-              return `${i + 1}. ${item.name}\n   Expected: ${fmtExportTime(item.expected_date)}${item.notes ? '\n   Notes: ' + item.notes : ''}`;
-            }
-            return `${i + 1}. ${item.name} [${item.group || 'Visitor'}]\n   In: ${fmtExportTime(item.sign_in_time)}${item.sign_out_time ? '  Out: ' + fmtExportTime(item.sign_out_time) : ''}`;
-          }),
-          divider,
-          `Total: ${list.length} record(s)`,
-        ];
-        await Share.share({
-          message: lines.join('\n'),
-          title: `${siteName} — ${tabName} — ${dateStr}.txt`,
-        });
+        await sharePdf({ title, headers, rows, filenameBase });
       }
     } catch (err) {
-      if (err?.message !== 'User did not share') {
-        Alert.alert('Export failed', err?.message || 'Could not export data.');
-      }
+      Alert.alert('Export failed', err?.message || 'Could not export data.');
     } finally {
       setExporting(false);
     }
@@ -365,8 +389,8 @@ const SecurityGuardScreen = ({ navigation }) => {
               'Export',
               'Choose export format',
               [
-                { text: 'CSV (Excel)', onPress: () => handleExport('csv') },
-                { text: 'Text Report', onPress: () => handleExport('pdf') },
+                { text: 'Excel (.xls)', onPress: () => handleExport('excel') },
+                { text: 'PDF', onPress: () => handleExport('pdf') },
                 { text: 'Cancel', style: 'cancel' },
               ]
             )}
@@ -720,7 +744,8 @@ const s = StyleSheet.create({
     borderBottomColor: '#f3f4f6',
   },
   searchInput: { flex: 1, fontSize: 15, color: '#111827' },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  // Extra bottom padding so actions aren't hidden behind bottom tabs
+  scrollContent: { padding: 16, paddingBottom: 120 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10 },
   visitCard: {
     flexDirection: 'row',
