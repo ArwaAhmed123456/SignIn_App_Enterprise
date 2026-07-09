@@ -90,9 +90,6 @@ const ManagerScreen = () => {
     setExpected(preRegistered);
     setPendingGuards(pending);
     setPresentGuards(present);
-    // Fetch pending guard registrations for this site
-    const pendingViaApi = await api.get('/guards/members', { params: { status: 'Pending', site_id: siteId } }).catch(() => ({ data: [] }));
-    setPendingGuards(pendingViaApi.data || []);
     setCounts({
       total: stats.totalIn || currentVisits.length,
       visitors: stats.visitorsIn || currentVisits.filter((visit) => !String(visit.group).toLowerCase().includes('employee')).length,
@@ -230,8 +227,12 @@ const ManagerScreen = () => {
   const approveGuard = async (guardId, action) => {
     setApprovingId(guardId);
     try {
-      await api.put(`/guards/members/${guardId}`, { status: action === 'approve' ? 'Current' : 'Archived' });
-      Alert.alert(action === 'approve' ? 'Approved' : 'Rejected', `Guard has been ${action === 'approve' ? 'approved and is now active' : 'rejected'}.`);
+      // Use the dedicated approval endpoint which sets approvalStatus field correctly
+      await api.put(`/guards/${guardId}/approval`, { status: action === 'approve' ? 'approved' : 'rejected' });
+      Alert.alert(
+        action === 'approve' ? '✓ Approved' : '✗ Rejected',
+        `Guard has been ${action === 'approve' ? 'approved and can now log in' : 'rejected'}.`
+      );
       await loadSiteData(selectedSite?.id);
     } catch (err) {
       Alert.alert('Error', err?.response?.data?.error || 'Could not update guard status.');

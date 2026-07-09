@@ -245,14 +245,23 @@ const GuardLogin = ({ navigation }) => {
                         {/* Error */}
                         {error ? (
                             <View style={{
-                                backgroundColor: '#fef2f2',
+                                backgroundColor: error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval') ? '#fef3c7' : '#fef2f2',
                                 borderWidth: 1,
-                                borderColor: '#fecaca',
+                                borderColor: error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval') ? '#fde68a' : '#fecaca',
                                 borderRadius: 12,
-                                padding: 12,
+                                padding: 14,
                                 marginBottom: 20,
                             }}>
-                                <Text style={{ color: '#dc2626', fontWeight: '600', fontSize: 13, textAlign: 'center' }}>{error}</Text>
+                                <Text style={{ color: error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval') ? '#92400e' : '#dc2626', fontWeight: '700', fontSize: 13, textAlign: 'center', marginBottom: 6 }}>{error}</Text>
+                                {(error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval')) ? (
+                                    <Text style={{ color: '#92400e', fontSize: 12, textAlign: 'center' }}>
+                                        Your account is awaiting manager approval. Contact your site manager to get activated.
+                                    </Text>
+                                ) : (error.toLowerCase().includes('invalid') || error.toLowerCase().includes('credentials')) ? (
+                                    <Text style={{ color: '#dc2626', fontSize: 12, textAlign: 'center' }}>
+                                        Check your email and password. Use the Register link below if you don't have an account yet.
+                                    </Text>
+                                ) : null}
                             </View>
                         ) : null}
 

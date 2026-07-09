@@ -787,8 +787,15 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
-                  <input value={form.role} onChange={e => set('role', e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                  <select value={form.role} onChange={e => set('role', e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                    <option value="Employee">Employee</option>
+                    <option value="Guard">Guard — security guard</option>
+                    <option value="Manager">Manager — receives notifications</option>
+                    <option value="Visitor">Visitor</option>
+                    <option value="Contractor">Contractor</option>
+                    <option value="Delivery">Delivery</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Language</label>

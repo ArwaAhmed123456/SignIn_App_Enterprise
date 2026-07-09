@@ -190,16 +190,15 @@ const InviteModal = ({ onClose, onInvited }) => {
                   <option value="employee">Employee — sign self in/out, view calendar</option>
                 </select>
               </div>
-              {sites.length > 0 && (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Assign to site</label>
-                  <select value={siteId} onChange={e => setSiteId(e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                    <option value="">Select site…</option>
-                    {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
-              )}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Assign to site</label>
+                <select value={siteId} onChange={e => setSiteId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                  <option value="">Select site…</option>
+                  {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {sites.length === 0 && <option disabled>No sites found — create one in Manage → Sites</option>}
+                </select>
+              </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700">
                 A welcome email with the companion app activation code will be sent to their email address.
               </div>
@@ -292,16 +291,15 @@ const MobileUserModal = ({ onClose, onCreated }) => {
               <p><strong>Admin</strong> — full mobile app access</p>
             </div>
           </div>
-          {sites.length > 0 && (
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Site</label>
-              <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                <option value="">Select site…</option>
-                {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Site</label>
+            <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+              <option value="">Select site…</option>
+              {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {sites.length === 0 && <option disabled>No sites found — create one in Manage → Sites</option>}
+            </select>
+          </div>
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
@@ -353,10 +351,18 @@ const AccountManagement = () => {
         api.get('/auth/admins'),
         api.get('/guards/members')
       ]);
-      const admins = adminsRes.data.map(a => ({ id: a._id, email: a.email, role: a.role, status: 'active', isPortal: true }));
+      const admins = adminsRes.data.map(a => ({ id: a._id, name: a.first_name ? `${a.first_name} ${a.last_name || ''}`.trim() : a.email?.split('@')[0] || 'Unknown', email: a.email, role: a.role, status: 'active', isPortal: true }));
       const members = membersRes.data
-        .filter(m => ['Guard', 'Manager', 'Employee'].includes(m.role))
-        .map(m => ({ id: m._id, email: m.email || 'No email', role: m.role.toLowerCase(), status: m.status.toLowerCase(), isPortal: false }));
+        .filter(m => ['guard', 'manager', 'employee'].includes((m.role || '').toLowerCase()))
+        .map(m => ({
+          id: m.id || m._id,
+          name: m.name || m.first_name || m.email?.split('@')[0] || 'Unknown',
+          email: m.email || 'No email',
+          role: (m.role || '').toLowerCase(),
+          status: (m.status || 'current').toLowerCase(),
+          isPortal: false,
+          site: m.site || ''
+        }));
       
       // Filter out superadmin if current user is not superadmin (though only superadmin should be here normally)
       setUsers([...admins, ...members].filter(u => adminRole === 'superadmin' || u.role !== 'superadmin'));
@@ -411,6 +417,7 @@ const AccountManagement = () => {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide">
             <tr>
+              <th className="px-5 py-3 text-left">Name</th>
               <th className="px-5 py-3 text-left">Email</th>
               <th className="px-5 py-3 text-left">Role</th>
               <th className="px-5 py-3 text-left">Type</th>
@@ -421,16 +428,17 @@ const AccountManagement = () => {
           <tbody className="divide-y divide-slate-100">
             {loadingUsers ? (
               <tr>
-                <td colSpan="5" className="px-5 py-8 text-center text-slate-400">Loading accounts...</td>
+                <td colSpan="6" className="px-5 py-8 text-center text-slate-400">Loading accounts...</td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-5 py-8 text-center text-slate-400">No accounts found.</td>
+                <td colSpan="6" className="px-5 py-8 text-center text-slate-400">No accounts found.</td>
               </tr>
             ) : (
               users.map(u => (
                 <tr key={u.id} className="hover:bg-slate-50 group">
-                  <td className="px-5 py-3 text-slate-800 font-medium">{u.email}</td>
+                  <td className="px-5 py-3 text-slate-800 font-medium">{u.name || '--'}</td>
+                  <td className="px-5 py-3 text-slate-800">{u.email}</td>
                   <td className="px-5 py-3">
                     {u.isPortal ? (
                       <select value={u.role} onChange={e => changeRole(u.id, e.target.value)}

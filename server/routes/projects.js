@@ -47,6 +47,14 @@ const fmt = (s) => ({
 
 router.get('/ping', (req, res) => res.json({ status: 'ok' }));
 
+// Public endpoint — returns site list without auth (used by mobile signup)
+router.get('/all-public', async (req, res) => {
+  try {
+    const sites = await Site.find({}, '_id name code').sort({ name: 1 }).lean();
+    res.json(sites.map(s => ({ id: s._id, name: s.name, code: s.code })));
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
 router.get('/:id/public', async (req, res) => {
   try {
     const site = await Site.findById(req.params.id);

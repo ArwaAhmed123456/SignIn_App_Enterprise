@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Platform } from 'react-native';
 
 import { CheckCircle, Calendar as CalendarIcon, ShieldCheck, User, Users, MessageCircle } from 'lucide-react-native';
 
@@ -38,7 +38,9 @@ const TAB_STYLE = {
   tabBarStyle: {
     borderTopWidth: 1, borderTopColor: '#f3f4f6',
     elevation: 0, shadowOpacity: 0,
-    height: 60, paddingBottom: 8, paddingTop: 8,
+    height: Platform.OS === 'ios' ? 84 : 64,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 10,
+    paddingTop: 8,
     backgroundColor: '#ffffff',
   },
   tabBarShowLabel: false,

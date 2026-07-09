@@ -19,8 +19,8 @@ const GuardSignup = ({ navigation }) => {
     const [focus, setFocus] = useState({ name: false, email: false, phone: false, password: false, confirm: false });
 
     useEffect(() => {
-        // Load available sites/companies for registration
-        api.get('/projects').then(r => setSites(r.data || [])).catch(() => setSites([]));
+        // Load available sites/companies for registration (public endpoint — no auth required)
+        api.get('/projects/all-public').then(r => setSites(r.data || [])).catch(() => setSites([]));
     }, []);
 
     const handleSignup = async () => {

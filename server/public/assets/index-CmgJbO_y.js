@@ -33186,7 +33186,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DqM5ixTq.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-BBbApHsg.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -71757,12 +71757,20 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Role" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "select",
                 {
                   value: form.role,
                   onChange: (e2) => set("role", e2.target.value),
-                  className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+                  className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Employee", children: "Employee" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Guard", children: "Guard — security guard" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Manager", children: "Manager — receives notifications" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Visitor", children: "Visitor" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Contractor", children: "Contractor" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Delivery", children: "Delivery" })
+                  ]
                 }
               )
             ] }),
@@ -74669,7 +74677,7 @@ const InviteModal = ({ onClose, onInvited }) => {
             }
           )
         ] }),
-        sites.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Assign to site" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
@@ -74679,7 +74687,8 @@ const InviteModal = ({ onClose, onInvited }) => {
               className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
-                sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id))
+                sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
+                sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites found — create one in Manage → Sites" })
               ]
             }
           )
@@ -74813,7 +74822,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
           ] })
         ] })
       ] }),
-      sites.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Site" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "select",
@@ -74823,7 +74832,8 @@ const MobileUserModal = ({ onClose, onCreated }) => {
             className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
-              sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id))
+              sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
+              sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites found — create one in Manage → Sites" })
             ]
           }
         )
@@ -74878,8 +74888,16 @@ const AccountManagement = () => {
         api.get("/auth/admins"),
         api.get("/guards/members")
       ]);
-      const admins = adminsRes.data.map((a2) => ({ id: a2._id, email: a2.email, role: a2.role, status: "active", isPortal: true }));
-      const members = membersRes.data.filter((m2) => ["Guard", "Manager", "Employee"].includes(m2.role)).map((m2) => ({ id: m2._id, email: m2.email || "No email", role: m2.role.toLowerCase(), status: m2.status.toLowerCase(), isPortal: false }));
+      const admins = adminsRes.data.map((a2) => ({ id: a2._id, name: a2.first_name ? `${a2.first_name} ${a2.last_name || ""}`.trim() : a2.email?.split("@")[0] || "Unknown", email: a2.email, role: a2.role, status: "active", isPortal: true }));
+      const members = membersRes.data.filter((m2) => ["guard", "manager", "employee"].includes((m2.role || "").toLowerCase())).map((m2) => ({
+        id: m2.id || m2._id,
+        name: m2.name || m2.first_name || m2.email?.split("@")[0] || "Unknown",
+        email: m2.email || "No email",
+        role: (m2.role || "").toLowerCase(),
+        status: (m2.status || "current").toLowerCase(),
+        isPortal: false,
+        site: m2.site || ""
+      }));
       setUsers([...admins, ...members].filter((u2) => adminRole === "superadmin" || u2.role !== "superadmin"));
     } catch (err) {
       console.error("Failed to fetch users", err);
@@ -74928,14 +74946,16 @@ const AccountManagement = () => {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Name" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Email" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Role" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Type" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Status" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-right", children: "Actions" })
       ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loadingUsers ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "5", className: "px-5 py-8 text-center text-slate-400", children: "Loading accounts..." }) }) : users.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "5", className: "px-5 py-8 text-center text-slate-400", children: "No accounts found." }) }) : users.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-800 font-medium", children: u2.email }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loadingUsers ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "6", className: "px-5 py-8 text-center text-slate-400", children: "Loading accounts..." }) }) : users.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "6", className: "px-5 py-8 text-center text-slate-400", children: "No accounts found." }) }) : users.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-800 font-medium", children: u2.name || "--" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-800", children: u2.email }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: u2.isPortal ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "select",
           {
