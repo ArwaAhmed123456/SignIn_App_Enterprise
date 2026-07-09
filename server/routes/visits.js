@@ -149,13 +149,26 @@ router.get('/stats', verifyAdmin, async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
   try {
     const sid  = await resolveFirst(req.query.site_id);
-    const base = { date: today, timeOut: null };
+    const base = { date: today, checkOut: null };
     if (sid) base.siteId = sid;
-    const [totalIn, employeesIn] = await Promise.all([
-      ActivityLog.countDocuments(base),
-      ActivityLog.countDocuments({ ...base, userType: { $in: ['Employee','Employees'] } }),
+
+    const totalIn = await ActivityLog.countDocuments(base);
+
+    // Group counts via aggregation
+    const groupAgg = await ActivityLog.aggregate([
+      { $match: base },
+      { $group: { _id: '$userType', count: { $sum: 1 } } },
     ]);
-    res.json({ totalIn, employeesIn, visitorsIn: totalIn - employeesIn });
+
+    const groupCounts = groupAgg.map(g => ({ group: g._id || 'Unknown', count: g.count }));
+
+    // Legacy fields for backwards compat
+    const employeesIn = groupCounts
+      .filter(g => ['employee', 'employees'].includes((g.group || '').toLowerCase()))
+      .reduce((s, g) => s + g.count, 0);
+    const visitorsIn = totalIn - employeesIn;
+
+    res.json({ totalIn, employeesIn, visitorsIn, groupCounts });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 

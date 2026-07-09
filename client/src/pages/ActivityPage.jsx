@@ -10,11 +10,14 @@ import {
   Search,
   Settings,
   Trash2,
+  User,
+  History,
   X,
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import api from '../api';
+import SlideOutDrawer from '../components/SlideOutDrawer';
 
 const toInputDate = (date = new Date()) => {
   const year = date.getFullYear();
@@ -388,7 +391,9 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-semibold text-slate-700">Visitor or member</label>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">
+              Member name <span className="text-red-500">*</span>
+            </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
               <input
@@ -398,7 +403,7 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
                   setMemberSearch(event.target.value);
                   setSelectedMember(null);
                 }}
-                placeholder="Search members or type a visitor name"
+                placeholder="Search members"
                 className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
               />
               {memberSuggestions.length > 0 && (
@@ -1310,6 +1315,8 @@ const ActivityPage = () => {
   const [dateTo, setDateTo] = useState(initialRange.to);
   const [selectedVisitIds, setSelectedVisitIds] = useState([]);
   const [openVisitMenuId, setOpenVisitMenuId] = useState(null);
+  const [selectedVisit, setSelectedVisit] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState('sign_in_time');
   const [sortDir, setSortDir] = useState('desc');
   const [visibleCols, setVisibleCols] = useState([
@@ -1790,8 +1797,16 @@ const ActivityPage = () => {
           <>
             <div className="flex flex-wrap gap-4">
               <StatCard label="Total in" value={stats.totalIn} />
-              <StatCard label="Visitors in" value={stats.visitorsIn} />
-              <StatCard label="Employees in" value={stats.employeesIn} />
+              {stats.employeesIn > 0 && (
+                <StatCard label="Employees in" value={stats.employeesIn} />
+              )}
+              {stats.visitorsIn > 0 && (
+                <StatCard label="Visitors in" value={stats.visitorsIn} />
+              )}
+              {/* Show per-group counts when available */}
+              {(stats.groupCounts || []).map((gc) => (
+                <StatCard key={gc.group} label={`${gc.group} in`} value={gc.count} />
+              ))}
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -2046,8 +2061,12 @@ const ActivityPage = () => {
 
                 <tbody className="divide-y divide-slate-100">
                   {visibleVisits.map((visit) => (
-                    <tr key={visit.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3">
+                    <tr
+                      key={visit.id}
+                      className="hover:bg-slate-50 cursor-pointer"
+                      onClick={() => { setSelectedVisit(visit); setDrawerOpen(true); }}
+                    >
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedVisitIds.includes(visit.id)}
@@ -2064,7 +2083,7 @@ const ActivityPage = () => {
                           </td>
                         ))}
 
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="relative inline-block">
                           <button
                             type="button"
@@ -2172,6 +2191,168 @@ const ActivityPage = () => {
           onClose={() => setShowExport(false)}
         />
       )}
+
+      {/* ── Visit detail slide-out drawer ─────────────────────── */}
+      <SlideOutDrawer
+        isOpen={drawerOpen}
+        onClose={() => { setDrawerOpen(false); setSelectedVisit(null); }}
+        title=""
+        actions={
+          selectedVisit && !selectedVisit.sign_out_time ? (
+            <button
+              type="button"
+              onClick={async () => {
+                await handleSignOutVisit(selectedVisit.id);
+                setDrawerOpen(false);
+                setSelectedVisit(null);
+              }}
+              className="w-full rounded-lg bg-[#2b4594] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1e326e]"
+            >
+              Sign out
+            </button>
+          ) : null
+        }
+      >
+        {selectedVisit && (
+          <div className="space-y-6">
+            {/* Avatar + name + group */}
+            <div className="flex items-center gap-4">
+              <div className="relative flex-shrink-0">
+                {selectedVisit.image_url
+                  ? <img src={selectedVisit.image_url} alt={selectedVisit.name} className="w-16 h-16 rounded-full object-cover" />
+                  : (
+                    <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-xl font-bold text-slate-600">
+                      {(selectedVisit.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                    </div>
+                  )
+                }
+                <span className={`absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white ${selectedVisit.sign_out_time ? 'bg-slate-400' : 'bg-green-500'}`} />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-slate-800">{selectedVisit.name}</p>
+                <p className="text-sm text-slate-500">{selectedVisit.group || '—'}</p>
+              </div>
+            </div>
+
+            {/* In and out */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">In and out</p>
+              <div className="grid grid-cols-2 gap-y-3 text-sm">
+                <span className="text-slate-500">Site</span>
+                <span className="font-medium text-slate-800">{selectedVisit.site || siteName}</span>
+
+                <span className="text-slate-500">Signed in</span>
+                <div>
+                  <span className="font-medium text-slate-800">
+                    {selectedVisit.sign_in_time
+                      ? new Date(selectedVisit.sign_in_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ', ' +
+                        new Date(selectedVisit.sign_in_time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                      : '—'
+                    }
+                  </span>
+                  {selectedVisit.checked_in_by && (
+                    <p className="text-xs text-slate-400 mt-0.5">by {selectedVisit.checked_in_by}</p>
+                  )}
+                </div>
+
+                <span className="text-slate-500">Signed out</span>
+                <span className="font-medium text-slate-800">
+                  {selectedVisit.sign_out_time
+                    ? new Date(selectedVisit.sign_out_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ', ' +
+                      new Date(selectedVisit.sign_out_time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                    : '—'
+                  }
+                </span>
+
+                <span className="text-slate-500">Total time</span>
+                <span className="font-medium text-slate-800">{selectedVisit.duration || '—'}</span>
+              </div>
+            </div>
+
+            {/* Sign in fields */}
+            {(selectedVisit.trade || selectedVisit.car_reg || selectedVisit.reason) && (
+              <div className="space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Sign in fields</p>
+                <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 text-sm">
+                  {selectedVisit.trade && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <span className="text-slate-500">Trade</span>
+                      <span className="font-medium text-slate-800">{selectedVisit.trade}</span>
+                    </div>
+                  )}
+                  {selectedVisit.car_reg && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <span className="text-slate-500">Car registration</span>
+                      <span className="font-medium text-slate-800">{selectedVisit.car_reg}</span>
+                    </div>
+                  )}
+                  {selectedVisit.reason && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <span className="text-slate-500">Notes</span>
+                      <span className="font-medium text-slate-800">{selectedVisit.reason}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Actions</p>
+              <div className="rounded-xl border border-slate-200 bg-white overflow-hidden divide-y divide-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <User size={16} className="text-slate-400" />
+                  View profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <History size={16} className="text-slate-400" />
+                  View visit history
+                </button>
+                {!selectedVisit.sign_out_time && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await handleSignOutVisit(selectedVisit.id);
+                      setDrawerOpen(false);
+                      setSelectedVisit(null);
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                  >
+                    <LogOut size={16} className="text-slate-400" />
+                    Sign out now
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleDeleteVisit(selectedVisit.id);
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 size={16} className="text-red-400" />
+                  Delete visit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </SlideOutDrawer>
     </div>
   );
 };
