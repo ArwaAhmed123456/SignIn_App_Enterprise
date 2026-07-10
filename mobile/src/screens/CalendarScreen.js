@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, SafeAreaView,
+  View, Text, TouchableOpacity, ScrollView,
   StyleSheet, ActivityIndicator, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Calendar, ChevronDown } from 'lucide-react-native';
 import api from '../services/api';
 
@@ -105,7 +106,7 @@ const CalendarScreen = () => {
   const groups = groupByWeek(feedDates);
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <View style={s.logo}>

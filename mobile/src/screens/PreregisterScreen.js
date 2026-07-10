@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Switch,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, ChevronDown } from 'lucide-react-native';
 import {
   createPreRegistration,
@@ -187,7 +187,7 @@ const PreregisterScreen = ({ navigation, route }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={s.container}>
+      <SafeAreaView style={s.container} edges={['top']}>
         <View style={s.centered}>
           <ActivityIndicator size="large" color="#2b4594" />
         </View>
@@ -197,14 +197,14 @@ const PreregisterScreen = ({ navigation, route }) => {
 
   if (success) {
     return (
-      <SafeAreaView style={s.container}>
+      <SafeAreaView style={s.container} edges={['top']}>
         <SuccessStep result={success} onDone={() => navigation.goBack()} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       <View style={s.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
           <ArrowLeft size={22} color="#111827" />

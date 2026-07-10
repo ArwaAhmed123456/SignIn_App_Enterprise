@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, TouchableOpacity, SafeAreaView, ScrollView,
+  View, Text, TouchableOpacity, ScrollView,
   StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Check, LogOut } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -154,7 +155,7 @@ const SignInFlowScreen = ({ navigation }) => {
   const canGoBack = step === 'site' || step === 'group';
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         {canGoBack ? (

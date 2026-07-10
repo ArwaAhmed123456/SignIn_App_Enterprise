@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import {
-  View, Text, SafeAreaView, ScrollView, TouchableOpacity,
+  View, Text, ScrollView, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AlertTriangle, CheckCircle, RefreshCw, Users } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -81,7 +82,7 @@ const EvacuationScreen = () => {
   const safeCount = safe.length;
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <View style={s.headerLeft}>
