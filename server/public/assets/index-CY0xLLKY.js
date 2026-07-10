@@ -17387,22 +17387,32 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$X = [
+const __iconNode$Z = [
   ["rect", { width: "20", height: "5", x: "2", y: "3", rx: "1", key: "1wp1u1" }],
   ["path", { d: "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8", key: "1s80jp" }],
   ["path", { d: "M10 12h4", key: "a56b0p" }]
 ];
-const Archive = createLucideIcon("archive", __iconNode$X);
-const __iconNode$W = [
+const Archive = createLucideIcon("archive", __iconNode$Z);
+const __iconNode$Y = [
+  ["path", { d: "M12 5v14", key: "s699le" }],
+  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+];
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$Y);
+const __iconNode$X = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$W);
-const __iconNode$V = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$X);
+const __iconNode$W = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$V);
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$W);
+const __iconNode$V = [
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
+];
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$V);
 const __iconNode$U = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
@@ -33186,7 +33196,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-BBbApHsg.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DKwr7wbN.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66669,6 +66679,42 @@ const AdminLayout = () => {
     ] })
   ] });
 };
+const SlideOutDrawer = ({ isOpen, onClose, title, children, actions }) => {
+  reactExports.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+  if (!isOpen) return null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "fixed inset-0 bg-slate-900/20 z-40 transition-opacity",
+        onClick: onClose
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-y-0 right-0 w-[600px] bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-slate-800", children: title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 text-slate-400", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "hover:text-slate-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, { size: 18 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "hover:text-slate-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, { size: 18 }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "hover:text-slate-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 20 }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-6 bg-white", children }),
+      actions && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-end gap-3", children: actions })
+    ] })
+  ] });
+};
 const toInputDate = (date = /* @__PURE__ */ new Date()) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -67011,7 +67057,10 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "mb-1 block text-sm font-semibold text-slate-700", children: "Visitor or member" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "mb-1 block text-sm font-semibold text-slate-700", children: [
+          "Member name ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-3 top-1/2 -translate-y-1/2 text-slate-400", size: 15 }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67023,7 +67072,7 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
                 setMemberSearch(event.target.value);
                 setSelectedMember(null);
               },
-              placeholder: "Search members or type a visitor name",
+              placeholder: "Search members",
               className: "w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
             }
           ),
@@ -67899,11 +67948,7 @@ const ActivityPage = () => {
   const [groups, setGroups] = reactExports.useState([]);
   const [visits, setVisits] = reactExports.useState([]);
   const [loadingVisits, setLoadingVisits] = reactExports.useState(false);
-  const [stats, setStats] = reactExports.useState({
-    totalIn: 0,
-    visitorsIn: 0,
-    employeesIn: 0
-  });
+  const [stats, setStats] = reactExports.useState({ totalIn: 0, groupCounts: [] });
   const [search, setSearch] = reactExports.useState("");
   const [statusFilter, setStatusFilter] = reactExports.useState("All");
   const [groupFilter, setGroupFilter] = reactExports.useState("All");
@@ -67919,6 +67964,8 @@ const ActivityPage = () => {
   const [dateTo, setDateTo] = reactExports.useState(initialRange.to);
   const [selectedVisitIds, setSelectedVisitIds] = reactExports.useState([]);
   const [openVisitMenuId, setOpenVisitMenuId] = reactExports.useState(null);
+  const [selectedVisit, setSelectedVisit] = reactExports.useState(null);
+  const [drawerOpen, setDrawerOpen] = reactExports.useState(false);
   const [sortBy, setSortBy] = reactExports.useState("sign_in_time");
   const [sortDir, setSortDir] = reactExports.useState("desc");
   const [visibleCols, setVisibleCols] = reactExports.useState([
@@ -68013,7 +68060,7 @@ const ActivityPage = () => {
       const response = await api.get("/visits/stats", {
         params: { site_id: siteId }
       });
-      setStats(response.data || { totalIn: 0, visitorsIn: 0, employeesIn: 0 });
+      setStats(response.data || { totalIn: 0, groupCounts: [] });
     } catch {
       setStats({ totalIn: 0, visitorsIn: 0, employeesIn: 0 });
     }
@@ -68303,9 +68350,8 @@ const ActivityPage = () => {
       )) }) }),
       activeTab === "visits" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { label: "Total in", value: stats.totalIn }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { label: "Visitors in", value: stats.visitorsIn }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { label: "Employees in", value: stats.employeesIn })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { label: "Total in", value: stats.totalIn ?? 0 }),
+          (stats.groupCounts || []).map((gc) => /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { label: `${gc.group} in`, value: gc.count }, gc.group))
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3", children: [
@@ -68448,7 +68494,51 @@ const ActivityPage = () => {
                 className: "rounded-lg bg-[#2b4594] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e326e]",
                 children: "New visit"
               }
-            )
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", ref: colRef, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setShowColSettings((c2) => !c2),
+                  className: "rounded-lg border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                  title: "Show/hide columns",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { size: 15 })
+                }
+              ),
+              showColSettings && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-2xl max-h-80 overflow-y-auto", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mb-2 text-xs font-bold uppercase tracking-wide text-slate-500", children: "Visit details" }),
+                visitColumns.filter((c2) => VISIT_DETAIL_COLS.includes(c2.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "checkbox",
+                      checked: visibleCols.includes(column.key),
+                      onChange: () => setVisibleCols(
+                        (cur) => cur.includes(column.key) ? cur.filter((i2) => i2 !== column.key) : [...cur, column.key]
+                      ),
+                      className: "h-4 w-4 accent-[#2b4594]"
+                    }
+                  ),
+                  column.key
+                ] }, column.key)),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500", children: "Personal fields" }),
+                visitColumns.filter((c2) => PERSONAL_FIELD_COLS.includes(c2.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "checkbox",
+                      checked: visibleCols.includes(column.key),
+                      onChange: () => setVisibleCols(
+                        (cur) => cur.includes(column.key) ? cur.filter((i2) => i2 !== column.key) : [...cur, column.key]
+                      ),
+                      className: "h-4 w-4 accent-[#2b4594]"
+                    }
+                  ),
+                  column.key
+                ] }, column.key))
+              ] })
+            ] })
           ] }),
           showFilters && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 grid gap-4 border-t border-slate-200 pt-4 md:grid-cols-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -68497,108 +68587,77 @@ const ActivityPage = () => {
                 }
               ) }),
               visitColumns.filter((column) => visibleCols.includes(column.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-4 py-3", children: column.header }, column.key)),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-14 px-4 py-3 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", ref: colRef, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: () => setShowColSettings((current) => !current),
-                    className: "rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { size: 15 })
-                  }
-                ),
-                showColSettings && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-3 shadow-xl max-h-80 overflow-y-auto", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mb-2 text-xs font-bold uppercase tracking-wide text-slate-500", children: "VISIT DETAILS" }),
-                  visitColumns.filter((c2) => VISIT_DETAIL_COLS.includes(c2.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "input",
-                      {
-                        type: "checkbox",
-                        checked: visibleCols.includes(column.key),
-                        onChange: () => setVisibleCols(
-                          (current) => current.includes(column.key) ? current.filter((item) => item !== column.key) : [...current, column.key]
-                        ),
-                        className: "h-4 w-4 accent-[#76c043]"
-                      }
-                    ),
-                    column.key
-                  ] }, column.key)),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500", children: "PERSONAL FIELDS" }),
-                  visitColumns.filter((c2) => PERSONAL_FIELD_COLS.includes(c2.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "input",
-                      {
-                        type: "checkbox",
-                        checked: visibleCols.includes(column.key),
-                        onChange: () => setVisibleCols(
-                          (current) => current.includes(column.key) ? current.filter((item) => item !== column.key) : [...current, column.key]
-                        ),
-                        className: "h-4 w-4 accent-[#2b4594]"
-                      }
-                    ),
-                    column.key
-                  ] }, column.key))
-                ] })
-              ] }) })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "w-14 px-4 py-3" })
             ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: visibleVisits.map((visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "checkbox",
-                  checked: selectedVisitIds.includes(visit.id),
-                  onChange: () => toggleVisitSelection(visit.id),
-                  className: "h-4 w-4 accent-[#2b4594]"
-                }
-              ) }),
-              visitColumns.filter((column) => visibleCols.includes(column.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-600", children: column.render(visit) }, `${visit.id}-${column.key}`)),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: (event) => {
-                      event.stopPropagation();
-                      setOpenVisitMenuId((current) => current === visit.id ? null : visit.id);
-                    },
-                    className: "rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Ellipsis, { size: 15 })
-                  }
-                ),
-                openVisitMenuId === visit.id && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-20 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl", children: [
-                  !visit.sign_out_time && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "button",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: visibleVisits.map((visit) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "tr",
+              {
+                className: "hover:bg-slate-50 cursor-pointer",
+                onClick: () => {
+                  setSelectedVisit(visit);
+                  setDrawerOpen(true);
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", onClick: (e2) => e2.stopPropagation(), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
                     {
-                      type: "button",
-                      onClick: () => {
-                        setOpenVisitMenuId(null);
-                        handleSignOutVisit(visit.id);
-                      },
-                      className: "flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 14 }),
-                        "Sign out"
-                      ]
+                      type: "checkbox",
+                      checked: selectedVisitIds.includes(visit.id),
+                      onChange: () => toggleVisitSelection(visit.id),
+                      className: "h-4 w-4 accent-[#2b4594]"
                     }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => {
-                        setOpenVisitMenuId(null);
-                        handleDeleteVisit(visit.id);
-                      },
-                      className: "flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 14 }),
-                        "Delete visit"
-                      ]
-                    }
-                  )
-                ] })
-              ] }) })
-            ] }, visit.id)) })
+                  ) }),
+                  visitColumns.filter((column) => visibleCols.includes(column.key)).map((column) => /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-600", children: column.render(visit) }, `${visit.id}-${column.key}`)),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-right", onClick: (e2) => e2.stopPropagation(), children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: (event) => {
+                          event.stopPropagation();
+                          setOpenVisitMenuId((current) => current === visit.id ? null : visit.id);
+                        },
+                        className: "rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700",
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Ellipsis, { size: 15 })
+                      }
+                    ),
+                    openVisitMenuId === visit.id && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-20 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl", children: [
+                      !visit.sign_out_time && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => {
+                            setOpenVisitMenuId(null);
+                            handleSignOutVisit(visit.id);
+                          },
+                          className: "flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 14 }),
+                            "Sign out"
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => {
+                            setOpenVisitMenuId(null);
+                            handleDeleteVisit(visit.id);
+                          },
+                          className: "flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 14 }),
+                            "Delete visit"
+                          ]
+                        }
+                      )
+                    ] })
+                  ] }) })
+                ]
+              },
+              visit.id
+            )) })
           ] }),
           !loadingVisits && visibleVisits.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-3 py-16 text-slate-400", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg font-semibold text-slate-600", children: "There is no visitor activity" }),
@@ -68654,6 +68713,145 @@ const ActivityPage = () => {
         groups,
         siteName,
         onClose: () => setShowExport(false)
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SlideOutDrawer,
+      {
+        isOpen: drawerOpen,
+        onClose: () => {
+          setDrawerOpen(false);
+          setSelectedVisit(null);
+        },
+        title: "",
+        actions: selectedVisit && !selectedVisit.sign_out_time ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: async () => {
+              await handleSignOutVisit(selectedVisit.id);
+              setDrawerOpen(false);
+              setSelectedVisit(null);
+            },
+            className: "w-full rounded-lg bg-[#2b4594] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1e326e]",
+            children: "Sign out"
+          }
+        ) : null,
+        children: selectedVisit && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex-shrink-0", children: [
+              selectedVisit.image_url ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: selectedVisit.image_url, alt: selectedVisit.name, className: "w-16 h-16 rounded-full object-cover" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-xl font-bold text-slate-600", children: (selectedVisit.name || "?").split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white ${selectedVisit.sign_out_time ? "bg-slate-400" : "bg-green-500"}` })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg font-bold text-slate-800", children: selectedVisit.name }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: selectedVisit.group || "—" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-wide text-slate-500", children: "In and out" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-y-3 text-sm", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Site" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.site || siteName }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Signed in" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.sign_in_time ? new Date(selectedVisit.sign_in_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + ", " + new Date(selectedVisit.sign_in_time).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "—" }),
+                selectedVisit.checked_in_by && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-400 mt-0.5", children: [
+                  "by ",
+                  selectedVisit.checked_in_by
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Signed out" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.sign_out_time ? new Date(selectedVisit.sign_out_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + ", " + new Date(selectedVisit.sign_out_time).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "—" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Total time" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.duration || "—" })
+            ] })
+          ] }),
+          (selectedVisit.trade || selectedVisit.car_reg || selectedVisit.reason) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-wide text-slate-500", children: "Sign in fields" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-white p-4 space-y-3 text-sm", children: [
+              selectedVisit.trade && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Trade" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.trade })
+              ] }),
+              selectedVisit.car_reg && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Car registration" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.car_reg })
+              ] }),
+              selectedVisit.reason && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Notes" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: selectedVisit.reason })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-wide text-slate-500", children: "Actions" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-white overflow-hidden divide-y divide-slate-100", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => {
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  },
+                  className: "flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 16, className: "text-slate-400" }),
+                    "View profile"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => {
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  },
+                  className: "flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(History, { size: 16, className: "text-slate-400" }),
+                    "View visit history"
+                  ]
+                }
+              ),
+              !selectedVisit.sign_out_time && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: async () => {
+                    await handleSignOutVisit(selectedVisit.id);
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  },
+                  className: "flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { size: 16, className: "text-slate-400" }),
+                    "Sign out now"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: async () => {
+                    await handleDeleteVisit(selectedVisit.id);
+                    setDrawerOpen(false);
+                    setSelectedVisit(null);
+                  },
+                  className: "flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 16, className: "text-red-400" }),
+                    "Delete visit"
+                  ]
+                }
+              )
+            ] })
+          ] })
+        ] })
       }
     )
   ] });
@@ -73262,7 +73460,7 @@ function makeDefaultSignOutFields(groups) {
   ];
 }
 function SiteSettings({ site, groups, onBack, onDeleted }) {
-  const TABS2 = ["Details", "Sign in & out flow", "Devices & QR posters", "Evacuation setup", "On-site report", "Privacy"];
+  const TABS2 = ["Details", "Tablet display", "Sign in & out flow", "Devices & QR posters", "Evacuation setup", "On-site report", "Privacy"];
   const [tab, setTab] = reactExports.useState("Details");
   const [siteName, setSiteName] = reactExports.useState(site.name);
   const [advOpen, setAdvOpen] = reactExports.useState(false);
@@ -73294,6 +73492,13 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [allSites, setAllSites] = reactExports.useState([site]);
   const [currentSite, setCurrentSite] = reactExports.useState(site);
   const [saving, setSaving] = reactExports.useState(false);
+  const [tabletLogo, setTabletLogo] = reactExports.useState(null);
+  const [tabletWelcome, setTabletWelcome] = reactExports.useState("Welcome");
+  const [tabletSubtitle, setTabletSubtitle] = reactExports.useState("Please sign in below");
+  const [tabletTheme, setTabletTheme] = reactExports.useState("#2b4594");
+  const [tabletScreensaver, setTabletScreensaver] = reactExports.useState(true);
+  const [tabletScreensaverMins, setTabletScreensaverMins] = reactExports.useState(5);
+  const [tabletSaving, setTabletSaving] = reactExports.useState(false);
   reactExports.useEffect(() => {
     api.get("/projects").then((r) => setAllSites(r.data || [site])).catch(() => {
     });
@@ -73659,6 +73864,287 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
         ] }, i2)) })
       ] }) })
     ] }),
+    tab === "Tablet display" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Branding" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Logo" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+              tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-16 w-16 rounded-xl object-contain border border-slate-200 bg-white p-1" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-16 w-16 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 text-xs text-center leading-tight", children: "No logo" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "file",
+                      accept: "image/*",
+                      className: "sr-only",
+                      onChange: (e2) => {
+                        const file = e2.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setTabletLogo(ev.target.result);
+                        reader.readAsDataURL(file);
+                      }
+                    }
+                  ),
+                  "Upload logo"
+                ] }),
+                tabletLogo && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setTabletLogo(null),
+                    className: "text-xs text-red-500 hover:underline text-left",
+                    children: "Remove logo"
+                  }
+                )
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-xs text-slate-400", children: "PNG or JPG recommended. Displays at the top of the tablet sign-in screen." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Theme colour" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "color",
+                  value: tabletTheme,
+                  onChange: (e2) => setTabletTheme(e2.target.value),
+                  className: "h-10 w-10 cursor-pointer rounded-lg border border-slate-300 p-0.5"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "text",
+                  value: tabletTheme,
+                  onChange: (e2) => setTabletTheme(e2.target.value),
+                  className: "w-32 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]",
+                  placeholder: "#2b4594"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2", children: ["#2b4594", "#16a34a", "#dc2626", "#7c3aed", "#0891b2", "#ea580c"].map((c2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  title: c2,
+                  onClick: () => setTabletTheme(c2),
+                  className: "h-7 w-7 rounded-full border-2 transition-transform hover:scale-110",
+                  style: { background: c2, borderColor: tabletTheme === c2 ? "#1e293b" : "transparent" }
+                },
+                c2
+              )) })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Welcome message" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Heading" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                value: tabletWelcome,
+                onChange: (e2) => setTabletWelcome(e2.target.value),
+                maxLength: 60,
+                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+                placeholder: "Welcome"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-xs text-slate-400", children: [
+              tabletWelcome.length,
+              "/60 characters"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Subtitle" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                value: tabletSubtitle,
+                onChange: (e2) => setTabletSubtitle(e2.target.value),
+                maxLength: 100,
+                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+                placeholder: "Please sign in below"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-xs text-slate-400", children: [
+              tabletSubtitle.length,
+              "/100 characters"
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Screensaver" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Dims the tablet after a period of inactivity" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                onClick: () => setTabletScreensaver((v2) => !v2),
+                className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? "bg-[#2b4594]" : "bg-slate-300"}`,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? "translate-x-6" : "translate-x-1"}` })
+              }
+            )
+          ] }),
+          tabletScreensaver && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Idle timeout (minutes)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "select",
+              {
+                value: tabletScreensaverMins,
+                onChange: (e2) => setTabletScreensaverMins(Number(e2.target.value)),
+                className: "border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+                children: [1, 2, 5, 10, 15, 30].map((m2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: m2, children: [
+                  m2,
+                  " minute",
+                  m2 !== 1 ? "s" : ""
+                ] }, m2))
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            disabled: tabletSaving,
+            onClick: async () => {
+              setTabletSaving(true);
+              try {
+                await api.put(`/projects/${currentSite.id}`, {
+                  name: currentSite.name,
+                  code: currentSite.code,
+                  tabletSettings: {
+                    logo: tabletLogo,
+                    welcome: tabletWelcome,
+                    subtitle: tabletSubtitle,
+                    theme: tabletTheme,
+                    screensaver: tabletScreensaver,
+                    screensaverMins: tabletScreensaverMins
+                  }
+                });
+                localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
+                  logo: tabletLogo,
+                  welcome: tabletWelcome,
+                  subtitle: tabletSubtitle,
+                  theme: tabletTheme,
+                  screensaver: tabletScreensaver,
+                  screensaverMins: tabletScreensaverMins
+                }));
+              } catch {
+              } finally {
+                setTabletSaving(false);
+              }
+              localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
+                logo: tabletLogo,
+                welcome: tabletWelcome,
+                subtitle: tabletSubtitle,
+                theme: tabletTheme,
+                screensaver: tabletScreensaver,
+                screensaverMins: tabletScreensaverMins
+              }));
+              toast.success("Tablet display settings saved");
+              setTabletSaving(false);
+            },
+            className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold",
+            children: tabletSaving ? "Saving…" : "Save changes"
+          }
+        ) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Preview" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 -mt-2", children: "Live preview of your tablet welcome screen" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full", style: { aspectRatio: "4/3" }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "w-full h-full rounded-[18px] overflow-hidden flex flex-col relative",
+              style: { background: tabletTheme },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-5 py-2 bg-black/10", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "14", height: "14", fill: "none", stroke: "white", strokeWidth: "2", viewBox: "0 0 24 24", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "11", cy: "11", r: "8" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 21l-4.35-4.35" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold opacity-80", children: "🇬🇧" })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-sm font-semibold opacity-90", children: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 bg-white rounded-lg flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "#1e293b", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "7", height: "7" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "14", y: "3", width: "7", height: "7" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "14", width: "7", height: "7" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "5", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "16", y: "5", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "16", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M14 14h3v3M17 14v3h3M14 17v3" })
+                  ] }) })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex items-center gap-8 px-10 py-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col justify-center", children: [
+                    tabletLogo && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-10 object-contain mb-4 self-start" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "p",
+                      {
+                        className: "text-white font-bold leading-tight mb-2",
+                        style: { fontSize: "clamp(18px, 3.5vw, 32px)" },
+                        children: tabletWelcome || "Hello,"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "p",
+                      {
+                        className: "text-white/70 font-medium",
+                        style: { fontSize: "clamp(11px, 1.8vw, 16px)" },
+                        children: tabletSubtitle || "Please sign in here."
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 mt-4", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-4 h-4 rounded-full flex items-center justify-center", style: { background: "white" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "10", height: "10", viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8 2L14 12H2L8 2Z", fill: tabletTheme }) }) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white/60 text-xs font-medium", children: "Tripod Services" })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-[42%] bg-white rounded-2xl shadow-lg p-5 flex flex-col gap-2.5", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "rounded-full py-2.5 flex items-center justify-center mb-1",
+                        style: { background: "#111827" },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold", children: "Tap to get started" })
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-6 bg-slate-50 border border-slate-200 rounded-lg" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5 mt-1" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-6 bg-slate-50 border border-slate-200 rounded-lg" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "mt-1 h-7 rounded-lg flex items-center justify-center",
+                        style: { background: tabletTheme },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-bold", children: "Sign in" })
+                      }
+                    )
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pb-2 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-1 rounded-full bg-white/30" }) })
+              ]
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -right-1 w-1.5 h-8 bg-[#2c2c2e] rounded-r-sm" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[20%] -left-1 w-1.5 h-5 bg-[#2c2c2e] rounded-l-sm" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[43%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 text-center", children: "Updates live as you change settings" })
+      ] })
+    ] }),
     tab === "Privacy" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 max-w-xl space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Privacy" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-3 cursor-pointer", children: [
@@ -73694,24 +74180,75 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
         return "https://tripod-signin-app.onrender.com".replace(/\/$/, "");
       };
       const qrUrl = `${getBaseUrl2()}/checkin/${currentSite.id}`;
-      const downloadQR = () => {
+      const downloadQRPng = () => {
         const container = document.getElementById("poster-qr-container");
         const svg = container?.querySelector("svg");
         if (!svg) return;
+        const PADDING = 40;
+        const QR_SIZE = 360;
+        const TOTAL = QR_SIZE + PADDING * 2;
         const svgData = new XMLSerializer().serializeToString(svg);
         const canvas = document.createElement("canvas");
-        canvas.width = 400;
-        canvas.height = 400;
+        canvas.width = TOTAL;
+        canvas.height = TOTAL;
         const ctx = canvas.getContext("2d");
         const img = new Image();
         img.onload = () => {
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(0, 0, 400, 400);
-          ctx.drawImage(img, 0, 0, 400, 400);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, TOTAL, TOTAL);
+          ctx.drawImage(img, PADDING, PADDING, QR_SIZE, QR_SIZE);
           const a2 = document.createElement("a");
           a2.download = `${viewQrPoster.name}-qr.png`;
           a2.href = canvas.toDataURL("image/png");
           a2.click();
+        };
+        img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+      };
+      const downloadQRPdf = () => {
+        const container = document.getElementById("poster-qr-container");
+        const svg = container?.querySelector("svg");
+        if (!svg) return;
+        const PADDING = 40;
+        const QR_SIZE = 360;
+        const TOTAL = QR_SIZE + PADDING * 2;
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const qrCanvas = document.createElement("canvas");
+        qrCanvas.width = TOTAL;
+        qrCanvas.height = TOTAL;
+        const ctx = qrCanvas.getContext("2d");
+        const img = new Image();
+        img.onload = () => {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, TOTAL, TOTAL);
+          ctx.drawImage(img, PADDING, PADDING, QR_SIZE, QR_SIZE);
+          const qrDataUrl = qrCanvas.toDataURL("image/png");
+          const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+              <style>
+                @page { size: A4; margin: 0; }
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { width: 210mm; min-height: 297mm; background: #fff; font-family: Arial, sans-serif;
+                       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40mm 30mm; }
+                h1 { font-size: 28px; color: #111827; text-align: center; margin-bottom: 8px; }
+                p  { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 32px; }
+                img { width: 200px; height: 200px; display: block; margin: 0 auto 24px; }
+                .url { font-size: 11px; color: #9ca3af; word-break: break-all; text-align: center; max-width: 300px; }
+                .footer { font-size: 11px; color: #d1d5db; margin-top: 40px; }
+              </style>
+            </head><body>
+              <h1>${currentSite.name}</h1>
+              <p>Scan to sign in at this location</p>
+              <img src="${qrDataUrl}" />
+              <div class="url">${qrUrl}</div>
+              <div class="footer">Powered by Sign In Enterprise · Tripod Services</div>
+            </body></html>`;
+          const w2 = window.open("", "_blank");
+          if (!w2) return;
+          w2.document.write(html);
+          w2.document.close();
+          w2.focus();
+          setTimeout(() => {
+            w2.print();
+          }, 500);
         };
         img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
       };
@@ -73724,7 +74261,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setViewQrPoster(null), className: "text-slate-400 hover:text-slate-700 rounded-full p-1 hover:bg-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 18 }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-5 flex flex-col items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "poster-qr-container", className: "p-4 bg-white border border-slate-200 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: qrUrl, size: 200, bgColor: "#ffffff", fgColor: "#1e293b", level: "H" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "poster-qr-container", className: "p-6 bg-white border-2 border-slate-200 rounded-2xl shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: qrUrl, size: 200, bgColor: "#ffffff", fgColor: "#1e293b", level: "H" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-slate-50 border border-slate-100 rounded-lg px-4 py-2 w-full text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-mono text-slate-500 break-all", children: qrUrl }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-400 text-center", children: [
             "Scan this QR code with a phone to open the visitor sign-in form for ",
@@ -73734,11 +74271,22 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
-                onClick: downloadQR,
+                onClick: downloadQRPng,
                 className: "flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Download, { size: 14 }),
-                  " Download QR"
+                  " PNG"
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: downloadQRPdf,
+                className: "flex-1 flex items-center justify-center gap-2 py-2.5 border border-[#2b4594] text-[#2b4594] hover:bg-blue-50 rounded-lg text-sm font-semibold",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { size: 14 }),
+                  " PDF"
                 ]
               }
             ),
@@ -73751,7 +74299,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                 className: "flex-1 flex items-center justify-center gap-2 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { size: 14 }),
-                  " Open page"
+                  " Open"
                 ]
               }
             )
@@ -74477,17 +75025,39 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [email, setEmail] = reactExports.useState("");
   const [firstName, setFirstName] = reactExports.useState("");
   const [lastName, setLastName] = reactExports.useState("");
+  const [phone2, setPhone] = reactExports.useState("");
   const [organization, setOrganization] = reactExports.useState("");
   const [role, setRole] = reactExports.useState("admin");
   const [accountType, setAccountType] = reactExports.useState("portal");
   const [mobileRole, setMobileRole] = reactExports.useState("guard");
   const [siteId, setSiteId] = reactExports.useState("");
   const [sites, setSites] = reactExports.useState([]);
+  const [sendWelcome, setSendWelcome] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
   const [error, setError] = reactExports.useState("");
   const [createdCreds, setCreatedCreds] = reactExports.useState(null);
+  const currentRole = (() => {
+    try {
+      const t3 = localStorage.getItem("adminToken");
+      return t3 ? JSON.parse(atob(t3.split(".")[1])).role || "admin" : "admin";
+    } catch {
+      return "admin";
+    }
+  })();
+  const isSuperAdmin = currentRole === "superadmin";
+  const currentSiteId = (() => {
+    try {
+      const t3 = localStorage.getItem("adminToken");
+      return t3 ? JSON.parse(atob(t3.split(".")[1])).site_id || "" : "";
+    } catch {
+      return "";
+    }
+  })();
   reactExports.useEffect(() => {
-    api.get("/projects").then((r) => setSites(r.data || [])).catch(() => {
+    api.get("/projects").then((r) => {
+      setSites(r.data || []);
+      if (!isSuperAdmin && currentSiteId) setSiteId(currentSiteId);
+    }).catch(() => {
     });
   }, []);
   const handleCreate = async () => {
@@ -74504,30 +75074,32 @@ const InviteModal = ({ onClose, onInvited }) => {
           role,
           first_name: firstName.trim() || void 0,
           last_name: lastName.trim() || void 0,
+          phone: phone2.trim() || void 0,
           organization: organization.trim() || void 0,
-          send_email: true
+          site_id: siteId || void 0,
+          send_email: sendWelcome
         });
         setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: "Portal account" });
         onInvited({ email: email.trim(), role });
       } else {
-        const parts2 = (firstName + " " + lastName).trim().split(/\s+/);
         const res = await api.post("/guards/members", {
           first_name: firstName.trim() || email.split("@")[0],
           last_name: lastName.trim() || void 0,
           email: email.trim(),
+          phone: phone2.trim() || void 0,
           mobileRole,
           role: mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
           site_id: siteId || void 0,
           status: "Current",
-          send_welcome: true,
-          include_companion: true
+          send_welcome: sendWelcome,
+          include_companion: sendWelcome
         });
         setCreatedCreds({
           email: email.trim(),
           password: res.data.password || "(sent by welcome email)",
           role: mobileRole,
           type: "Mobile app account",
-          note: "Welcome email with companion code sent to their inbox."
+          note: sendWelcome ? "Welcome email with companion app code sent to their inbox." : void 0
         });
         onInvited({ email: email.trim(), role: mobileRole, status: "invited" });
       }
@@ -74537,6 +75109,7 @@ const InviteModal = ({ onClose, onInvited }) => {
       setSaving(false);
     }
   };
+  const inp = "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]";
   if (createdCreds) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-lg font-bold text-slate-800", children: [
       "✓ ",
@@ -74566,15 +75139,18 @@ const InviteModal = ({ onClose, onInvited }) => {
   ] }) });
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Create account" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Create account" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Add a portal admin or mobile app user" })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 18 }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-6 py-5 space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Account type" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-2", children: [
-          { val: "portal", label: "Portal (Web)", desc: "Access the admin dashboard" },
-          { val: "mobile", label: "Mobile App", desc: "Guard / Manager / Employee" }
+          { val: "portal", label: "🖥  Portal (Web)", desc: "Admin dashboard access" },
+          { val: "mobile", label: "📱  Mobile App", desc: "Guard / Manager / Employee" }
         ].map(({ val, label, desc }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "button",
           {
@@ -74592,27 +75168,11 @@ const InviteModal = ({ onClose, onInvited }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "First name" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              value: firstName,
-              onChange: (e2) => setFirstName(e2.target.value),
-              placeholder: "John",
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: firstName, onChange: (e2) => setFirstName(e2.target.value), placeholder: "John", className: inp })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Last name" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              value: lastName,
-              onChange: (e2) => setLastName(e2.target.value),
-              placeholder: "Smith",
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: lastName, onChange: (e2) => setLastName(e2.target.value), placeholder: "Smith", className: inp })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -74620,81 +75180,84 @@ const InviteModal = ({ onClose, onInvited }) => {
           "Email address ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "email",
-            value: email,
-            onChange: (e2) => setEmail(e2.target.value),
-            placeholder: "john@company.com",
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-          }
-        )
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", value: email, onChange: (e2) => setEmail(e2.target.value), placeholder: "john@tripodsvcs.co.uk", className: inp })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+          "Phone ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-normal text-xs", children: "(optional)" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "tel", value: phone2, onChange: (e2) => setPhone(e2.target.value), placeholder: "+44 7700 900000", className: inp })
       ] }),
       accountType === "portal" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Organization" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              value: organization,
-              onChange: (e2) => setOrganization(e2.target.value),
-              placeholder: "IB Vogt - Horton Solar Farm",
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Organisation" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: organization, onChange: (e2) => setOrganization(e2.target.value), placeholder: "Tripod Services Ltd", className: inp })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Portal role" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              value: role,
-              onChange: (e2) => setRole(e2.target.value),
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin — manage their own site" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "superadmin", children: "Superadmin — full access to all sites" })
-              ]
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+            "Portal role ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: role, onChange: (e2) => setRole(e2.target.value), className: inp, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Site Manager — manages their assigned site only" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "superadmin", children: "Super Admin — full access to all sites" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-xs text-slate-400", children: role === "superadmin" ? "Can see and edit every account and guard across all sites." : "Restricted to data linked to their assigned site only." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+            "Assign to site ",
+            !isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-normal text-xs", children: "(locked to your site)" })
+          ] }),
+          isSuperAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: siteId, onChange: (e2) => setSiteId(e2.target.value), className: inp, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
+            sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
+            sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites — create one in Manage → Sites" })
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${inp} bg-slate-50 text-slate-600 cursor-not-allowed`, children: sites.find((s2) => s2.id === currentSiteId)?.name || "Your site" })
         ] })
       ] }),
       accountType === "mobile" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile app role" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              value: mobileRole,
-              onChange: (e2) => setMobileRole(e2.target.value),
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Security Guard — sign in/out visitors, run evacuations" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager — view on-site people, receive notifications" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee — sign self in/out, view calendar" })
-              ]
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+            "Mobile app role ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: mobileRole, onChange: (e2) => setMobileRole(e2.target.value), className: inp, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Security Guard — sign in/out visitors, run evacuations" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager — view on-site people, approve guards" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee — sign self in/out, view calendar" })
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Assign to site" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              value: siteId,
-              onChange: (e2) => setSiteId(e2.target.value),
-              className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
-                sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
-                sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites found — create one in Manage → Sites" })
-              ]
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700", children: "A welcome email with the companion app activation code will be sent to their email address." })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+            "Assign to site ",
+            !isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-normal text-xs", children: "(locked to your site)" })
+          ] }),
+          isSuperAdmin ? /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: siteId, onChange: (e2) => setSiteId(e2.target.value), className: inp, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
+            sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
+            sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites — create one in Manage → Sites" })
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${inp} bg-slate-50 text-slate-600 cursor-not-allowed`, children: sites.find((s2) => s2.id === currentSiteId)?.name || "Your site" })
+        ] })
       ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 15, className: "text-[#2b4594]" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: accountType === "mobile" ? "Includes credentials and companion app invite code" : "Includes credentials and portal access link" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            onClick: () => setSendWelcome((v2) => !v2),
+            className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? "bg-[#2b4594]" : "bg-slate-300"}`,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? "translate-x-6" : "translate-x-1"}` })
+          }
+        )
+      ] }) }),
       error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: error })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 px-6 py-4 border-t border-slate-100", children: [

@@ -5,9 +5,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  SafeAreaView, StyleSheet, ActivityIndicator, KeyboardAvoidingView,
+  StyleSheet, ActivityIndicator, KeyboardAvoidingView,
   Platform, Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Send, RefreshCw } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -135,7 +136,7 @@ const MessagesScreen = ({ navigation, route }) => {
 
   if (!siteId) {
     return (
-      <SafeAreaView style={s.container}>
+      <SafeAreaView style={s.container} edges={['top']}>
         <View style={s.centered}>
           <Text style={s.emptyText}>No site linked to your account. Please contact your administrator.</Text>
         </View>
@@ -144,7 +145,7 @@ const MessagesScreen = ({ navigation, route }) => {
   }
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <View>

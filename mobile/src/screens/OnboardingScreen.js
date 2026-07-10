@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BRAND_BLUE = '#2b4594';
 
@@ -43,7 +44,15 @@ const OnboardingScreen = ({ navigation }) => {
           activeOpacity={0.7}
           onPress={() => navigation.navigate('GuardSignup')}
         >
-          <Text style={styles.aboutText}>✏️  Register with invite code? <Text style={{ color: BRAND_BLUE, fontWeight: '700' }}>Sign Up</Text></Text>
+          <Text style={styles.aboutText}>✏️  New here? <Text style={{ color: BRAND_BLUE, fontWeight: '700' }}>Register</Text></Text>
+        </TouchableOpacity>
+
+        {/* About this app — info line, separate from register */}
+        <TouchableOpacity
+          style={styles.infoBtn}
+          activeOpacity={0.6}
+        >
+          <Text style={styles.infoText}>ⓘ  About this app</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -60,11 +69,8 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     padding: 28,
     marginBottom: 28,
-    shadowColor: BRAND_BLUE,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowColor: 'transparent',
+    elevation: 0,
   },
   logoImg:  { width: 130, height: 72 },
   title:    { fontSize: 26, fontWeight: '800', color: '#111827', marginBottom: 10, letterSpacing: -0.3, textAlign: 'center' },
@@ -89,6 +95,8 @@ const styles = StyleSheet.create({
   portalBtnText:{ color: BRAND_BLUE },
   aboutBtn:     { alignItems: 'center', marginTop: 12 },
   aboutText:    { fontSize: 15, color: '#6b7280' },
+  infoBtn:      { alignItems: 'center', marginTop: 10 },
+  infoText:     { fontSize: 13, color: '#9ca3af' },
 });
 
 export default OnboardingScreen;

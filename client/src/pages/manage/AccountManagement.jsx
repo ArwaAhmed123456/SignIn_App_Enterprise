@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X } from 'lucide-react';
+import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X, Mail } from 'lucide-react';
 import api from '../../api';
 
 const ROLES = ['superadmin', 'admin', 'viewer'];
-
 const ROLE_COLORS = {
   superadmin: 'bg-purple-100 text-purple-700',
   admin:      'bg-blue-100 text-[#2b4594]',
   viewer:     'bg-slate-100 text-slate-600',
 };
-
 const MOBILE_ROLES = ['employee', 'guard', 'manager', 'admin'];
 
 // ─── Invite user modal ────────────────────────────────────────────────────────
@@ -18,18 +16,31 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [email, setEmail]               = useState('');
   const [firstName, setFirstName]       = useState('');
   const [lastName, setLastName]         = useState('');
+  const [phone, setPhone]               = useState('');
   const [organization, setOrganization] = useState('');
   const [role, setRole]                 = useState('admin');
-  const [accountType, setAccountType]   = useState('portal'); // portal | mobile
+  const [accountType, setAccountType]   = useState('portal');
   const [mobileRole, setMobileRole]     = useState('guard');
   const [siteId, setSiteId]             = useState('');
   const [sites, setSites]               = useState([]);
+  const [sendWelcome, setSendWelcome]   = useState(true);
   const [saving, setSaving]             = useState(false);
   const [error, setError]               = useState('');
   const [createdCreds, setCreatedCreds] = useState(null);
 
+  const currentRole = (() => {
+    try { const t = localStorage.getItem('adminToken'); return t ? JSON.parse(atob(t.split('.')[1])).role || 'admin' : 'admin'; } catch { return 'admin'; }
+  })();
+  const isSuperAdmin = currentRole === 'superadmin';
+  const currentSiteId = (() => {
+    try { const t = localStorage.getItem('adminToken'); return t ? JSON.parse(atob(t.split('.')[1])).site_id || '' : ''; } catch { return ''; }
+  })();
+
   useEffect(() => {
-    api.get('/projects').then(r => setSites(r.data || [])).catch(() => {});
+    api.get('/projects').then(r => {
+      setSites(r.data || []);
+      if (!isSuperAdmin && currentSiteId) setSiteId(currentSiteId);
+    }).catch(() => {});
   }, []);
 
   const handleCreate = async () => {
@@ -37,36 +48,34 @@ const InviteModal = ({ onClose, onInvited }) => {
     setSaving(true); setError('');
     try {
       if (accountType === 'portal') {
-        // Create portal (web dashboard) account
         const res = await api.post('/auth/invite', {
           email: email.trim(), role,
           first_name: firstName.trim() || undefined,
           last_name:  lastName.trim()  || undefined,
+          phone:      phone.trim()     || undefined,
           organization: organization.trim() || undefined,
-          send_email: true,
+          site_id:    siteId           || undefined,
+          send_email: sendWelcome,
         });
         setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: 'Portal account' });
         onInvited({ email: email.trim(), role });
       } else {
-        // Create mobile app account (Guard/Manager/Employee)
-        const parts = (firstName + ' ' + lastName).trim().split(/\s+/);
         const res = await api.post('/guards/members', {
-          first_name: firstName.trim() || email.split('@')[0],
-          last_name:  lastName.trim() || undefined,
-          email: email.trim(),
+          first_name:        firstName.trim() || email.split('@')[0],
+          last_name:         lastName.trim()  || undefined,
+          email:             email.trim(),
+          phone:             phone.trim()     || undefined,
           mobileRole,
-          role: mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
-          site_id: siteId || undefined,
-          status: 'Current',
-          send_welcome: true,
-          include_companion: true,
+          role:              mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
+          site_id:           siteId           || undefined,
+          status:            'Current',
+          send_welcome:      sendWelcome,
+          include_companion: sendWelcome,
         });
         setCreatedCreds({
-          email: email.trim(),
-          password: res.data.password || '(sent by welcome email)',
-          role: mobileRole,
-          type: 'Mobile app account',
-          note: 'Welcome email with companion code sent to their inbox.',
+          email: email.trim(), password: res.data.password || '(sent by welcome email)',
+          role: mobileRole, type: 'Mobile app account',
+          note: sendWelcome ? 'Welcome email with companion app code sent to their inbox.' : undefined,
         });
         onInvited({ email: email.trim(), role: mobileRole, status: 'invited' });
       }
@@ -74,6 +83,8 @@ const InviteModal = ({ onClose, onInvited }) => {
       setError(err.response?.data?.error || 'Failed to create account');
     } finally { setSaving(false); }
   };
+
+  const inp = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]';
 
   // Step 2 — show credentials
   if (createdCreds) return (
@@ -116,18 +127,21 @@ const InviteModal = ({ onClose, onInvited }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">Create account</h2>
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">Create account</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Add a portal admin or mobile app user</p>
+          </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"><X size={18} /></button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
 
-          {/* Account type toggle */}
+          {/* Account type */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Account type</label>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { val: 'portal', label: 'Portal (Web)', desc: 'Access the admin dashboard' },
-                { val: 'mobile', label: 'Mobile App',   desc: 'Guard / Manager / Employee' },
+                { val: 'portal', label: '🖥  Portal (Web)', desc: 'Admin dashboard access' },
+                { val: 'mobile', label: '📱  Mobile App',   desc: 'Guard / Manager / Employee' },
               ].map(({ val, label, desc }) => (
                 <button key={val} type="button" onClick={() => setAccountType(val)}
                   className={`text-left px-4 py-3 rounded-xl border-2 transition-colors ${accountType === val ? 'border-[#2b4594] bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
@@ -142,68 +156,112 @@ const InviteModal = ({ onClose, onInvited }) => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">First name</label>
-              <input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="John"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              <input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="John" className={inp} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Last name</label>
-              <input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Smith"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              <input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Smith" className={inp} />
             </div>
           </div>
 
           {/* Email */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Email address <span className="text-red-500">*</span></label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="john@company.com"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="john@tripodsvcs.co.uk" className={inp} />
           </div>
 
-          {/* Portal-specific fields */}
+          {/* Phone */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Phone <span className="text-slate-400 font-normal text-xs">(optional)</span></label>
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+44 7700 900000" className={inp} />
+          </div>
+
+          {/* Portal fields */}
           {accountType === 'portal' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Organization</label>
-                <input value={organization} onChange={e => setOrganization(e.target.value)} placeholder="IB Vogt - Horton Solar Farm"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Organisation</label>
+                <input value={organization} onChange={e => setOrganization(e.target.value)} placeholder="Tripod Services Ltd" className={inp} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Portal role</label>
-                <select value={role} onChange={e => setRole(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                  <option value="admin">Admin — manage their own site</option>
-                  <option value="superadmin">Superadmin — full access to all sites</option>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Portal role <span className="text-red-500">*</span></label>
+                <select value={role} onChange={e => setRole(e.target.value)} className={inp}>
+                  <option value="admin">Site Manager — manages their assigned site only</option>
+                  <option value="superadmin">Super Admin — full access to all sites</option>
                 </select>
+                <p className="mt-1 text-xs text-slate-400">
+                  {role === 'superadmin' ? 'Can see and edit every account and guard across all sites.' : 'Restricted to data linked to their assigned site only.'}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Assign to site {!isSuperAdmin && <span className="text-slate-400 font-normal text-xs">(locked to your site)</span>}
+                </label>
+                {isSuperAdmin ? (
+                  <select value={siteId} onChange={e => setSiteId(e.target.value)} className={inp}>
+                    <option value="">Select site…</option>
+                    {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    {sites.length === 0 && <option disabled>No sites — create one in Manage → Sites</option>}
+                  </select>
+                ) : (
+                  <div className={`${inp} bg-slate-50 text-slate-600 cursor-not-allowed`}>
+                    {sites.find(s => s.id === currentSiteId)?.name || 'Your site'}
+                  </div>
+                )}
               </div>
             </>
           )}
 
-          {/* Mobile-specific fields */}
+          {/* Mobile fields */}
           {accountType === 'mobile' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile app role</label>
-                <select value={mobileRole} onChange={e => setMobileRole(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile app role <span className="text-red-500">*</span></label>
+                <select value={mobileRole} onChange={e => setMobileRole(e.target.value)} className={inp}>
                   <option value="guard">Security Guard — sign in/out visitors, run evacuations</option>
-                  <option value="manager">Manager — view on-site people, receive notifications</option>
+                  <option value="manager">Manager — view on-site people, approve guards</option>
                   <option value="employee">Employee — sign self in/out, view calendar</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Assign to site</label>
-                <select value={siteId} onChange={e => setSiteId(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                  <option value="">Select site…</option>
-                  {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  {sites.length === 0 && <option disabled>No sites found — create one in Manage → Sites</option>}
-                </select>
-              </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700">
-                A welcome email with the companion app activation code will be sent to their email address.
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Assign to site {!isSuperAdmin && <span className="text-slate-400 font-normal text-xs">(locked to your site)</span>}
+                </label>
+                {isSuperAdmin ? (
+                  <select value={siteId} onChange={e => setSiteId(e.target.value)} className={inp}>
+                    <option value="">Select site…</option>
+                    {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    {sites.length === 0 && <option disabled>No sites — create one in Manage → Sites</option>}
+                  </select>
+                ) : (
+                  <div className={`${inp} bg-slate-50 text-slate-600 cursor-not-allowed`}>
+                    {sites.find(s => s.id === currentSiteId)?.name || 'Your site'}
+                  </div>
+                )}
               </div>
             </>
           )}
+
+          {/* Welcome email toggle */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0">
+                  <Mail size={15} className="text-[#2b4594]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {accountType === 'mobile' ? 'Includes credentials and companion app invite code' : 'Includes credentials and portal access link'}
+                  </p>
+                </div>
+              </div>
+              <div onClick={() => setSendWelcome(v => !v)}
+                className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? 'translate-x-6' : 'translate-x-1'}`} />
+              </div>
+            </div>
+          </div>
 
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         </div>

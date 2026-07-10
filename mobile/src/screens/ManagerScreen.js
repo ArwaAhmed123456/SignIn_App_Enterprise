@@ -4,13 +4,13 @@ import {
   Alert,
   Modal,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -266,7 +266,7 @@ const ManagerScreen = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={s.container}>
+      <SafeAreaView style={s.container} edges={['top']}>
         <View style={s.centered}>
           <ActivityIndicator size="large" color="#2b4594" />
         </View>
@@ -275,7 +275,7 @@ const ManagerScreen = () => {
   }
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       <View style={s.header}>
         <View>
           <Text style={s.headerTitle}>Manager portal</Text>

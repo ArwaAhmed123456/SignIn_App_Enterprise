@@ -5,7 +5,6 @@ import {
   Modal,
   Platform,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import * as FileSystem from 'expo-file-system';
@@ -363,7 +363,7 @@ const SecurityGuardScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={s.container}>
+      <SafeAreaView style={s.container} edges={['top']}>
         <View style={s.centered}>
           <ActivityIndicator size="large" color="#2b4594" />
         </View>
@@ -372,7 +372,7 @@ const SecurityGuardScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={s.container} edges={['top']}>
       <View style={s.header}>
         <View style={s.headerLeft}>
           <View style={s.shieldIcon}>

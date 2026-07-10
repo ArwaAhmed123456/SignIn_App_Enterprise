@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, SafeAreaView,
+  View, Text, TouchableOpacity, ScrollView,
   StyleSheet, Switch, Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, User, ChevronDown } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 
@@ -56,7 +57,7 @@ const ProfileScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={[{ flex: 1 }, { backgroundColor: BG }]}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor: BG }]} edges={['top']}>
       {/* Header */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BG }}>
         <Text style={{ fontSize: 18, fontWeight: '700', color: T1 }}>{org}</Text>

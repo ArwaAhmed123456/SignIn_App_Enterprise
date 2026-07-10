@@ -1122,51 +1122,98 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
           {/* Right column — live preview */}
           <div className="flex flex-col gap-4">
             <h2 className="text-base font-bold text-slate-800">Preview</h2>
-            <div
-              className="rounded-2xl overflow-hidden shadow-xl border border-slate-200 aspect-[3/4] flex flex-col"
-              style={{ background: tabletTheme }}
-            >
-              {/* Header bar */}
-              <div className="flex items-center justify-center pt-8 pb-4 px-6">
-                {tabletLogo
-                  ? <img src={tabletLogo} alt="logo" className="h-14 object-contain" />
-                  : (
-                    <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/>
+            <p className="text-xs text-slate-500 -mt-2">Live preview of your tablet welcome screen</p>
+
+            {/* iPad landscape mockup */}
+            <div className="relative w-full" style={{ aspectRatio: '4/3' }}>
+              {/* iPad outer frame */}
+              <div className="absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]">
+                {/* Screen area */}
+                <div className="w-full h-full rounded-[18px] overflow-hidden flex flex-col relative"
+                  style={{ background: tabletTheme }}>
+
+                  {/* Status bar */}
+                  <div className="flex items-center justify-between px-5 py-2 bg-black/10">
+                    <div className="flex items-center gap-3">
+                      {/* Search icon */}
+                      <svg width="14" height="14" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                      {/* UK flag emoji simulation */}
+                      <span className="text-white text-xs font-semibold opacity-80">🇬🇧</span>
+                    </div>
+                    {/* Clock */}
+                    <span className="text-white text-sm font-semibold opacity-90">
+                      {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {/* QR icon top right */}
+                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        <rect x="5" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="#1e293b" stroke="none"/>
+                        <path d="M14 14h3v3M17 14v3h3M14 17v3"/>
                       </svg>
                     </div>
-                  )
-                }
-              </div>
+                  </div>
 
-              {/* Welcome text */}
-              <div className="text-center px-6 pb-6">
-                <p className="text-2xl font-bold text-white truncate">{tabletWelcome || 'Welcome'}</p>
-                <p className="text-sm text-white/70 mt-1 truncate">{tabletSubtitle || 'Please sign in below'}</p>
-              </div>
+                  {/* Main content area */}
+                  <div className="flex-1 flex items-center gap-8 px-10 py-4">
+                    {/* Left — welcome text + logo */}
+                    <div className="flex-1 flex flex-col justify-center">
+                      {tabletLogo && (
+                        <img src={tabletLogo} alt="logo" className="h-10 object-contain mb-4 self-start" />
+                      )}
+                      <p className="text-white font-bold leading-tight mb-2"
+                        style={{ fontSize: 'clamp(18px, 3.5vw, 32px)' }}>
+                        {tabletWelcome || 'Hello,'}
+                      </p>
+                      <p className="text-white/70 font-medium"
+                        style={{ fontSize: 'clamp(11px, 1.8vw, 16px)' }}>
+                        {tabletSubtitle || 'Please sign in here.'}
+                      </p>
+                      {/* Brand badge */}
+                      <div className="flex items-center gap-1.5 mt-4">
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'white' }}>
+                          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2L14 12H2L8 2Z" fill={tabletTheme} />
+                          </svg>
+                        </div>
+                        <span className="text-white/60 text-xs font-medium">Tripod Services</span>
+                      </div>
+                    </div>
 
-              {/* Mock sign-in card */}
-              <div className="mx-4 flex-1 bg-white rounded-2xl p-5 flex flex-col gap-3">
-                <div className="h-3 bg-slate-100 rounded-full w-1/3" />
-                <div className="h-8 bg-slate-100 rounded-lg" />
-                <div className="h-3 bg-slate-100 rounded-full w-1/3 mt-2" />
-                <div className="h-8 bg-slate-100 rounded-lg" />
-                <div className="flex-1" />
-                <div
-                  className="h-10 rounded-lg flex items-center justify-center"
-                  style={{ background: tabletTheme }}
-                >
-                  <span className="text-white text-sm font-bold">Sign in</span>
+                    {/* Right — sign in card */}
+                    <div className="w-[42%] bg-white rounded-2xl shadow-lg p-5 flex flex-col gap-2.5">
+                      {/* Tap to get started button */}
+                      <div className="rounded-full py-2.5 flex items-center justify-center mb-1"
+                        style={{ background: '#111827' }}>
+                        <span className="text-white text-xs font-semibold">Tap to get started</span>
+                      </div>
+                      {/* Mock form fields */}
+                      <div className="h-2 bg-slate-100 rounded-full w-2/5" />
+                      <div className="h-6 bg-slate-50 border border-slate-200 rounded-lg" />
+                      <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" />
+                      <div className="h-6 bg-slate-50 border border-slate-200 rounded-lg" />
+                      <div className="mt-1 h-7 rounded-lg flex items-center justify-center"
+                        style={{ background: tabletTheme }}>
+                        <span className="text-white text-xs font-bold">Sign in</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Home bar */}
+                  <div className="pb-2 flex justify-center">
+                    <div className="w-24 h-1 rounded-full bg-white/30" />
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom bar */}
-              <div className="h-6 flex items-center justify-center">
-                <div className="w-12 h-1.5 rounded-full bg-white/30" />
-              </div>
+              {/* iPad side buttons */}
+              <div className="absolute top-[30%] -right-1 w-1.5 h-8 bg-[#2c2c2e] rounded-r-sm" />
+              <div className="absolute top-[20%] -left-1 w-1.5 h-5 bg-[#2c2c2e] rounded-l-sm" />
+              <div className="absolute top-[30%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" />
+              <div className="absolute top-[43%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" />
             </div>
-            <p className="text-xs text-slate-400 text-center">This is how your tablet sign-in screen will look</p>
+
+            <p className="text-xs text-slate-400 text-center">Updates live as you change settings</p>
           </div>
         </div>
       )}
@@ -1216,21 +1263,77 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
           return `http://192.168.100.173:${window.location.port || 5173}`;
         };
         const qrUrl = `${getBaseUrl()}/checkin/${currentSite.id}`;
-        const qrRef = { current: null };
-        const downloadQR = () => {
+
+        // Download PNG — draws QR with 40px white border so every scanner reads it
+        const downloadQRPng = () => {
           const container = document.getElementById('poster-qr-container');
           const svg = container?.querySelector('svg');
           if (!svg) return;
+          const PADDING = 40;
+          const QR_SIZE = 360;
+          const TOTAL   = QR_SIZE + PADDING * 2;
           const svgData = new XMLSerializer().serializeToString(svg);
-          const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 400;
-          const ctx = canvas.getContext('2d'); const img = new Image();
+          const canvas  = document.createElement('canvas');
+          canvas.width  = TOTAL; canvas.height = TOTAL;
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
           img.onload = () => {
-            ctx.fillStyle = '#fff'; ctx.fillRect(0,0,400,400); ctx.drawImage(img,0,0,400,400);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, TOTAL, TOTAL);
+            ctx.drawImage(img, PADDING, PADDING, QR_SIZE, QR_SIZE);
             const a = document.createElement('a');
-            a.download = `${viewQrPoster.name}-qr.png`; a.href = canvas.toDataURL('image/png'); a.click();
+            a.download = `${viewQrPoster.name}-qr.png`;
+            a.href = canvas.toDataURL('image/png');
+            a.click();
           };
           img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
         };
+
+        // Download PDF — A4 page with site name, QR code centred, URL below
+        const downloadQRPdf = () => {
+          const container = document.getElementById('poster-qr-container');
+          const svg = container?.querySelector('svg');
+          if (!svg) return;
+          const PADDING = 40; const QR_SIZE = 360; const TOTAL = QR_SIZE + PADDING * 2;
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const qrCanvas = document.createElement('canvas');
+          qrCanvas.width = TOTAL; qrCanvas.height = TOTAL;
+          const ctx = qrCanvas.getContext('2d');
+          const img = new Image();
+          img.onload = () => {
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, TOTAL, TOTAL);
+            ctx.drawImage(img, PADDING, PADDING, QR_SIZE, QR_SIZE);
+            const qrDataUrl = qrCanvas.toDataURL('image/png');
+            // Build an A4-proportioned PDF page as HTML then print-to-PDF
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+              <style>
+                @page { size: A4; margin: 0; }
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { width: 210mm; min-height: 297mm; background: #fff; font-family: Arial, sans-serif;
+                       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40mm 30mm; }
+                h1 { font-size: 28px; color: #111827; text-align: center; margin-bottom: 8px; }
+                p  { font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 32px; }
+                img { width: 200px; height: 200px; display: block; margin: 0 auto 24px; }
+                .url { font-size: 11px; color: #9ca3af; word-break: break-all; text-align: center; max-width: 300px; }
+                .footer { font-size: 11px; color: #d1d5db; margin-top: 40px; }
+              </style>
+            </head><body>
+              <h1>${currentSite.name}</h1>
+              <p>Scan to sign in at this location</p>
+              <img src="${qrDataUrl}" />
+              <div class="url">${qrUrl}</div>
+              <div class="footer">Powered by Sign In Enterprise · Tripod Services</div>
+            </body></html>`;
+            const w = window.open('', '_blank');
+            if (!w) return;
+            w.document.write(html);
+            w.document.close();
+            w.focus();
+            setTimeout(() => { w.print(); }, 500);
+          };
+          img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        };
+
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
@@ -1239,7 +1342,8 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                 <button onClick={() => setViewQrPoster(null)} className="text-slate-400 hover:text-slate-700 rounded-full p-1 hover:bg-slate-100"><X size={18} /></button>
               </div>
               <div className="px-6 py-5 flex flex-col items-center gap-4">
-                <div id="poster-qr-container" className="p-4 bg-white border border-slate-200 rounded-xl">
+                {/* QR rendered with white padding so scanners can read it */}
+                <div id="poster-qr-container" className="p-6 bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
                   <QRCode value={qrUrl} size={200} bgColor="#ffffff" fgColor="#1e293b" level="H" />
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-lg px-4 py-2 w-full text-center">
@@ -1249,13 +1353,17 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                   Scan this QR code with a phone to open the visitor sign-in form for <strong>{currentSite.name}</strong>
                 </p>
                 <div className="flex gap-3 w-full">
-                  <button onClick={downloadQR}
+                  <button onClick={downloadQRPng}
                     className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
-                    <Download size={14} /> Download QR
+                    <Download size={14} /> PNG
+                  </button>
+                  <button onClick={downloadQRPdf}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-[#2b4594] text-[#2b4594] hover:bg-blue-50 rounded-lg text-sm font-semibold">
+                    <FileText size={14} /> PDF
                   </button>
                   <a href={qrUrl} target="_blank" rel="noreferrer"
                     className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                    <ExternalLink size={14} /> Open page
+                    <ExternalLink size={14} /> Open
                   </a>
                 </div>
               </div>
