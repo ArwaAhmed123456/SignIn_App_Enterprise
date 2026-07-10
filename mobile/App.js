@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { ActivityIndicator, View, Platform } from 'react-native';
 
-import { CheckCircle, Calendar as CalendarIcon, ShieldCheck, User, Users, MessageCircle } from 'lucide-react-native';
+import { CheckCircle, Calendar as CalendarIcon, ShieldCheck, AlertTriangle, User, Users, MessageCircle } from 'lucide-react-native';
 
 // Companion screens
 import TodayScreen        from './src/screens/TodayScreen';
@@ -72,7 +72,7 @@ const GuardTabs = () => (
   <Tab.Navigator screenOptions={TAB_STYLE}>
     <Tab.Screen name="GuardHome"    component={SecurityGuardScreen} options={{ tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={26} /> }} />
     <Tab.Screen name="Messages"     component={MessagesScreen}      options={{ tabBarIcon: ({ color }) => <MessageCircle  color={color} size={26} /> }} />
-    <Tab.Screen name="EvacuationTab"component={EvacuationScreen}    options={{ tabBarIcon: ({ color }) => <Users          color={color} size={26} /> }} />
+    <Tab.Screen name="EvacuationTab"component={EvacuationScreen}    options={{ tabBarIcon: ({ color }) => <AlertTriangle  color={color} size={26} /> }} />
     <Tab.Screen name="Profile"      component={ProfileScreen}       options={{ tabBarIcon: ({ color }) => <User           color={color} size={26} /> }} />
   </Tab.Navigator>
 );

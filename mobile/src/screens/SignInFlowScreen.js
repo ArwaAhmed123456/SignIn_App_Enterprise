@@ -16,7 +16,7 @@ const SelectSiteStep = ({ onSelect }) => {
     api.get('/projects').then(r => setSites(r.data || [])).catch(() => setSites([])).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <View style={s.centered}><ActivityIndicator color="#4ade80" size="large" /></View>;
+  if (loading) return <View style={s.centered}><ActivityIndicator color="#2b4594" size="large" /></View>;
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -46,7 +46,7 @@ const SelectGroupStep = ({ site, onSelect }) => {
       .finally(() => setLoading(false));
   }, [site.id]);
 
-  if (loading) return <View style={s.centered}><ActivityIndicator color="#4ade80" size="large" /></View>;
+  if (loading) return <View style={s.centered}><ActivityIndicator color="#2b4594" size="large" /></View>;
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -54,7 +54,7 @@ const SelectGroupStep = ({ site, onSelect }) => {
       <Text style={s.stepSub}>Please choose a group to sign in to:</Text>
       {groups.map(g => (
         <TouchableOpacity key={g.id} onPress={() => onSelect(g)} style={s.listItem} activeOpacity={0.75}>
-          <View style={[s.groupDot, { backgroundColor: '#4ade80' }]}>
+          <View style={[s.groupDot, { backgroundColor: '#2b4594' }]}>
             <Text style={[s.groupDotText, { color: '#111827' }]}>{(g.name||'G')[0].toUpperCase()}</Text>
           </View>
           <Text style={s.listItemText}>{g.name}</Text>
@@ -168,7 +168,7 @@ const SignInFlowScreen = ({ navigation }) => {
         <View style={s.backBtn} />
       </View>
 
-      {signing && <View style={s.centered}><ActivityIndicator color="#4ade80" size="large" /><Text style={{ marginTop: 12, color: '#6b7280' }}>Signing in…</Text></View>}
+      {signing && <View style={s.centered}><ActivityIndicator color="#2b4594" size="large" /><Text style={{ marginTop: 12, color: '#6b7280' }}>Signing in…</Text></View>}
       {!signing && step === 'site'      && <SelectSiteStep  onSelect={(site) => { setSite(site); setStep('group'); }} />}
       {!signing && step === 'group'     && <SelectGroupStep site={site} onSelect={handleGroupSelect} />}
       {!signing && step === 'signed-in' && <SignedInStep visitName={memberName} site={site} time={signInTime} visitId={visitId} onSignOut={() => setStep('signed-out')} onFinish={() => navigation.goBack()} />}
@@ -191,11 +191,11 @@ const s = StyleSheet.create({
   empty:         { textAlign: 'center', color: '#9ca3af', marginTop: 40 },
   centered:      { flex: 1, alignItems: 'center', justifyContent: 'center' },
   finishWrap:    { flex: 1, alignItems: 'center' },
-  finishBtn:     { alignSelf: 'flex-end', margin: 16, backgroundColor: '#4ade80', paddingHorizontal: 22, paddingVertical: 10, borderRadius: 12 },
+  finishBtn:     { alignSelf: 'flex-end', margin: 16, backgroundColor: '#2b4594', paddingHorizontal: 22, paddingVertical: 10, borderRadius: 12 },
   finishBtnText: { fontSize: 16, fontWeight: '700', color: '#111827' },
   thankContainer:{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 80 },
   avatarCircle:  { width: 96, height: 96, borderRadius: 48, backgroundColor: '#e5e7eb', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  greenDot:      { position: 'absolute', bottom: 4, right: 4, width: 20, height: 20, borderRadius: 10, backgroundColor: '#4ade80', borderWidth: 2, borderColor: '#ffffff' },
+  greenDot:      { position: 'absolute', bottom: 4, right: 4, width: 20, height: 20, borderRadius: 10, backgroundColor: '#2b4594', borderWidth: 2, borderColor: '#ffffff' },
   thankText:     { fontSize: 20, fontWeight: '600', color: '#111827' },
   signOutRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 14, marginBottom: 40, backgroundColor: '#ffffff' },
   signOutText:   { fontSize: 16, fontWeight: '600', color: '#111827' },

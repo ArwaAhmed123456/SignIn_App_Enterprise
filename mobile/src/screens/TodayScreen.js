@@ -47,11 +47,14 @@ const TodayScreen = ({ navigation }) => {
 
       if (site) {
         const [statsRes, preregRes] = await Promise.all([
-          api.get(`/visits/stats?site_id=${site.id}`).catch(() => ({ data: { totalIn: 0, visitorsIn: 0, employeesIn: 0 } })),
+          api.get(`/visits/stats?site_id=${site.id}`).catch(() => ({ data: { totalIn: 0, groupCounts: [] } })),
           api.get(`/pre-registrations?site_id=${site.id}`).catch(() => ({ data: [] })),
         ]);
         const stats = statsRes.data;
-        setCounts({ all: stats.totalIn || 0, visitors: stats.visitorsIn || 0, employees: stats.employeesIn || 0 });
+        const gc = stats.groupCounts || [];
+        const empCount = gc.filter(g => ['employee','employees'].includes((g.group||'').toLowerCase())).reduce((s,g) => s+g.count, 0);
+        const visCount = (stats.totalIn || 0) - empCount;
+        setCounts({ all: stats.totalIn || 0, visitors: visCount, employees: empCount });
         setExpected((preregRes.data || []).filter(p => p.status === 'Pending').slice(0, 5));
       }
 
@@ -82,15 +85,15 @@ const TodayScreen = ({ navigation }) => {
     return `${hrs}h ${mins}m`;
   };
 
-  if (loading) return <View style={s.centered}><ActivityIndicator size="large" color="#4ade80" /></View>;
+  if (loading) return <View style={s.centered}><ActivityIndicator size="large" color="#2b4594" /></View>;
 
   return (
     <SafeAreaView style={s.container}>
       {/* Header */}
       <View style={s.header}>
         <View style={s.logo}>
-          <View style={[s.logoDot, { backgroundColor: '#4ade80', marginRight: -10, zIndex: 1 }]} />
-          <View style={[s.logoDot, { backgroundColor: '#2b4594', opacity: 0.85 }]} />
+          <View style={[s.logoDot, { backgroundColor: '#2b4594', marginRight: -10, zIndex: 1 }]} />
+          <View style={[s.logoDot, { backgroundColor: '#1e326e', opacity: 0.85 }]} />
         </View>
         <TouchableOpacity onPress={() => setShowActions(v => !v)} style={s.plusBtn}>
           <Plus size={22} color="#1e293b" />
@@ -112,7 +115,7 @@ const TodayScreen = ({ navigation }) => {
       )}
 
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4ade80" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         {/* Date */}
@@ -172,7 +175,7 @@ const TodayScreen = ({ navigation }) => {
             <View style={s.siteDropdown}>
               {sites.map(site => (
                 <TouchableOpacity key={site.id} onPress={() => { setSelectedSite(site); setSiteOpen(false); load(); }} style={s.siteOption}>
-                  <Text style={[s.siteOptionText, selectedSite?.id === site.id && { color: '#4ade80', fontWeight: '700' }]}>{site.name}</Text>
+                  <Text style={[s.siteOptionText, selectedSite?.id === site.id && { color: '#2b4594', fontWeight: '700' }]}>{site.name}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -238,12 +241,12 @@ const s = StyleSheet.create({
   card:           { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: '#f3f4f6' },
   avatarRow:      { alignItems: 'center', marginBottom: 10 },
   avatar:         { width: 64, height: 64, borderRadius: 32, backgroundColor: '#e5e7eb', position: 'relative' },
-  onlineDot:      { position: 'absolute', bottom: 2, right: 2, width: 16, height: 16, borderRadius: 8, backgroundColor: '#4ade80', borderWidth: 2, borderColor: '#fff' },
+  onlineDot:      { position: 'absolute', bottom: 2, right: 2, width: 16, height: 16, borderRadius: 8, backgroundColor: '#2b4594', borderWidth: 2, borderColor: '#fff' },
   notSignedText:  { fontSize: 16, fontWeight: '700', color: '#111827', textAlign: 'center', marginBottom: 12 },
   signedInText:   { fontSize: 15, fontWeight: '700', color: '#111827', textAlign: 'center', marginBottom: 14 },
   signedOutText:  { fontSize: 15, fontWeight: '700', color: '#6b7280', textAlign: 'center', marginBottom: 14 },
-  signInBtn:      { borderWidth: 1.5, borderColor: '#e5e7eb', borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
-  signInBtnText:  { fontSize: 15, fontWeight: '600', color: '#111827' },
+  signInBtn:      { backgroundColor: '#2b4594', borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
+  signInBtnText:  { fontSize: 15, fontWeight: '600', color: '#ffffff' },
   signOutBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, paddingVertical: 14 },
   signOutIcon:    { fontSize: 18, color: '#ef4444' },
   signOutText:    { fontSize: 15, fontWeight: '600', color: '#111827' },
@@ -269,7 +272,7 @@ const s = StyleSheet.create({
   detailsLink:    { fontSize: 14, color: '#9ca3af' },
   scheduleHours:  { fontSize: 13, color: '#6b7280', marginBottom: 8 },
   progressTrack:  { height: 4, backgroundColor: '#e5e7eb', borderRadius: 2 },
-  progressBar:    { height: 4, backgroundColor: '#4ade80', borderRadius: 2 },
+  progressBar:    { height: 4, backgroundColor: '#2b4594', borderRadius: 2 },
 });
 
 export default TodayScreen;

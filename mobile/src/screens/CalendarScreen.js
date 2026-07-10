@@ -109,7 +109,7 @@ const CalendarScreen = () => {
       {/* Header */}
       <View style={s.header}>
         <View style={s.logo}>
-          <View style={[s.dot, { backgroundColor: '#4ade80', marginRight: -10, zIndex: 1 }]} />
+          <View style={[s.dot, { backgroundColor: '#2b4594', marginRight: -10, zIndex: 1 }]} />
           <View style={[s.dot, { backgroundColor: '#2b4594', opacity: 0.85 }]} />
         </View>
         <TouchableOpacity style={s.plusBtn}><Plus size={22} color="#1e293b" /></TouchableOpacity>
@@ -141,10 +141,10 @@ const CalendarScreen = () => {
       </View>
 
       {loading ? (
-        <View style={s.centered}><ActivityIndicator color="#4ade80" size="large" /></View>
+        <View style={s.centered}><ActivityIndicator color="#2b4594" size="large" /></View>
       ) : (
         <ScrollView
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4ade80" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
           contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}
         >
           {groups.map((group, gi) => {
@@ -158,11 +158,11 @@ const CalendarScreen = () => {
                 {/* Worked / Total time summary cards for "This week" */}
                 {gi === groups.length - 1 && weekWorked > 0 && (
                   <View style={s.summaryRow}>
-                    <View style={[s.summaryCard, { borderColor: '#4ade80' }]}>
+                    <View style={[s.summaryCard, { borderColor: '#2b4594' }]}>
                       <Text style={s.summaryTop}>Worked</Text>
                       <Text style={s.summaryVal}>{fmtHours(weekWorked)}</Text>
                     </View>
-                    <View style={[s.summaryCard, { borderColor: '#4ade80' }]}>
+                    <View style={[s.summaryCard, { borderColor: '#2b4594' }]}>
                       <Text style={s.summaryTop}>Total time</Text>
                       <Text style={s.summaryVal}>{fmtHours(weekSummary.total)}</Text>
                     </View>
@@ -241,7 +241,7 @@ const s = StyleSheet.create({
   calBtn:      { width: 48, height: 48, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
   weekStrip:   { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   dayBtn:      { alignItems: 'center', justifyContent: 'center', width: 44, paddingVertical: 8, borderRadius: 22 },
-  dayBtnSel:   { backgroundColor: '#4ade80' },
+  dayBtnSel:   { backgroundColor: '#2b4594' },
   dayLabel:    { fontSize: 11, fontWeight: '500', marginBottom: 4, color: '#6b7280' },
   dayLabelSel: { color: '#ffffff' },
   dayNum:      { fontSize: 16, fontWeight: '700', color: '#111827' },
@@ -258,8 +258,8 @@ const s = StyleSheet.create({
   siteName:    { fontSize: 14, color: '#9ca3af', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   timelineRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12 },
   timelineLine:{ width: 20, alignItems: 'center', marginRight: 14 },
-  greenDot:    { width: 14, height: 14, borderRadius: 7, backgroundColor: '#4ade80' },
-  vertLine:    { flex: 1, width: 2, backgroundColor: '#4ade80', minHeight: 24 },
+  greenDot:    { width: 14, height: 14, borderRadius: 7, backgroundColor: '#2b4594' },
+  vertLine:    { flex: 1, width: 2, backgroundColor: '#2b4594', minHeight: 24 },
   timeRow:     { flexDirection: 'row', alignItems: 'center', gap: 12 },
   timeText:    { fontSize: 17, fontWeight: '700', color: '#111827', width: 50 },
   eventLabel:  { fontSize: 14, color: '#6b7280' },
