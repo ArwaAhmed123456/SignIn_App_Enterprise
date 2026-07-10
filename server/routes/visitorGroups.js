@@ -107,20 +107,55 @@ router.post('/seed-defaults', verifyToken, async (req, res) => {
   const { project_id } = req.body;
   if (!project_id) return res.status(400).json({ error: 'project_id required' });
   const defaults = [
-    { name:'Employee', type:'Repeat',   icon:'👷', color:'#2b4594', sortOrder:0 },
-    { name:'Visitor',  type:'Standard', icon:'👤', color:'#0891b2', sortOrder:1 },
-    { name:'Delivery', type:'Delivery', icon:'📦', color:'#d97706', sortOrder:2 },
-    { name:'Contractor',type:'Standard',icon:'🔧', color:'#7c3aed', sortOrder:3 },
+    { name: 'Employees',       type: 'Repeat',   color: '#2b4594', sortOrder: 0 },
+    { name: 'Visitors',        type: 'Standard', color: '#0891b2', sortOrder: 1 },
+    { name: 'Contractors',     type: 'Standard', color: '#7c3aed', sortOrder: 2 },
+    { name: 'Deliveries',      type: 'Delivery', color: '#d97706', sortOrder: 3 },
+    { name: 'Security Guards', type: 'Standard', color: '#16a34a', sortOrder: 4 },
   ];
   const seeded = [];
   for (const d of defaults) {
     const exists = await VisitorGroup.findOne({ siteId: project_id, name: d.name });
     if (!exists) {
-      await VisitorGroup.create({ siteId: project_id, fieldsRequired: '["name"]', fieldsOptional: '[]', ...d });
+      await VisitorGroup.create({
+        siteId: project_id, isActive: true,
+        fieldsRequired: '["name"]', fieldsOptional: '[]', ...d,
+      });
       seeded.push(d.name);
+    } else if (!exists.isActive) {
+      await VisitorGroup.findByIdAndUpdate(exists._id, { isActive: true });
+      seeded.push(d.name + ' (re-activated)');
     }
   }
   res.json({ success: true, seeded });
+});
+
+// GET /api/visitor-groups/auto-seed — called on app load to ensure every site has default groups
+router.get('/auto-seed', async (req, res) => {
+  try {
+    const sites = await Site.find({}, '_id').lean();
+    const defaults = [
+      { name: 'Employees',       type: 'Repeat',   color: '#2b4594', sortOrder: 0 },
+      { name: 'Visitors',        type: 'Standard', color: '#0891b2', sortOrder: 1 },
+      { name: 'Contractors',     type: 'Standard', color: '#7c3aed', sortOrder: 2 },
+      { name: 'Deliveries',      type: 'Delivery', color: '#d97706', sortOrder: 3 },
+      { name: 'Security Guards', type: 'Standard', color: '#16a34a', sortOrder: 4 },
+    ];
+    let total = 0;
+    for (const site of sites) {
+      for (const d of defaults) {
+        const exists = await VisitorGroup.findOne({ siteId: site._id, name: d.name });
+        if (!exists) {
+          await VisitorGroup.create({
+            siteId: site._id, isActive: true,
+            fieldsRequired: '["name"]', fieldsOptional: '[]', ...d,
+          });
+          total++;
+        }
+      }
+    }
+    res.json({ success: true, created: total });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;

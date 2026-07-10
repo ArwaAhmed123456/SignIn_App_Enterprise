@@ -98,6 +98,21 @@ router.post('/', verifySuperAdmin, async (req, res) => {
       adminEmail: adminEmails[0],
       adminEmails,
     });
+
+    // Seed default visitor groups for the new site
+    const VisitorGroup = require('../models/VisitorGroup');
+    const defaultGroups = [
+      { name: 'Employees',    type: 'Standard', color: '#2b4594', icon: '👔', sortOrder: 0 },
+      { name: 'Visitors',     type: 'Standard', color: '#0891b2', icon: '🙋', sortOrder: 1 },
+      { name: 'Contractors',  type: 'Standard', color: '#7c3aed', icon: '🔧', sortOrder: 2 },
+      { name: 'Deliveries',   type: 'Standard', color: '#ea580c', icon: '📦', sortOrder: 3 },
+      { name: 'Security Guards', type: 'Standard', color: '#16a34a', icon: '🛡️', sortOrder: 4 },
+    ];
+    await Promise.all(defaultGroups.map(g =>
+      VisitorGroup.create({ siteId: site._id, ...g, isActive: true,
+        fieldsRequired: JSON.stringify(['name']), fieldsOptional: JSON.stringify([]) })
+    )).catch(() => {}); // non-fatal if groups already exist
+
     res.json(fmt(site));
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });

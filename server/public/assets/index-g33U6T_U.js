@@ -33196,7 +33196,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DKwr7wbN.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Clz6u_Gu.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -67149,6 +67149,7 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
   const [startDate, setStartDate] = reactExports.useState(toInputDate(/* @__PURE__ */ new Date()));
   const [arrivalTime, setArrivalTime] = reactExports.useState("");
   const [notes, setNotes] = reactExports.useState("");
+  const [sendWelcome, setSendWelcome] = reactExports.useState(false);
   const [file, setFile] = reactExports.useState(null);
   const [saving, setSaving] = reactExports.useState(false);
   const [error, setError] = reactExports.useState("");
@@ -67203,7 +67204,8 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
       notes: notes || void 0,
       expected_date: expectedDate,
       visitor_group_id: groupId || selectedMember?.visitor_group_id || void 0,
-      member_id: selectedMember?.id || void 0
+      member_id: selectedMember?.id || void 0,
+      send_welcome: sendWelcome && !!email
     });
   };
   const handleBulkSubmit = async () => {
@@ -67482,6 +67484,20 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
         ] })
       ] }),
       error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600", children: error }),
+      mode === "individual" && email && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Send arrival confirmation and site info to visitor" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            onClick: () => setSendWelcome((v2) => !v2),
+            className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? "bg-[#2b4594]" : "bg-slate-300"}`,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? "translate-x-6" : "translate-x-1"}` })
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 border-t border-slate-200 pt-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
@@ -68613,19 +68629,24 @@ const ActivityPage = () => {
                       "button",
                       {
                         type: "button",
-                        onClick: (event) => {
+                        onMouseDown: (event) => {
                           event.stopPropagation();
+                          event.preventDefault();
                           setOpenVisitMenuId((current) => current === visit.id ? null : visit.id);
                         },
                         className: "rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700",
                         children: /* @__PURE__ */ jsxRuntimeExports.jsx(Ellipsis, { size: 15 })
                       }
                     ),
-                    openVisitMenuId === visit.id && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-20 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl", children: [
+                    openVisitMenuId === visit.id && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full z-50 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl", children: [
                       !visit.sign_out_time && /* @__PURE__ */ jsxRuntimeExports.jsxs(
                         "button",
                         {
                           type: "button",
+                          onMouseDown: (e2) => {
+                            e2.stopPropagation();
+                            e2.preventDefault();
+                          },
                           onClick: () => {
                             setOpenVisitMenuId(null);
                             handleSignOutVisit(visit.id);
@@ -68641,6 +68662,10 @@ const ActivityPage = () => {
                         "button",
                         {
                           type: "button",
+                          onMouseDown: (e2) => {
+                            e2.stopPropagation();
+                            e2.preventDefault();
+                          },
                           onClick: () => {
                             setOpenVisitMenuId(null);
                             handleDeleteVisit(visit.id);
@@ -71259,13 +71284,12 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
     role: "",
     mobileRole: "employee",
     language: "English (UK)",
-    show_on_sites: "All sites",
+    show_on_sites: "",
     start_date: "",
     end_date: "",
     send_welcome: true,
     include_companion: false,
     host_notifications: "group_default",
-    // 'group_default' or 'custom'
     notify_arrives_email: true,
     notify_arrives_sms: false,
     notify_departs_email: false,
@@ -71275,7 +71299,18 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [saving, setSaving] = reactExports.useState(false);
   const [errors, setErrors] = reactExports.useState({});
   const [saveError, setSaveError] = reactExports.useState("");
+  const [sites, setSites] = reactExports.useState([]);
   const set = (k2, v2) => setForm((f2) => ({ ...f2, [k2]: v2 }));
+  reactExports.useEffect(() => {
+    api.get("/projects").then((r) => {
+      const siteList = r.data || [];
+      setSites(siteList);
+      if (siteList.length > 0 && !form.show_on_sites) {
+        setForm((f2) => ({ ...f2, show_on_sites: siteList[0].id }));
+      }
+    }).catch(() => {
+    });
+  }, []);
   const validate = () => {
     const e2 = {};
     if (!form.name.trim()) e2.name = "This field is required";
@@ -71300,6 +71335,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         start_date: form.start_date || void 0,
         end_date: form.end_date || void 0,
         visitor_group_id: form.group || void 0,
+        site_id: form.show_on_sites || void 0,
         status: "Current",
         send_welcome: (form.send_welcome || form.include_companion) && !!form.email.trim(),
         include_companion: form.include_companion && !!form.email.trim()
@@ -71465,13 +71501,16 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Show on sites" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "select",
               {
                 value: form.show_on_sites,
                 onChange: (e2) => set("show_on_sites", e2.target.value),
                 className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "All sites" })
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "All sites" }),
+                  sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id))
+                ]
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Able to sign in and appear as host (if enabled)" })
@@ -71517,7 +71556,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 text-sm text-slate-700 cursor-pointer", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: form.include_companion, onChange: (e2) => set("include_companion", e2.target.checked), className: "w-4 h-4 accent-[#2b4594]" }),
-            "Include Sign In Companion app invite"
+            "Include Tripod Hub Connect app invite"
           ] })
         ] })
       ] }),
@@ -72057,7 +72096,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 text-sm text-slate-700 cursor-pointer", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: form.include_companion, onChange: (e2) => set("include_companion", e2.target.checked), className: "w-4 h-4 accent-[#2b4594]" }),
-              "Include Sign In Companion app invite"
+              "Include Tripod Hub Connect app invite"
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-3 rounded-lg bg-teal-50 border border-teal-200 px-4 py-3 text-xs text-teal-700", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: "ℹ" }),
@@ -72261,13 +72300,10 @@ const PeopleDirectory = () => {
   }, [activeTab, search]);
   const fetchGroups = reactExports.useCallback(async () => {
     try {
-      let url2 = "/visitor-groups";
-      try {
-        const sitesRes = await api.get("/projects");
-        const firstSiteId = (sitesRes.data || [])[0]?.id;
-        if (firstSiteId) url2 = `/visitor-groups?project_id=${firstSiteId}`;
-      } catch {
-      }
+      const sitesRes = await api.get("/projects");
+      const siteList = sitesRes.data || [];
+      const siteId = siteList[0]?.id;
+      const url2 = siteId ? `/visitor-groups?project_id=${siteId}` : "/visitor-groups";
       const res = await api.get(url2);
       setGroups(res.data || []);
     } catch {
@@ -75246,7 +75282,7 @@ const InviteModal = ({ onClose, onInvited }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 15, className: "text-[#2b4594]" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: accountType === "mobile" ? "Includes credentials and companion app invite code" : "Includes credentials and portal access link" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: accountType === "mobile" ? "Includes credentials and Tripod Hub Connect app invite code" : "Includes credentials and portal access link" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(

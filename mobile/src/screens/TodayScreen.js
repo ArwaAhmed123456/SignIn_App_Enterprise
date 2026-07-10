@@ -117,7 +117,7 @@ const TodayScreen = ({ navigation }) => {
 
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Date */}
         <Text style={s.dateHeader}>☀️  {todayStr}</Text>
@@ -184,7 +184,7 @@ const TodayScreen = ({ navigation }) => {
         </View>
 
         {/* Counters */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, marginBottom: 16 }}>
+        <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, marginBottom: 16 }}>
           {[['All', counts.all], ['Visitors', counts.visitors], ['Employees', counts.employees]].map(([label, val]) => (
             <View key={label} style={s.counterCard}>
               <Text style={s.counterVal}>{val}</Text>

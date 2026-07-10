@@ -8,7 +8,31 @@ const rateLimit = require('express-rate-limit');
 dotenv.config();
 
 const connectDB = require('./db');
-connectDB();
+connectDB().then(async () => {
+  // Auto-seed default visitor groups for every existing site on startup
+  try {
+    const VisitorGroup = require('./models/VisitorGroup');
+    const Site         = require('./models/Site');
+    const defaults = [
+      { name: 'Employees',       type: 'Repeat',   color: '#2b4594', sortOrder: 0 },
+      { name: 'Visitors',        type: 'Standard', color: '#0891b2', sortOrder: 1 },
+      { name: 'Contractors',     type: 'Standard', color: '#7c3aed', sortOrder: 2 },
+      { name: 'Deliveries',      type: 'Delivery', color: '#d97706', sortOrder: 3 },
+      { name: 'Security Guards', type: 'Standard', color: '#16a34a', sortOrder: 4 },
+    ];
+    const sites = await Site.find({}, '_id').lean();
+    for (const site of sites) {
+      for (const d of defaults) {
+        const exists = await VisitorGroup.findOne({ siteId: site._id, name: d.name });
+        if (!exists) {
+          await VisitorGroup.create({ siteId: site._id, isActive: true,
+            fieldsRequired: '["name"]', fieldsOptional: '[]', ...d });
+        }
+      }
+    }
+    console.log(`[startup] Visitor groups seeded for ${sites.length} site(s)`);
+  } catch (e) { console.warn('[startup] Group seed skipped:', e.message); }
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;

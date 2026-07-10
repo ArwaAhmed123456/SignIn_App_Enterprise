@@ -173,10 +173,10 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [drawerTab, setDrawerTab] = useState('Details');
   const [form, setForm] = useState({
     group: '', name: '', email: '', phone: '', role: '', mobileRole: 'employee',
-    language: 'English (UK)', show_on_sites: 'All sites',
+    language: 'English (UK)', show_on_sites: '',
     start_date: '', end_date: '',
     send_welcome: true, include_companion: false,
-    host_notifications: 'group_default', // 'group_default' or 'custom'
+    host_notifications: 'group_default',
     notify_arrives_email: true, notify_arrives_sms: false,
     notify_departs_email: false, notify_departs_sms: false,
     notify_another_member: '',
@@ -184,8 +184,20 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
+  const [sites, setSites] = useState([]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  useEffect(() => {
+    api.get('/projects').then(r => {
+      const siteList = r.data || [];
+      setSites(siteList);
+      // Default to first site
+      if (siteList.length > 0 && !form.show_on_sites) {
+        setForm(f => ({ ...f, show_on_sites: siteList[0].id }));
+      }
+    }).catch(() => {});
+  }, []);
 
   const validate = () => {
     const e = {};
@@ -212,6 +224,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         start_date: form.start_date || undefined,
         end_date: form.end_date || undefined,
         visitor_group_id: form.group || undefined,
+        site_id: form.show_on_sites || undefined,
         status: 'Current',
         send_welcome: (form.send_welcome || form.include_companion) && !!form.email.trim(),
         include_companion: form.include_companion && !!form.email.trim(),
@@ -334,7 +347,8 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Show on sites</label>
                   <select value={form.show_on_sites} onChange={e => set('show_on_sites', e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-                    <option>All sites</option>
+                    <option value="">All sites</option>
+                    {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                   <p className="text-xs text-slate-400 mt-1">Able to sign in and appear as host (if enabled)</p>
                 </div>
@@ -367,7 +381,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                 </label>
                 <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                   <input type="checkbox" checked={form.include_companion} onChange={e => set('include_companion', e.target.checked)} className="w-4 h-4 accent-[#2b4594]" />
-                  Include Sign In Companion app invite
+                  Include Tripod Hub Connect app invite
                 </label>
               </div>
             </>
@@ -848,7 +862,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
                 </label>
                 <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                   <input type="checkbox" checked={form.include_companion} onChange={e => set('include_companion', e.target.checked)} className="w-4 h-4 accent-[#2b4594]" />
-                  Include Sign In Companion app invite
+                  Include Tripod Hub Connect app invite
                 </label>
                 <div className="mt-3 rounded-lg bg-teal-50 border border-teal-200 px-4 py-3 text-xs text-teal-700">
                   <span className="font-semibold">ℹ</span> This member uses group default app permissions, but none are currently set for their group. Enable permissions in their <span className="underline cursor-pointer">group settings</span>, or configure them <span className="underline cursor-pointer">here</span>.
@@ -1057,15 +1071,11 @@ const PeopleDirectory = () => {
 
   const fetchGroups = useCallback(async () => {
     try {
-      // Try to get groups - first fetch sites, then groups for first site
-      let url = '/visitor-groups';
-      try {
-        const sitesRes = await api.get('/projects');
-        const firstSiteId = (sitesRes.data || [])[0]?.id;
-        if (firstSiteId) url = `/visitor-groups?project_id=${firstSiteId}`;
-      } catch {
-        // If projects fetch fails, try without project_id
-      }
+      const sitesRes = await api.get('/projects');
+      const siteList = sitesRes.data || [];
+      // Load groups for all sites (or first site as fallback)
+      const siteId = siteList[0]?.id;
+      const url = siteId ? `/visitor-groups?project_id=${siteId}` : '/visitor-groups';
       const res = await api.get(url);
       setGroups(res.data || []);
     } catch { setGroups([]); }

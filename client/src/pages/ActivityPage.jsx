@@ -480,6 +480,7 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
   const [startDate, setStartDate] = useState(toInputDate(new Date()));
   const [arrivalTime, setArrivalTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [sendWelcome, setSendWelcome] = useState(false);
   const [file, setFile] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -547,6 +548,7 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
       expected_date: expectedDate,
       visitor_group_id: groupId || selectedMember?.visitor_group_id || undefined,
       member_id: selectedMember?.id || undefined,
+      send_welcome: sendWelcome && !!email,
     });
   };
 
@@ -819,6 +821,22 @@ const PreRegModal = ({ siteId, siteName, groups, onClose, onSaved }) => {
 
           {error && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          )}
+
+          {/* Welcome email toggle */}
+          {mode === 'individual' && email && (
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
+                <p className="text-xs text-slate-500 mt-0.5">Send arrival confirmation and site info to visitor</p>
+              </div>
+              <div
+                onClick={() => setSendWelcome(v => !v)}
+                className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? 'bg-[#2b4594]' : 'bg-slate-300'}`}
+              >
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? 'translate-x-6' : 'translate-x-1'}`} />
+              </div>
+            </div>
           )}
 
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
@@ -2073,8 +2091,9 @@ const ActivityPage = () => {
                         <div className="relative inline-block">
                           <button
                             type="button"
-                            onClick={(event) => {
+                            onMouseDown={(event) => {
                               event.stopPropagation();
+                              event.preventDefault();
                               setOpenVisitMenuId((current) => (current === visit.id ? null : visit.id));
                             }}
                             className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
@@ -2083,10 +2102,11 @@ const ActivityPage = () => {
                           </button>
 
                           {openVisitMenuId === visit.id && (
-                            <div className="absolute right-0 top-full z-20 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+                            <div className="absolute right-0 top-full z-50 mt-1 min-w-[170px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
                               {!visit.sign_out_time && (
                                 <button
                                   type="button"
+                                  onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                   onClick={() => {
                                     setOpenVisitMenuId(null);
                                     handleSignOutVisit(visit.id);
@@ -2099,6 +2119,7 @@ const ActivityPage = () => {
                               )}
                               <button
                                 type="button"
+                                onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                 onClick={() => {
                                   setOpenVisitMenuId(null);
                                   handleDeleteVisit(visit.id);

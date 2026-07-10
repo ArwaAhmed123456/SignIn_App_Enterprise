@@ -61,13 +61,16 @@ const ProfileScreen = ({ navigation }) => {
       {/* Header */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BG }}>
         <Text style={{ fontSize: 18, fontWeight: '700', color: T1 }}>{org}</Text>
-        <TouchableOpacity style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: BD, alignItems: 'center', justifyContent: 'center', backgroundColor: BG2 }}>
-          <Plus size={20} color={T1} />
+        <TouchableOpacity
+          onPress={handleDisconnect}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: '#ff3b30', borderRadius: 20 }}
+        >
+          <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Log Out</Text>
         </TouchableOpacity>
       </View>
 
       {/* Extra bottom padding so content (e.g., Log Out) is not hidden behind the bottom tab bar */}
-      <ScrollView style={{ flex: 1, paddingHorizontal: 12 }} contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1, paddingHorizontal: 12 }} contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}>
 
         {/* Profile card */}
         <Card>

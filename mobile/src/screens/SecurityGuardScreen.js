@@ -78,7 +78,7 @@ const CheckInModal = ({
             style={s.input}
           />
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.groupPicker}>
+          <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.groupPicker}>
             {visitorGroups.map((item) => {
               const groupName = item?.name || 'Visitor';
               const active = group === groupName;
@@ -437,7 +437,7 @@ const SecurityGuardScreen = ({ navigation }) => {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
               <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
             </View>
-            <ScrollView style={{ paddingHorizontal: 16 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
               {sites.length === 0 ? (
                 <View style={{ paddingVertical: 20, alignItems: 'center' }}>
                   <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>

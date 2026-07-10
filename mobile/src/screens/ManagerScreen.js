@@ -316,7 +316,7 @@ const ManagerScreen = () => {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
               <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
             </View>
-            <ScrollView style={{ paddingHorizontal: 16 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
               {sites.length === 0 ? (
                 <View style={{ paddingVertical: 20, alignItems: 'center' }}>
                   <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>
@@ -344,7 +344,7 @@ const ManagerScreen = () => {
         </TouchableOpacity>
       </Modal>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
+      <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
         {TABS.map((tab) => (
           <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
             <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>

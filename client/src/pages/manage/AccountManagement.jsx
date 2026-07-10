@@ -252,7 +252,7 @@ const InviteModal = ({ onClose, onInvited }) => {
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {accountType === 'mobile' ? 'Includes credentials and companion app invite code' : 'Includes credentials and portal access link'}
+                    {accountType === 'mobile' ? 'Includes credentials and Tripod Hub Connect app invite code' : 'Includes credentials and portal access link'}
                   </p>
                 </div>
               </div>
