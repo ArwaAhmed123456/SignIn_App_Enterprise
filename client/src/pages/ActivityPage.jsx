@@ -1295,11 +1295,7 @@ const ActivityPage = () => {
   const [groups, setGroups] = useState([]);
   const [visits, setVisits] = useState([]);
   const [loadingVisits, setLoadingVisits] = useState(false);
-  const [stats, setStats] = useState({
-    totalIn: 0,
-    visitorsIn: 0,
-    employeesIn: 0,
-  });
+  const [stats, setStats] = useState({ totalIn: 0, groupCounts: [] });
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [groupFilter, setGroupFilter] = useState('All');
@@ -1425,7 +1421,7 @@ const ActivityPage = () => {
       const response = await api.get('/visits/stats', {
         params: { site_id: siteId },
       });
-      setStats(response.data || { totalIn: 0, visitorsIn: 0, employeesIn: 0 });
+      setStats(response.data || { totalIn: 0, groupCounts: [] });
     } catch {
       setStats({ totalIn: 0, visitorsIn: 0, employeesIn: 0 });
     }
@@ -1796,14 +1792,7 @@ const ActivityPage = () => {
         {activeTab === 'visits' && (
           <>
             <div className="flex flex-wrap gap-4">
-              <StatCard label="Total in" value={stats.totalIn} />
-              {stats.employeesIn > 0 && (
-                <StatCard label="Employees in" value={stats.employeesIn} />
-              )}
-              {stats.visitorsIn > 0 && (
-                <StatCard label="Visitors in" value={stats.visitorsIn} />
-              )}
-              {/* Show per-group counts when available */}
+              <StatCard label="Total in" value={stats.totalIn ?? 0} />
               {(stats.groupCounts || []).map((gc) => (
                 <StatCard key={gc.group} label={`${gc.group} in`} value={gc.count} />
               ))}
@@ -1946,6 +1935,50 @@ const ActivityPage = () => {
                 >
                   New visit
                 </button>
+
+                {/* Column visibility — in toolbar so it renders above the table scroll */}
+                <div className="relative" ref={colRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowColSettings(c => !c)}
+                    className="rounded-lg border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    title="Show/hide columns"
+                  >
+                    <Settings size={15} />
+                  </button>
+                  {showColSettings && (
+                    <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-2xl max-h-80 overflow-y-auto">
+                      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Visit details</p>
+                      {visitColumns.filter(c => VISIT_DETAIL_COLS.includes(c.key)).map((column) => (
+                        <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
+                          <input
+                            type="checkbox"
+                            checked={visibleCols.includes(column.key)}
+                            onChange={() => setVisibleCols(cur =>
+                              cur.includes(column.key) ? cur.filter(i => i !== column.key) : [...cur, column.key]
+                            )}
+                            className="h-4 w-4 accent-[#2b4594]"
+                          />
+                          {column.key}
+                        </label>
+                      ))}
+                      <p className="mt-3 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Personal fields</p>
+                      {visitColumns.filter(c => PERSONAL_FIELD_COLS.includes(c.key)).map((column) => (
+                        <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
+                          <input
+                            type="checkbox"
+                            checked={visibleCols.includes(column.key)}
+                            onChange={() => setVisibleCols(cur =>
+                              cur.includes(column.key) ? cur.filter(i => i !== column.key) : [...cur, column.key]
+                            )}
+                            className="h-4 w-4 accent-[#2b4594]"
+                          />
+                          {column.key}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {showFilters && (
@@ -2008,54 +2041,7 @@ const ActivityPage = () => {
                         </th>
                       ))}
 
-                    <th className="w-14 px-4 py-3 text-right">
-                      <div className="relative inline-block" ref={colRef}>
-                        <button
-                          type="button"
-                          onClick={() => setShowColSettings((current) => !current)}
-                          className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                        >
-                          <Settings size={15} />
-                        </button>
-
-                        {showColSettings && (
-                          <div className="absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-3 shadow-xl max-h-80 overflow-y-auto">
-                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">VISIT DETAILS</p>
-                            {visitColumns.filter(c => VISIT_DETAIL_COLS.includes(c.key)).map((column) => (
-                              <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
-                                <input
-                                  type="checkbox"
-                                  checked={visibleCols.includes(column.key)}
-                                  onChange={() => setVisibleCols((current) =>
-                                    current.includes(column.key)
-                                      ? current.filter((item) => item !== column.key)
-                                      : [...current, column.key]
-                                  )}
-                                  className="h-4 w-4 accent-[#76c043]"
-                                />
-                                {column.key}
-                              </label>
-                            ))}
-                            <p className="mt-3 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">PERSONAL FIELDS</p>
-                            {visitColumns.filter(c => PERSONAL_FIELD_COLS.includes(c.key)).map((column) => (
-                              <label key={column.key} className="flex items-center gap-2 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-1">
-                                <input
-                                  type="checkbox"
-                                  checked={visibleCols.includes(column.key)}
-                                  onChange={() => setVisibleCols((current) =>
-                                    current.includes(column.key)
-                                      ? current.filter((item) => item !== column.key)
-                                      : [...current, column.key]
-                                  )}
-                                  className="h-4 w-4 accent-[#2b4594]"
-                                />
-                                {column.key}
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </th>
+                    <th className="w-14 px-4 py-3" />
                   </tr>
                 </thead>
 
