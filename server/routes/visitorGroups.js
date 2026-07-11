@@ -39,15 +39,23 @@ router.get('/', async (req, res) => {
       const s = await Site.findOne().sort({ createdAt: 1 });
       resolvedSiteId = s?._id;
     }
-    const groups = await VisitorGroup.find({ isActive: true, siteId: resolvedSiteId }).sort({ sortOrder: 1, name: 1 });
+    const groups = await VisitorGroup.find({ isActive: true, siteId: resolvedSiteId }).sort({ sortOrder: 1, name: 1 }).lean();
+    // Deduplicate by name (case-insensitive) keeping the first occurrence
+    const seen = new Set();
+    const uniqueGroups = groups.filter(g => {
+      const key = (g.name || '').toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
     // Count members per group
     const Member = require('../models/Member');
     const counts = await Member.aggregate([
-      { $match: { visitorGroupId: { $in: groups.map(g => g._id) } } },
+      { $match: { visitorGroupId: { $in: uniqueGroups.map(g => g._id) } } },
       { $group: { _id: '$visitorGroupId', count: { $sum: 1 } } },
     ]);
     const countMap = Object.fromEntries(counts.map(c => [c._id.toString(), c.count]));
-    res.json(groups.map(g => ({ ...fmt(g), member_count: countMap[g._id.toString()] || 0 })));
+    res.json(uniqueGroups.map(g => ({ ...fmt(g), member_count: countMap[g._id.toString()] || 0 })));
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 

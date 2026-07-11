@@ -552,13 +552,28 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [saving, setSaving] = useState(false);
 
   // ── Tablet display state ─────────────────────────────────
-  const [tabletLogo, setTabletLogo]                 = useState(null); // base64 data url
-  const [tabletWelcome, setTabletWelcome]           = useState('Welcome');
-  const [tabletSubtitle, setTabletSubtitle]         = useState('Please sign in below');
+  const [tabletLogo, setTabletLogo]                 = useState(null);
+  const [tabletShowLogo, setTabletShowLogo]         = useState(true);
+  const [tabletBgImage, setTabletBgImage]           = useState(null);
+  const [tabletWelcome, setTabletWelcome]           = useState('Hello,');
+  const [tabletSubtitle, setTabletSubtitle]         = useState('Please sign in here.');
   const [tabletTheme, setTabletTheme]               = useState('#2b4594');
   const [tabletScreensaver, setTabletScreensaver]   = useState(true);
   const [tabletScreensaverMins, setTabletScreensaverMins] = useState(5);
   const [tabletSaving, setTabletSaving]             = useState(false);
+  const [tabletFullscreen, setTabletFullscreen]     = useState(false);
+  const [tabletComponent, setTabletComponent]       = useState('Background imagery');
+  const [tabletShowForm, setTabletShowForm]         = useState(true);
+  const [tabletShowQR, setTabletShowQR]             = useState(true);
+  const [tabletShowClock, setTabletShowClock]       = useState(true);
+  const [tabletShowLang, setTabletShowLang]         = useState(true);
+  const [tabletOverlayOpacity, setTabletOverlayOpacity] = useState(40);
+  const [tabletNightMode, setTabletNightMode]       = useState(false);
+
+  const TABLET_COMPONENTS = [
+    'Background imagery', 'Buttons', 'Contactless sign in',
+    'Overlay', 'Language selector', 'Clock', 'Group shortcuts', 'Night mode',
+  ];
 
   useEffect(() => {
     api.get('/projects').then(r => setAllSites(r.data || [site])).catch(() => {});
@@ -931,291 +946,277 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
 
       {/* ── TABLET DISPLAY TAB ──────────────────────────────── */}
       {tab === 'Tablet display' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          {/* Left column — settings */}
-          <div className="space-y-6">
-
-            {/* Branding */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
-              <h2 className="text-base font-bold text-slate-800">Branding</h2>
-
-              {/* Logo upload */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Logo</label>
-                <div className="flex items-center gap-4">
-                  {tabletLogo
-                    ? <img src={tabletLogo} alt="logo" className="h-16 w-16 rounded-xl object-contain border border-slate-200 bg-white p-1" />
-                    : <div className="h-16 w-16 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 text-xs text-center leading-tight">No logo</div>
-                  }
-                  <div className="flex flex-col gap-2">
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="sr-only"
-                        onChange={e => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onload = ev => setTabletLogo(ev.target.result);
-                          reader.readAsDataURL(file);
-                        }}
-                      />
-                      Upload logo
-                    </label>
-                    {tabletLogo && (
-                      <button
-                        type="button"
-                        onClick={() => setTabletLogo(null)}
-                        className="text-xs text-red-500 hover:underline text-left"
-                      >
-                        Remove logo
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <p className="mt-2 text-xs text-slate-400">PNG or JPG recommended. Displays at the top of the tablet sign-in screen.</p>
+        <>
+        {/* Fullscreen kiosk preview modal */}
+        {tabletFullscreen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : tabletTheme }}>
+            {tabletBgImage && <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${tabletOverlayOpacity/100})` }} />}
+            <button onClick={() => setTabletFullscreen(false)} className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white font-bold text-xl">✕</button>
+            {tabletShowClock && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-white text-2xl font-bold opacity-80">
+                {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
               </div>
+            )}
+            <div className="relative z-10 flex items-center gap-16 px-16 w-full max-w-6xl">
+              <div className="flex-1 flex flex-col gap-5">
+                {tabletShowLogo && (
+                  tabletLogo
+                    ? <img src={tabletLogo} alt="logo" className="h-20 object-contain self-start" />
+                    : <div className="h-16 flex items-center"><span className="text-white text-2xl font-black">TRIPOD</span></div>
+                )}
+                <h1 className="text-white font-black leading-tight" style={{ fontSize: 'clamp(32px,5vw,72px)' }}>{tabletWelcome || 'Hello,'}</h1>
+                <p className="text-white/70 font-medium text-2xl">{tabletSubtitle || 'Please sign in here.'}</p>
+                {tabletShowQR && (
+                  <div className="mt-3 flex items-center gap-4">
+                    <div className="bg-white p-3 rounded-2xl"><div className="w-20 h-20 bg-slate-100 flex items-center justify-center text-xs text-slate-400 font-mono">QR</div></div>
+                    <p className="text-white/60 text-base">Scan to sign in from your phone</p>
+                  </div>
+                )}
+              </div>
+              {tabletShowForm && (
+                <div className="w-96 bg-white rounded-3xl shadow-2xl p-8 flex flex-col gap-4">
+                  <h2 className="text-2xl font-bold text-slate-800">Sign in</h2>
+                  <div><label className="block text-sm font-semibold text-slate-600 mb-1">Full name</label><div className="h-12 bg-slate-50 border-2 border-slate-200 rounded-xl" /></div>
+                  <div><label className="block text-sm font-semibold text-slate-600 mb-1">Group</label><div className="h-12 bg-slate-50 border-2 border-slate-200 rounded-xl" /></div>
+                  <div className="rounded-full h-14 flex items-center justify-center font-bold text-white text-lg mt-2" style={{ background: tabletTheme }}>Sign in</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-              {/* Theme colour */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Theme colour</label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={tabletTheme}
-                    onChange={e => setTabletTheme(e.target.value)}
-                    className="h-10 w-10 cursor-pointer rounded-lg border border-slate-300 p-0.5"
-                  />
-                  <input
-                    type="text"
-                    value={tabletTheme}
-                    onChange={e => setTabletTheme(e.target.value)}
-                    className="w-32 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]"
-                    placeholder="#2b4594"
-                  />
-                  {/* Quick presets */}
-                  <div className="flex gap-2">
-                    {['#2b4594','#16a34a','#dc2626','#7c3aed','#0891b2','#ea580c'].map(c => (
-                      <button
-                        key={c}
-                        type="button"
-                        title={c}
-                        onClick={() => setTabletTheme(c)}
-                        className="h-7 w-7 rounded-full border-2 transition-transform hover:scale-110"
-                        style={{ background: c, borderColor: tabletTheme === c ? '#1e293b' : 'transparent' }}
-                      />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: settings panel */}
+          <div className="space-y-4">
+            {/* Component selector */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Select component</h2>
+              <select value={tabletComponent} onChange={e => setTabletComponent(e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+                {TABLET_COMPONENTS.map(c => <option key={c}>{c}</option>)}
+              </select>
+
+              {tabletComponent === 'Background imagery' && (
+                <div className="space-y-3 pt-1 border-t border-slate-100">
+                  <p className="text-xs text-slate-500 pt-2">Supports .jpg and .png (up to 20MB, min 2048×1536px) or .mov/.mp4 videos (up to 50MB).</p>
+                  <label className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-sm font-semibold text-slate-600 hover:border-[#2b4594] hover:text-[#2b4594] transition-colors">
+                    <input type="file" accept="image/*,video/mp4,video/quicktime" className="sr-only" onChange={e => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = ev => setTabletBgImage(ev.target.result);
+                      reader.readAsDataURL(file);
+                    }} />
+                    {tabletBgImage ? '🖼 Change background' : '+ Upload background image'}
+                  </label>
+                  {tabletBgImage && (
+                    <div className="flex items-center gap-3">
+                      <img src={tabletBgImage} alt="bg preview" className="h-12 w-20 object-cover rounded-lg border border-slate-200" />
+                      <button onClick={() => setTabletBgImage(null)} className="text-xs text-red-500 hover:underline">Remove</button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {tabletComponent === 'Overlay' && (
+                <div className="pt-2 space-y-2 border-t border-slate-100">
+                  <label className="block text-sm font-semibold text-slate-700 pt-2">Overlay darkness: {tabletOverlayOpacity}%</label>
+                  <input type="range" min={0} max={80} value={tabletOverlayOpacity} onChange={e => setTabletOverlayOpacity(Number(e.target.value))} className="w-full accent-[#2b4594]" />
+                  <p className="text-xs text-slate-400">Darkens background image so text stays readable.</p>
+                </div>
+              )}
+
+              {tabletComponent === 'Buttons' && (
+                <div className="pt-2 space-y-3 border-t border-slate-100">
+                  <label className="block text-sm font-semibold text-slate-700 pt-2">Button colour</label>
+                  <div className="flex gap-2 items-center">
+                    <input type="color" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="h-10 w-10 rounded-lg border border-slate-300 cursor-pointer p-0.5" />
+                    <input type="text" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]" />
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {['#2b4594','#16a34a','#dc2626','#7c3aed','#0891b2','#ea580c','#111827'].map(c => (
+                      <button key={c} onClick={() => setTabletTheme(c)} className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110" style={{ background: c, borderColor: tabletTheme === c ? '#1e293b' : 'transparent' }} />
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
 
-            {/* Welcome message */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-              <h2 className="text-base font-bold text-slate-800">Welcome message</h2>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Heading</label>
-                <input
-                  value={tabletWelcome}
-                  onChange={e => setTabletWelcome(e.target.value)}
-                  maxLength={60}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-                  placeholder="Welcome"
-                />
-                <p className="mt-1 text-xs text-slate-400">{tabletWelcome.length}/60 characters</p>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Subtitle</label>
-                <input
-                  value={tabletSubtitle}
-                  onChange={e => setTabletSubtitle(e.target.value)}
-                  maxLength={100}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-                  placeholder="Please sign in below"
-                />
-                <p className="mt-1 text-xs text-slate-400">{tabletSubtitle.length}/100 characters</p>
-              </div>
-            </div>
+              {tabletComponent === 'Contactless sign in' && (
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-2">
+                    <div><p className="text-sm font-semibold text-slate-800">Show QR code</p><p className="text-xs text-slate-500">Visitors scan to sign in contactlessly</p></div>
+                    <div onClick={() => setTabletShowQR(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowQR ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowQR ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            {/* Screensaver */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-base font-bold text-slate-800">Screensaver</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Dims the tablet after a period of inactivity</p>
+              {tabletComponent === 'Language selector' && (
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-2">
+                    <div><p className="text-sm font-semibold text-slate-800">Show language flag</p><p className="text-xs text-slate-500">Visitors can switch kiosk language</p></div>
+                    <div onClick={() => setTabletShowLang(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowLang ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowLang ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
                 </div>
-                <div
-                  onClick={() => setTabletScreensaver(v => !v)}
-                  className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? 'bg-[#2b4594]' : 'bg-slate-300'}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? 'translate-x-6' : 'translate-x-1'}`} />
+              )}
+
+              {tabletComponent === 'Clock' && (
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-2">
+                    <p className="text-sm font-semibold text-slate-800">Show clock</p>
+                    <div onClick={() => setTabletShowClock(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowClock ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowClock ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              {tabletScreensaver && (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Idle timeout (minutes)</label>
-                  <select
-                    value={tabletScreensaverMins}
-                    onChange={e => setTabletScreensaverMins(Number(e.target.value))}
-                    className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-                  >
-                    {[1, 2, 5, 10, 15, 30].map(m => (
-                      <option key={m} value={m}>{m} minute{m !== 1 ? 's' : ''}</option>
-                    ))}
-                  </select>
+              )}
+
+              {tabletComponent === 'Night mode' && (
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-2">
+                    <div><p className="text-sm font-semibold text-slate-800">Enable night mode</p><p className="text-xs text-slate-500">Darker theme during off-hours to save energy</p></div>
+                    <div onClick={() => setTabletNightMode(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletNightMode ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletNightMode ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end">
-              <button
-                type="button"
-                disabled={tabletSaving}
-                onClick={async () => {
-                  setTabletSaving(true);
-                  // Persist to site settings via a generic key-value store on the site
-                  try {
-                    await api.put(`/projects/${currentSite.id}`, {
-                      name: currentSite.name,
-                      code: currentSite.code,
-                      tabletSettings: {
-                        logo: tabletLogo,
-                        welcome: tabletWelcome,
-                        subtitle: tabletSubtitle,
-                        theme: tabletTheme,
-                        screensaver: tabletScreensaver,
-                        screensaverMins: tabletScreensaverMins,
-                      },
-                    });
-                    // Persist locally too so public kiosk can read it
-                    localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
-                      logo: tabletLogo,
-                      welcome: tabletWelcome,
-                      subtitle: tabletSubtitle,
-                      theme: tabletTheme,
-                      screensaver: tabletScreensaver,
-                      screensaverMins: tabletScreensaverMins,
-                    }));
-                  } catch { /* silently store locally */ }
-                  finally { setTabletSaving(false); }
-                  // Always save to localStorage as fallback
-                  localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
-                    logo: tabletLogo,
-                    welcome: tabletWelcome,
-                    subtitle: tabletSubtitle,
-                    theme: tabletTheme,
-                    screensaver: tabletScreensaver,
-                    screensaverMins: tabletScreensaverMins,
-                  }));
-                  toast.success('Tablet display settings saved');
-                  setTabletSaving(false);
-                }}
-                className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold"
-              >
-                {tabletSaving ? 'Saving…' : 'Save changes'}
-              </button>
-            </div>
-          </div>
-
-          {/* Right column — live preview */}
-          <div className="flex flex-col gap-4">
-            <h2 className="text-base font-bold text-slate-800">Preview</h2>
-            <p className="text-xs text-slate-500 -mt-2">Live preview of your tablet welcome screen</p>
-
-            {/* iPad landscape mockup */}
-            <div className="relative w-full" style={{ aspectRatio: '4/3' }}>
-              {/* iPad outer frame */}
-              <div className="absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]">
-                {/* Screen area */}
-                <div className="w-full h-full rounded-[18px] overflow-hidden flex flex-col relative"
-                  style={{ background: tabletTheme }}>
-
-                  {/* Status bar */}
-                  <div className="flex items-center justify-between px-5 py-2 bg-black/10">
-                    <div className="flex items-center gap-3">
-                      {/* Search icon */}
-                      <svg width="14" height="14" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                      {/* UK flag emoji simulation */}
-                      <span className="text-white text-xs font-semibold opacity-80">🇬🇧</span>
-                    </div>
-                    {/* Clock */}
-                    <span className="text-white text-sm font-semibold opacity-90">
-                      {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                    {/* QR icon top right */}
-                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                        <rect x="5" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="#1e293b" stroke="none"/>
-                        <path d="M14 14h3v3M17 14v3h3M14 17v3"/>
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Main content area */}
-                  <div className="flex-1 flex items-center gap-8 px-10 py-4">
-                    {/* Left — welcome text + logo */}
-                    <div className="flex-1 flex flex-col justify-center">
-                      {tabletLogo && (
-                        <img src={tabletLogo} alt="logo" className="h-10 object-contain mb-4 self-start" />
-                      )}
-                      <p className="text-white font-bold leading-tight mb-2"
-                        style={{ fontSize: 'clamp(18px, 3.5vw, 32px)' }}>
-                        {tabletWelcome || 'Hello,'}
-                      </p>
-                      <p className="text-white/70 font-medium"
-                        style={{ fontSize: 'clamp(11px, 1.8vw, 16px)' }}>
-                        {tabletSubtitle || 'Please sign in here.'}
-                      </p>
-                      {/* Brand badge */}
-                      <div className="flex items-center gap-1.5 mt-4">
-                        <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'white' }}>
-                          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 2L14 12H2L8 2Z" fill={tabletTheme} />
-                          </svg>
-                        </div>
-                        <span className="text-white/60 text-xs font-medium">Tripod Services</span>
-                      </div>
-                    </div>
-
-                    {/* Right — sign in card */}
-                    <div className="w-[42%] bg-white rounded-2xl shadow-lg p-5 flex flex-col gap-2.5">
-                      {/* Tap to get started button */}
-                      <div className="rounded-full py-2.5 flex items-center justify-center mb-1"
-                        style={{ background: '#111827' }}>
-                        <span className="text-white text-xs font-semibold">Tap to get started</span>
-                      </div>
-                      {/* Mock form fields */}
-                      <div className="h-2 bg-slate-100 rounded-full w-2/5" />
-                      <div className="h-6 bg-slate-50 border border-slate-200 rounded-lg" />
-                      <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" />
-                      <div className="h-6 bg-slate-50 border border-slate-200 rounded-lg" />
-                      <div className="mt-1 h-7 rounded-lg flex items-center justify-center"
-                        style={{ background: tabletTheme }}>
-                        <span className="text-white text-xs font-bold">Sign in</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Home bar */}
-                  <div className="pb-2 flex justify-center">
-                    <div className="w-24 h-1 rounded-full bg-white/30" />
-                  </div>
+            {/* Logo */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold text-slate-800">Logo</h2>
+                <div onClick={() => setTabletShowLogo(v => !v)} className={`relative w-10 h-5 rounded-full cursor-pointer transition-colors ${tabletShowLogo ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowLogo ? 'translate-x-5' : 'translate-x-0.5'}`} />
                 </div>
               </div>
+              {tabletShowLogo && (
+                <div className="flex items-center gap-3">
+                  <div className="h-14 w-14 rounded-xl border border-slate-200 bg-white flex items-center justify-center overflow-hidden">
+                    {tabletLogo ? <img src={tabletLogo} alt="logo" className="h-full w-full object-contain p-1" /> : <span className="text-xs text-slate-400 text-center leading-tight">Default Tripod logo</span>}
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                      <input type="file" accept="image/*" className="sr-only" onChange={e => {
+                        const file = e.target.files?.[0]; if (!file) return;
+                        const reader = new FileReader(); reader.onload = ev => setTabletLogo(ev.target.result); reader.readAsDataURL(file);
+                      }} />
+                      Upload custom logo
+                    </label>
+                    {tabletLogo && <button onClick={() => setTabletLogo(null)} className="text-xs text-red-500 hover:underline text-left">Use Tripod default</button>}
+                  </div>
+                </div>
+              )}
+            </div>
 
-              {/* iPad side buttons */}
+            {/* Welcome message */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+              <h2 className="text-sm font-bold text-slate-800">Welcome message</h2>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Heading</label>
+                <input value={tabletWelcome} onChange={e => setTabletWelcome(e.target.value)} maxLength={60} placeholder="Hello," className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Subtitle</label>
+                <input value={tabletSubtitle} onChange={e => setTabletSubtitle(e.target.value)} maxLength={100} placeholder="Please sign in here." className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              </div>
+            </div>
+
+            {/* Show form toggle */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5">
+              <div className="flex items-center justify-between">
+                <div><p className="text-sm font-semibold text-slate-800">Show sign-in form</p><p className="text-xs text-slate-500">Display the name/group form on screen</p></div>
+                <div onClick={() => setTabletShowForm(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowForm ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowForm ? 'translate-x-6' : 'translate-x-1'}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Screensaver */}
+            <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div><h2 className="text-sm font-bold text-slate-800">Screensaver</h2><p className="text-xs text-slate-500">Dims after inactivity</p></div>
+                <div onClick={() => setTabletScreensaver(v => !v)} className={`relative w-10 h-5 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                </div>
+              </div>
+              {tabletScreensaver && (
+                <select value={tabletScreensaverMins} onChange={e => setTabletScreensaverMins(Number(e.target.value))} className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594] w-full">
+                  {[1,2,5,10,15,30].map(m => <option key={m} value={m}>{m} minute{m !== 1 ? 's' : ''}</option>)}
+                </select>
+              )}
+            </div>
+
+            <button type="button" disabled={tabletSaving} onClick={async () => {
+              setTabletSaving(true);
+              const settings = { logo: tabletLogo, bgImage: tabletBgImage, showLogo: tabletShowLogo, welcome: tabletWelcome, subtitle: tabletSubtitle, theme: tabletTheme, screensaver: tabletScreensaver, screensaverMins: tabletScreensaverMins, showForm: tabletShowForm, showQR: tabletShowQR, showClock: tabletShowClock, showLang: tabletShowLang, overlayOpacity: tabletOverlayOpacity, nightMode: tabletNightMode };
+              try { await api.put(`/projects/${currentSite.id}`, { name: currentSite.name, code: currentSite.code, tabletSettings: settings }); } catch {}
+              localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify(settings));
+              setTabletSaving(false);
+            }} className="w-full px-4 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
+              {tabletSaving ? 'Saving…' : 'Save changes'}
+            </button>
+          </div>
+
+
+
+
+
+          {/* Right: iPad preview (2/3 width) */}
+          <div className="lg:col-span-2 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div><h2 className="text-base font-bold text-slate-800">Preview</h2><p className="text-xs text-slate-500">Click the mockup to launch fullscreen kiosk view</p></div>
+              <button onClick={() => setTabletFullscreen(true)} className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">⛶ Fullscreen</button>
+            </div>
+
+            {/* iPad mockup — clickable */}
+            <div className="relative w-full cursor-pointer group" style={{ aspectRatio: '4/3' }} onClick={() => setTabletFullscreen(true)}>
+              <div className="absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]">
+                <div className="w-full h-full rounded-[18px] overflow-hidden flex flex-col relative"
+                  style={{ background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : (tabletNightMode ? '#0f172a' : tabletTheme) }}>
+                  {tabletBgImage && <div className="absolute inset-0 rounded-[18px]" style={{ background: `rgba(0,0,0,${tabletOverlayOpacity/100})` }} />}
+                  {/* Status bar */}
+                  <div className="relative z-10 flex items-center justify-between px-5 py-2 bg-black/10">
+                    <div className="flex items-center gap-2">{tabletShowLang && <span className="text-white text-xs opacity-80">🇬🇧</span>}</div>
+                    {tabletShowClock && <span className="text-white text-sm font-semibold opacity-90">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>}
+                    {tabletShowQR && <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="5" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="#1e293b" stroke="none"/></svg></div>}
+                  </div>
+                  {/* Content */}
+                  <div className="relative z-10 flex-1 flex items-center gap-6 px-8 py-3">
+                    <div className="flex-1 flex flex-col justify-center">
+                      {tabletShowLogo && <div className="h-8 mb-2 flex items-center">{tabletLogo ? <img src={tabletLogo} alt="logo" className="h-full object-contain" /> : <span className="text-white font-black text-sm opacity-70">TRIPOD</span>}</div>}
+                      <p className="text-white font-black leading-tight mb-1" style={{ fontSize: 'clamp(16px,3vw,28px)' }}>{tabletWelcome || 'Hello,'}</p>
+                      <p className="text-white/70" style={{ fontSize: 'clamp(9px,1.5vw,13px)' }}>{tabletSubtitle || 'Please sign in here.'}</p>
+                    </div>
+                    {tabletShowForm && (
+                      <div className="w-[42%] bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-2">
+                        <div className="rounded-full py-2 flex items-center justify-center" style={{ background: '#111827' }}><span className="text-white text-xs font-semibold">Tap to get started</span></div>
+                        <div className="h-2 bg-slate-100 rounded-full w-2/5" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
+                        <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
+                        <div className="h-6 rounded-lg flex items-center justify-center mt-1" style={{ background: tabletTheme }}><span className="text-white text-xs font-bold">Sign in</span></div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative z-10 pb-2 flex justify-center"><div className="w-20 h-1 rounded-full bg-white/30" /></div>
+                </div>
+              </div>
+              {/* iPad buttons */}
               <div className="absolute top-[30%] -right-1 w-1.5 h-8 bg-[#2c2c2e] rounded-r-sm" />
               <div className="absolute top-[20%] -left-1 w-1.5 h-5 bg-[#2c2c2e] rounded-l-sm" />
               <div className="absolute top-[30%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" />
               <div className="absolute top-[43%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" />
+              {/* Hover hint */}
+              <div className="absolute inset-0 rounded-[28px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                <span className="text-white font-semibold text-sm bg-black/50 px-4 py-2 rounded-full">Click to launch fullscreen kiosk</span>
+              </div>
             </div>
-
-            <p className="text-xs text-slate-400 text-center">Updates live as you change settings</p>
+            <p className="text-xs text-slate-400 text-center">Live preview · Click to launch fullscreen kiosk mode</p>
           </div>
         </div>
+        </>
       )}
 
       {/* ── PRIVACY TAB ─────────────────────────────────────── */}
