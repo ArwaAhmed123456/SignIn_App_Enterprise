@@ -33196,7 +33196,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Clz6u_Gu.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DzZu0FOj.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -73529,12 +73529,34 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [currentSite, setCurrentSite] = reactExports.useState(site);
   const [saving, setSaving] = reactExports.useState(false);
   const [tabletLogo, setTabletLogo] = reactExports.useState(null);
-  const [tabletWelcome, setTabletWelcome] = reactExports.useState("Welcome");
-  const [tabletSubtitle, setTabletSubtitle] = reactExports.useState("Please sign in below");
+  const [tabletShowLogo, setTabletShowLogo] = reactExports.useState(true);
+  const [tabletBgImage, setTabletBgImage] = reactExports.useState(null);
+  const [tabletWelcome, setTabletWelcome] = reactExports.useState("Hello,");
+  const [tabletSubtitle, setTabletSubtitle] = reactExports.useState("Please sign in here.");
   const [tabletTheme, setTabletTheme] = reactExports.useState("#2b4594");
   const [tabletScreensaver, setTabletScreensaver] = reactExports.useState(true);
   const [tabletScreensaverMins, setTabletScreensaverMins] = reactExports.useState(5);
   const [tabletSaving, setTabletSaving] = reactExports.useState(false);
+  const [tabletFullscreen, setTabletFullscreen] = reactExports.useState(false);
+  const [tabletComponent, setTabletComponent] = reactExports.useState("Background imagery");
+  const [tabletShowForm, setTabletShowForm] = reactExports.useState(true);
+  const [tabletShowQR, setTabletShowQR] = reactExports.useState(true);
+  const [tabletButtonStyle, setTabletButtonStyle] = reactExports.useState("tap-to-start");
+  const [tabletQrPosition, setTabletQrPosition] = reactExports.useState("top-right");
+  const [tabletShowClock, setTabletShowClock] = reactExports.useState(true);
+  const [tabletShowLang, setTabletShowLang] = reactExports.useState(true);
+  const [tabletOverlayOpacity, setTabletOverlayOpacity] = reactExports.useState(40);
+  const [tabletNightMode, setTabletNightMode] = reactExports.useState(false);
+  const TABLET_COMPONENTS = [
+    "Background imagery",
+    "Buttons",
+    "Contactless sign in",
+    "Overlay",
+    "Language selector",
+    "Clock",
+    "Group shortcuts",
+    "Night mode"
+  ];
   reactExports.useEffect(() => {
     api.get("/projects").then((r) => setAllSites(r.data || [site])).catch(() => {
     });
@@ -73900,285 +73922,277 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
         ] }, i2)) })
       ] }) })
     ] }),
-    tab === "Tablet display" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-5", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Branding" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Logo" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-              tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-16 w-16 rounded-xl object-contain border border-slate-200 bg-white p-1" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-16 w-16 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 text-xs text-center leading-tight", children: "No logo" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      type: "file",
-                      accept: "image/*",
-                      className: "sr-only",
-                      onChange: (e2) => {
-                        const file = e2.target.files?.[0];
-                        if (!file) return;
-                        const reader = new FileReader();
-                        reader.onload = (ev) => setTabletLogo(ev.target.result);
-                        reader.readAsDataURL(file);
-                      }
-                    }
-                  ),
-                  "Upload logo"
-                ] }),
-                tabletLogo && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: () => setTabletLogo(null),
-                    className: "text-xs text-red-500 hover:underline text-left",
-                    children: "Remove logo"
-                  }
-                )
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-xs text-slate-400", children: "PNG or JPG recommended. Displays at the top of the tablet sign-in screen." })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Theme colour" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "color",
-                  value: tabletTheme,
-                  onChange: (e2) => setTabletTheme(e2.target.value),
-                  className: "h-10 w-10 cursor-pointer rounded-lg border border-slate-300 p-0.5"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "text",
-                  value: tabletTheme,
-                  onChange: (e2) => setTabletTheme(e2.target.value),
-                  className: "w-32 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]",
-                  placeholder: "#2b4594"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2", children: ["#2b4594", "#16a34a", "#dc2626", "#7c3aed", "#0891b2", "#ea580c"].map((c2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  type: "button",
-                  title: c2,
-                  onClick: () => setTabletTheme(c2),
-                  className: "h-7 w-7 rounded-full border-2 transition-transform hover:scale-110",
-                  style: { background: c2, borderColor: tabletTheme === c2 ? "#1e293b" : "transparent" }
-                },
-                c2
-              )) })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Welcome message" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Heading" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                value: tabletWelcome,
-                onChange: (e2) => setTabletWelcome(e2.target.value),
-                maxLength: 60,
-                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-                placeholder: "Welcome"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-xs text-slate-400", children: [
-              tabletWelcome.length,
-              "/60 characters"
+    tab === "Tablet display" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      tabletFullscreen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center", style: { background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : tabletTheme }, children: [
+        tabletBgImage && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0", style: { background: `rgba(0,0,0,${tabletOverlayOpacity / 100})` } }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTabletFullscreen(false), className: "absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white font-bold text-xl", children: "✕" }),
+        tabletShowClock && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-4 left-1/2 -translate-x-1/2 z-10 text-white text-2xl font-bold opacity-80", children: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex items-center gap-16 px-16 w-full max-w-6xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col gap-5", children: [
+            tabletShowLogo && (tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-20 object-contain self-start" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod logo", className: "h-20 object-contain self-start" })),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-white font-black leading-tight", style: { fontSize: "clamp(32px,5vw,72px)" }, children: tabletWelcome || "Hello," }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white/70 font-medium text-2xl", children: tabletSubtitle || "Please sign in here." }),
+            tabletShowQR && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-3 flex items-center gap-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white p-3 rounded-2xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 h-20 bg-slate-100 flex items-center justify-center text-xs text-slate-400 font-mono", children: "QR" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white/60 text-base", children: "Scan to sign in from your phone" })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Subtitle" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                value: tabletSubtitle,
-                onChange: (e2) => setTabletSubtitle(e2.target.value),
-                maxLength: 100,
-                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-                placeholder: "Please sign in below"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-xs text-slate-400", children: [
-              tabletSubtitle.length,
-              "/100 characters"
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 space-y-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+          tabletShowForm && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-96 bg-white rounded-3xl shadow-2xl p-8 flex flex-col gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: "Sign in" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Screensaver" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Dims the tablet after a period of inactivity" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-600 mb-1", children: "Full name" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-12 bg-slate-50 border-2 border-slate-200 rounded-xl" })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                onClick: () => setTabletScreensaver((v2) => !v2),
-                className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? "bg-[#2b4594]" : "bg-slate-300"}`,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? "translate-x-6" : "translate-x-1"}` })
-              }
-            )
-          ] }),
-          tabletScreensaver && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Idle timeout (minutes)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-600 mb-1", children: "Group" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-12 bg-slate-50 border-2 border-slate-200 rounded-xl" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full h-14 flex items-center justify-center font-bold text-white text-lg mt-2", style: { background: tabletTheme }, children: "Sign in" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-5 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-sm font-bold text-slate-800 uppercase tracking-wide", children: "Select component" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "select",
               {
-                value: tabletScreensaverMins,
-                onChange: (e2) => setTabletScreensaverMins(Number(e2.target.value)),
-                className: "border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-                children: [1, 2, 5, 10, 15, 30].map((m2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: m2, children: [
-                  m2,
-                  " minute",
-                  m2 !== 1 ? "s" : ""
-                ] }, m2))
+                value: tabletComponent,
+                onChange: (e2) => setTabletComponent(e2.target.value),
+                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
+                children: TABLET_COMPONENTS.map((c2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: c2 }, c2))
               }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            type: "button",
-            disabled: tabletSaving,
-            onClick: async () => {
-              setTabletSaving(true);
-              try {
-                await api.put(`/projects/${currentSite.id}`, {
-                  name: currentSite.name,
-                  code: currentSite.code,
-                  tabletSettings: {
-                    logo: tabletLogo,
-                    welcome: tabletWelcome,
-                    subtitle: tabletSubtitle,
-                    theme: tabletTheme,
-                    screensaver: tabletScreensaver,
-                    screensaverMins: tabletScreensaverMins
-                  }
-                });
-                localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
-                  logo: tabletLogo,
-                  welcome: tabletWelcome,
-                  subtitle: tabletSubtitle,
-                  theme: tabletTheme,
-                  screensaver: tabletScreensaver,
-                  screensaverMins: tabletScreensaverMins
-                }));
-              } catch {
-              } finally {
-                setTabletSaving(false);
-              }
-              localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify({
-                logo: tabletLogo,
-                welcome: tabletWelcome,
-                subtitle: tabletSubtitle,
-                theme: tabletTheme,
-                screensaver: tabletScreensaver,
-                screensaverMins: tabletScreensaverMins
-              }));
-              toast.success("Tablet display settings saved");
-              setTabletSaving(false);
-            },
-            className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold",
-            children: tabletSaving ? "Saving…" : "Save changes"
-          }
-        ) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Preview" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 -mt-2", children: "Live preview of your tablet welcome screen" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full", style: { aspectRatio: "4/3" }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "w-full h-full rounded-[18px] overflow-hidden flex flex-col relative",
-              style: { background: tabletTheme },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-5 py-2 bg-black/10", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "14", height: "14", fill: "none", stroke: "white", strokeWidth: "2", viewBox: "0 0 24 24", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "11", cy: "11", r: "8" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M21 21l-4.35-4.35" })
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold opacity-80", children: "🇬🇧" })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-sm font-semibold opacity-90", children: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 bg-white rounded-lg flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "#1e293b", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "7", height: "7" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "14", y: "3", width: "7", height: "7" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "14", width: "7", height: "7" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "5", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "16", y: "5", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "16", width: "3", height: "3", fill: "#1e293b", stroke: "none" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M14 14h3v3M17 14v3h3M14 17v3" })
-                  ] }) })
+            ),
+            tabletComponent === "Background imagery" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3 pt-1 border-t border-slate-100", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 pt-2", children: "Supports .jpg and .png (up to 20MB, min 2048×1536px) or .mov/.mp4 videos (up to 50MB)." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-sm font-semibold text-slate-600 hover:border-[#2b4594] hover:text-[#2b4594] transition-colors", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", accept: "image/*,video/mp4,video/quicktime", className: "sr-only", onChange: (e2) => {
+                  const file = e2.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => setTabletBgImage(ev.target.result);
+                  reader.readAsDataURL(file);
+                } }),
+                tabletBgImage ? "🖼 Change background" : "+ Upload background image"
+              ] }),
+              tabletBgImage && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletBgImage, alt: "bg preview", className: "h-12 w-20 object-cover rounded-lg border border-slate-200" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTabletBgImage(null), className: "text-xs text-red-500 hover:underline", children: "Remove" })
+              ] })
+            ] }),
+            tabletComponent === "Overlay" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 space-y-2 border-t border-slate-100", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 pt-2", children: [
+                "Overlay darkness: ",
+                tabletOverlayOpacity,
+                "%"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "range", min: 0, max: 80, value: tabletOverlayOpacity, onChange: (e2) => setTabletOverlayOpacity(Number(e2.target.value)), className: "w-full accent-[#2b4594]" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400", children: "Darkens background image so text stays readable." })
+            ] }),
+            tabletComponent === "Buttons" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 space-y-3 border-t border-slate-100", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 pt-2", children: "Button style" }),
+              [
+                { val: "tap-to-start", label: "Tap to start button", desc: "Tap start & select sign in or out on the following screen" },
+                { val: "sign-in-out", label: "Sign in & out buttons", desc: "Tap in or out to begin flow immediately" },
+                { val: "no-button", label: "No button", desc: "Tap anywhere & select sign in or out on the following screen" }
+              ].map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setTabletButtonStyle(opt.val),
+                  className: `w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-colors ${tabletButtonStyle === opt.val ? "border-[#2b4594] bg-blue-50" : "border-slate-200 hover:border-slate-300"}`,
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${tabletButtonStyle === opt.val ? "border-[#2b4594]" : "border-slate-300"}`, children: tabletButtonStyle === opt.val && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2.5 h-2.5 rounded-full bg-[#2b4594]" }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-sm font-semibold ${tabletButtonStyle === opt.val ? "text-[#2b4594]" : "text-slate-800"}`, children: opt.label }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: opt.desc })
+                    ] })
+                  ]
+                },
+                opt.val
+              )),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-2", children: "Button colour" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 items-center flex-wrap", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "color", value: tabletTheme, onChange: (e2) => setTabletTheme(e2.target.value), className: "h-9 w-9 rounded-lg border border-slate-300 cursor-pointer p-0.5" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "text", value: tabletTheme, onChange: (e2) => setTabletTheme(e2.target.value), className: "w-28 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-[#2b4594]" }),
+                  ["#2b4594", "#16a34a", "#dc2626", "#7c3aed", "#0891b2", "#111827"].map((c2) => /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTabletTheme(c2), className: "h-7 w-7 rounded-full border-2 transition-transform hover:scale-110", style: { background: c2, borderColor: tabletTheme === c2 ? "#1e293b" : "transparent" } }, c2))
+                ] })
+              ] })
+            ] }),
+            tabletComponent === "Contactless sign in" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 space-y-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between pt-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Display dynamic QR code" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Visitors scan to sign in contactlessly" })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex items-center gap-8 px-10 py-4", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col justify-center", children: [
-                    tabletLogo && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-10 object-contain mb-4 self-start" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "p",
-                      {
-                        className: "text-white font-bold leading-tight mb-2",
-                        style: { fontSize: "clamp(18px, 3.5vw, 32px)" },
-                        children: tabletWelcome || "Hello,"
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "p",
-                      {
-                        className: "text-white/70 font-medium",
-                        style: { fontSize: "clamp(11px, 1.8vw, 16px)" },
-                        children: tabletSubtitle || "Please sign in here."
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 mt-4", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-4 h-4 rounded-full flex items-center justify-center", style: { background: "white" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "10", height: "10", viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M8 2L14 12H2L8 2Z", fill: tabletTheme }) }) }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white/60 text-xs font-medium", children: "Tripod Services" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletShowQR((v2) => !v2), className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowQR ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowQR ? "translate-x-6" : "translate-x-1"}` }) })
+              ] }),
+              tabletShowQR && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-700 mb-2", children: "Select position" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-4", children: [["top-left", "Top left"], ["top-right", "Top right"]].map(([val, label]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center gap-2 cursor-pointer", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      onClick: () => setTabletQrPosition(val),
+                      className: `w-5 h-5 rounded-full border-2 flex items-center justify-center ${tabletQrPosition === val ? "border-[#2b4594]" : "border-slate-300"}`,
+                      children: tabletQrPosition === val && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2.5 h-2.5 rounded-full bg-[#2b4594]" })
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-slate-700", children: label })
+                ] }, val)) })
+              ] })
+            ] }),
+            tabletComponent === "Language selector" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between pt-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Show language flag" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Visitors can switch kiosk language" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletShowLang((v2) => !v2), className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowLang ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowLang ? "translate-x-6" : "translate-x-1"}` }) })
+            ] }) }),
+            tabletComponent === "Clock" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between pt-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Show clock" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletShowClock((v2) => !v2), className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowClock ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowClock ? "translate-x-6" : "translate-x-1"}` }) })
+            ] }) }),
+            tabletComponent === "Night mode" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between pt-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Enable night mode" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Darker theme during off-hours to save energy" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletNightMode((v2) => !v2), className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletNightMode ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletNightMode ? "translate-x-6" : "translate-x-1"}` }) })
+            ] }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-5 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-sm font-bold text-slate-800", children: "Logo" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletShowLogo((v2) => !v2), className: `relative w-10 h-5 rounded-full cursor-pointer transition-colors ${tabletShowLogo ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowLogo ? "translate-x-5" : "translate-x-0.5"}` }) })
+            ] }),
+            tabletShowLogo && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-14 w-20 rounded-xl border border-slate-200 bg-white flex items-center justify-center overflow-hidden p-1", children: tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-full w-full object-contain" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod logo", className: "h-full w-full object-contain" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", accept: "image/*", className: "sr-only", onChange: (e2) => {
+                    const file = e2.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setTabletLogo(ev.target.result);
+                    reader.readAsDataURL(file);
+                  } }),
+                  "Upload custom logo"
+                ] }),
+                tabletLogo && /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTabletLogo(null), className: "text-xs text-slate-500 hover:text-red-500 hover:underline text-left", children: "Use Tripod default" })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-5 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-sm font-bold text-slate-800", children: "Welcome message" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-600 mb-1", children: "Heading" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: tabletWelcome, onChange: (e2) => setTabletWelcome(e2.target.value), maxLength: 60, placeholder: "Hello,", className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-600 mb-1", children: "Subtitle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: tabletSubtitle, onChange: (e2) => setTabletSubtitle(e2.target.value), maxLength: 100, placeholder: "Please sign in here.", className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 p-5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Show sign-in form" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Display the name/group form on screen" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletShowForm((v2) => !v2), className: `relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowForm ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowForm ? "translate-x-6" : "translate-x-1"}` }) })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-5 space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-sm font-bold text-slate-800", children: "Screensaver" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Dims after inactivity" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => setTabletScreensaver((v2) => !v2), className: `relative w-10 h-5 rounded-full cursor-pointer transition-colors ${tabletScreensaver ? "bg-[#2b4594]" : "bg-slate-300"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletScreensaver ? "translate-x-5" : "translate-x-0.5"}` }) })
+            ] }),
+            tabletScreensaver && /* @__PURE__ */ jsxRuntimeExports.jsx("select", { value: tabletScreensaverMins, onChange: (e2) => setTabletScreensaverMins(Number(e2.target.value)), className: "border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594] w-full", children: [1, 2, 5, 10, 15, 30].map((m2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: m2, children: [
+              m2,
+              " minute",
+              m2 !== 1 ? "s" : ""
+            ] }, m2)) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", disabled: tabletSaving, onClick: async () => {
+            setTabletSaving(true);
+            const settings = { logo: tabletLogo, bgImage: tabletBgImage, showLogo: tabletShowLogo, welcome: tabletWelcome, subtitle: tabletSubtitle, theme: tabletTheme, screensaver: tabletScreensaver, screensaverMins: tabletScreensaverMins, showForm: tabletShowForm, showQR: tabletShowQR, showClock: tabletShowClock, showLang: tabletShowLang, overlayOpacity: tabletOverlayOpacity, nightMode: tabletNightMode };
+            try {
+              await api.put(`/projects/${currentSite.id}`, { name: currentSite.name, code: currentSite.code, tabletSettings: settings });
+            } catch {
+            }
+            localStorage.setItem(`tablet_settings_${currentSite.id}`, JSON.stringify(settings));
+            setTabletSaving(false);
+          }, className: "w-full px-4 py-2.5 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold", children: tabletSaving ? "Saving…" : "Save changes" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-2 flex flex-col gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-slate-800", children: "Preview" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Click the mockup to launch fullscreen kiosk view" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setTabletFullscreen(true), className: "inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: "⛶ Fullscreen" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full cursor-pointer group", style: { aspectRatio: "4/3" }, onClick: () => setTabletFullscreen(true), children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "w-full h-full rounded-[18px] overflow-hidden flex flex-col relative",
+                style: { background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : tabletNightMode ? "#0f172a" : "#ffffff" },
+                children: [
+                  tabletBgImage && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 rounded-[18px]", style: { background: `rgba(0,0,0,${tabletOverlayOpacity / 100})` } }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex items-center justify-between px-5 py-2 bg-black/10", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                      tabletShowLang && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs opacity-80", children: "🇬🇧" }),
+                      tabletShowClock && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-sm font-semibold opacity-90", children: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) })
+                    ] }),
+                    tabletShowQR && tabletQrPosition === "top-right" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: `${window.location.origin}/checkin/${currentSite.id}`, size: 48, bgColor: "#ffffff", fgColor: "#1e293b", level: "M" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[6px] text-slate-500 text-center leading-tight max-w-[52px]", children: "Scan or visit" })
                     ] })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-[42%] bg-white rounded-2xl shadow-lg p-5 flex flex-col gap-2.5", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "div",
-                      {
-                        className: "rounded-full py-2.5 flex items-center justify-center mb-1",
-                        style: { background: "#111827" },
-                        children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold", children: "Tap to get started" })
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-6 bg-slate-50 border border-slate-200 rounded-lg" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5 mt-1" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-6 bg-slate-50 border border-slate-200 rounded-lg" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "div",
-                      {
-                        className: "mt-1 h-7 rounded-lg flex items-center justify-center",
-                        style: { background: tabletTheme },
-                        children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-bold", children: "Sign in" })
-                      }
-                    )
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pb-2 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-1 rounded-full bg-white/30" }) })
-              ]
-            }
-          ) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -right-1 w-1.5 h-8 bg-[#2c2c2e] rounded-r-sm" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[20%] -left-1 w-1.5 h-5 bg-[#2c2c2e] rounded-l-sm" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[43%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 text-center", children: "Updates live as you change settings" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex-1 flex items-center gap-6 px-8 py-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col justify-center", children: [
+                      tabletShowQR && tabletQrPosition === "top-left" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm mb-2 self-start", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: `${window.location.origin}/checkin/${currentSite.id}`, size: 40, bgColor: "#ffffff", fgColor: "#1e293b", level: "M" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[6px] text-slate-500", children: "Scan or visit" })
+                      ] }),
+                      tabletShowLogo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 mb-2 flex items-center", children: tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-full object-contain" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod logo", className: "h-full object-contain" }) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black leading-tight mb-1", style: { fontSize: "clamp(16px,3vw,28px)", color: tabletBgImage ? "#fff" : tabletNightMode ? "#fff" : "#111827" }, children: tabletWelcome || "Hello," }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "opacity-70", style: { fontSize: "clamp(9px,1.5vw,13px)", color: tabletBgImage ? "#fff" : tabletNightMode ? "#e2e8f0" : "#374151" }, children: tabletSubtitle || "Please sign in here." })
+                    ] }),
+                    tabletButtonStyle !== "no-button" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-[42%] bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-2", children: [
+                      tabletButtonStyle === "tap-to-start" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full py-2 flex items-center justify-center", style: { background: "#111827" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold", children: "Tap to get started" }) }),
+                        tabletShowForm && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5 mt-1" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-5 bg-slate-50 border border-slate-200 rounded-lg" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 bg-slate-100 rounded-full w-2/5 mt-1" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-5 bg-slate-50 border border-slate-200 rounded-lg" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-6 rounded-lg flex items-center justify-center mt-1", style: { background: tabletTheme }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-bold", children: "Sign in" }) })
+                        ] })
+                      ] }),
+                      tabletButtonStyle === "sign-in-out" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg py-2 flex items-center justify-center", style: { background: tabletTheme }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-xs font-semibold", children: "Sign in" }) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg py-2 flex items-center justify-center border-2", style: { borderColor: tabletTheme }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold", style: { color: tabletTheme }, children: "Sign out" }) })
+                      ] })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative z-10 pb-2 flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 h-1 rounded-full bg-white/30" }) })
+                ]
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -right-1 w-1.5 h-8 bg-[#2c2c2e] rounded-r-sm" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[20%] -left-1 w-1.5 h-5 bg-[#2c2c2e] rounded-l-sm" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[30%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-[43%] -left-1 w-1.5 h-8 bg-[#2c2c2e] rounded-l-sm" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 rounded-[28px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold text-sm bg-black/50 px-4 py-2 rounded-full", children: "Click to launch fullscreen kiosk" }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 text-center", children: "Live preview · Click to launch fullscreen kiosk mode" })
+        ] })
       ] })
     ] }),
     tab === "Privacy" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-6 max-w-xl space-y-4", children: [
@@ -75056,7 +75070,6 @@ const ROLE_COLORS = {
   admin: "bg-blue-100 text-[#2b4594]",
   viewer: "bg-slate-100 text-slate-600"
 };
-const MOBILE_ROLES = ["employee", "guard", "manager", "admin"];
 const InviteModal = ({ onClose, onInvited }) => {
   const [email, setEmail] = reactExports.useState("");
   const [firstName, setFirstName] = reactExports.useState("");
@@ -75312,15 +75325,18 @@ const InviteModal = ({ onClose, onInvited }) => {
 };
 const MobileUserModal = ({ onClose, onCreated }) => {
   const [form, setForm] = reactExports.useState({ name: "", email: "", phone: "", mobileRole: "guard", site_id: "" });
+  const [sendWelcome, setSendWelcome] = reactExports.useState(true);
+  const [sendAppCode, setSendAppCode] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
   const [error, setError] = reactExports.useState("");
   const [sites, setSites] = reactExports.useState([]);
+  const [createdCreds, setCreatedCreds] = reactExports.useState(null);
   reactExports.useEffect(() => {
     api.get("/projects").then((res) => setSites(res.data || [])).catch(() => setSites([]));
   }, []);
   const handleCreate = async () => {
     if (!form.name.trim()) {
-      setError("Name is required");
+      setError("Full name is required");
       return;
     }
     setSaving(true);
@@ -75333,24 +75349,59 @@ const MobileUserModal = ({ onClose, onCreated }) => {
         email: form.email.trim() || void 0,
         phone: form.phone.trim() || void 0,
         mobileRole: form.mobileRole,
-        role: form.mobileRole === "guard" ? "Guard" : form.mobileRole === "manager" ? "Manager" : "Employee",
+        role: form.mobileRole === "guard" ? "Guard" : form.mobileRole === "manager" ? "Manager" : form.mobileRole === "admin" ? "Admin" : "Employee",
         site_id: form.site_id || void 0,
-        status: "Current"
+        status: "Current",
+        send_welcome: sendWelcome && !!form.email.trim(),
+        include_companion: sendAppCode && !!form.email.trim()
       });
-      onCreated(res.data.member);
-      onClose();
+      setCreatedCreds({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: res.data.password || "(sent by email)",
+        role: form.mobileRole,
+        note: (sendWelcome || sendAppCode) && form.email.trim() ? "Welcome email with login credentials and Tripod Hub Connect invite code sent." : void 0
+      });
+      onCreated?.(res.data.member);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to create user");
-    } finally {
       setSaving(false);
     }
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md", children: [
+  const inp = "w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2b4594]";
+  if (createdCreds) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "✓ Mobile app user created" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-5 space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-green-50 border border-green-200 rounded-xl p-4 space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-bold text-green-800", children: [
+          "Share these credentials with ",
+          createdCreds.name,
+          ":"
+        ] }),
+        createdCreds.email && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-green-600 font-semibold mb-1", children: "EMAIL" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono text-sm bg-white border border-green-200 rounded-lg px-3 py-2 select-all", children: createdCreds.email })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-green-600 font-semibold mb-1", children: "PASSWORD" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-mono text-sm bg-white border border-green-200 rounded-lg px-3 py-2 select-all font-bold tracking-wider", children: createdCreds.password })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-green-600 font-semibold mb-1", children: "ROLE" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold capitalize text-slate-800", children: createdCreds.role })
+        ] })
+      ] }),
+      createdCreds.note && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2", children: createdCreds.note }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2", children: "⚠ Copy these credentials now — the password will not be shown again." })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end px-6 py-4 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold", children: "Done" }) })
+  ] }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Create mobile app user" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 18 }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-6 py-5 space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-6 py-5 space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
           "Full name ",
@@ -75362,7 +75413,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
             value: form.name,
             onChange: (e2) => setForm((f2) => ({ ...f2, name: e2.target.value })),
             placeholder: "John Smith",
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+            className: inp
           }
         )
       ] }),
@@ -75375,7 +75426,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
             value: form.email,
             onChange: (e2) => setForm((f2) => ({ ...f2, email: e2.target.value })),
             placeholder: "john@company.com",
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+            className: inp
           }
         )
       ] }),
@@ -75387,55 +75438,77 @@ const MobileUserModal = ({ onClose, onCreated }) => {
             value: form.phone,
             onChange: (e2) => setForm((f2) => ({ ...f2, phone: e2.target.value })),
             placeholder: "+44 7700 900000",
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+            className: inp
           }
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile App Role" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "select",
-          {
-            value: form.mobileRole,
-            onChange: (e2) => setForm((f2) => ({ ...f2, mobileRole: e2.target.value })),
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-            children: MOBILE_ROLES.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: r, children: r.charAt(0).toUpperCase() + r.slice(1) }, r))
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 text-xs text-slate-500 space-y-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: form.mobileRole, onChange: (e2) => setForm((f2) => ({ ...f2, mobileRole: e2.target.value })), className: inp, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Guard" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 text-xs text-slate-500 space-y-0.5 pl-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Guard" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-700", children: "Guard" }),
             " — sign in/out visitors, run evacuations"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Manager" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-700", children: "Manager" }),
             " — view on-site people, receive notifications"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Employee" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-700", children: "Employee" }),
             " — sign self in/out, view calendar"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Admin" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-700", children: "Admin" }),
             " — full mobile app access"
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Site" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "select",
-          {
-            value: form.site_id,
-            onChange: (e2) => setForm((f2) => ({ ...f2, site_id: e2.target.value })),
-            className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
-              sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
-              sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites found — create one in Manage → Sites" })
-            ]
-          }
-        )
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: form.site_id, onChange: (e2) => setForm((f2) => ({ ...f2, site_id: e2.target.value })), className: inp, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
+          sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id)),
+          sites.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { disabled: true, children: "No sites — create one in Manage → Sites" })
+        ] })
+      ] }),
+      form.email.trim() && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-500 uppercase tracking-wide", children: "Email options" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 cursor-pointer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: sendWelcome,
+              onChange: (e2) => setSendWelcome(e2.target.checked),
+              className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Includes login credentials and getting started instructions" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 cursor-pointer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: sendAppCode,
+              onChange: (e2) => setSendAppCode(e2.target.checked),
+              className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Include Tripod Hub Connect app invite" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Sends a 12-digit code to connect the mobile companion app" })
+          ] })
+        ] })
       ] }),
       error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: error })
     ] }),
@@ -75517,13 +75590,97 @@ const AccountManagement = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-8", children: "Manage subscription, user roles and permissions for your organisation." }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Users, title: "Portal users", desc: "Add and edit users who have access to this portal", onClick: () => setActiveSection("users") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Mobile app users", desc: "Create Guard, Manager, and Employee accounts for the companion app", onClick: () => setShowMobileUser(true) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Mobile app users", desc: "Create Guard, Manager, and Employee accounts for the companion app", onClick: () => setActiveSection("mobile-users") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Roles and permissions", desc: "Set up different user roles and what they can do", onClick: () => setActiveSection("roles") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: CreditCard, title: "Subscription details", desc: "Plans and payment details", onClick: () => setActiveSection("billing") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: FileText, title: "Audit log", desc: "Record of system activity and events", onClick: () => setActiveSection("audit") })
-    ] }),
-    showMobileUser && /* @__PURE__ */ jsxRuntimeExports.jsx(MobileUserModal, { onClose: () => setShowMobileUser(false), onCreated: (member) => console.log("Created mobile user:", member) })
+    ] })
   ] });
+  if (activeSection === "mobile-users") {
+    const mobileUsers = users.filter((u2) => !u2.isPortal);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActiveSection("overview"), className: "text-sm text-[#2b4594] hover:underline", children: "← Account management" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-bold text-slate-800 mb-1", children: "Mobile app users" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Create and manage Guard, Manager, and Employee accounts for the Tripod Hub Connect companion app." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => setShowMobileUser(true),
+            className: "flex items-center gap-2 px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 15 }),
+              " Create mobile app user"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-4 gap-4 mb-6", children: [
+        { label: "Total", value: mobileUsers.length, color: "text-slate-800" },
+        { label: "Guards", value: mobileUsers.filter((u2) => u2.role === "guard").length, color: "text-[#2b4594]" },
+        { label: "Managers", value: mobileUsers.filter((u2) => u2.role === "manager").length, color: "text-purple-700" },
+        { label: "Employees", value: mobileUsers.filter((u2) => u2.role === "employee" || u2.role === "admin").length, color: "text-green-700" }
+      ].map(({ label, value: value2, color }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 px-5 py-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-2xl font-bold ${color}`, children: value2 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-1", children: label })
+      ] }, label)) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Name" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Email" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Role" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Site" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Status" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-right", children: "Actions" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loadingUsers ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "6", className: "px-5 py-8 text-center text-slate-400", children: "Loading..." }) }) : mobileUsers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { colSpan: "6", className: "px-5 py-12 text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-semibold mb-1", children: "No mobile app users yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs mb-4", children: "Create your first guard, manager, or employee to get started." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => setShowMobileUser(true),
+              className: "inline-flex items-center gap-2 px-4 py-2 bg-[#2b4594] text-white rounded-lg text-sm font-semibold hover:bg-[#1e326e]",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { size: 14 }),
+                " Create mobile app user"
+              ]
+            }
+          )
+        ] }) }) : mobileUsers.map((u2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-full bg-[#2b4594]/10 flex items-center justify-center text-xs font-bold text-[#2b4594] flex-shrink-0", children: (u2.name || "?")[0].toUpperCase() }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-slate-800", children: u2.name || "--" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-600", children: u2.email || "--" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${u2.role === "guard" ? "bg-blue-100 text-[#2b4594]" : u2.role === "manager" ? "bg-purple-100 text-purple-700" : u2.role === "admin" ? "bg-slate-200 text-slate-700" : "bg-green-100 text-green-700"}`, children: u2.role }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs", children: u2.site || "—" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${u2.status === "active" || u2.status === "current" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`, children: u2.status === "current" ? "Active" : u2.status }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => removeUser(u2.id),
+              className: "p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100",
+              title: "Remove",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 13 })
+            }
+          ) })
+        ] }, u2.id)) })
+      ] }) }),
+      showMobileUser && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MobileUserModal,
+        {
+          onClose: () => setShowMobileUser(false),
+          onCreated: (member) => {
+            setShowMobileUser(false);
+            fetchUsers();
+          }
+        }
+      )
+    ] });
+  }
   if (activeSection === "users") return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-3xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActiveSection("overview"), className: "text-sm text-[#2b4594] hover:underline", children: "← Account management" }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-6", children: [

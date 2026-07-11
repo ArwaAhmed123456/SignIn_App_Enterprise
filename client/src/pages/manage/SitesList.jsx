@@ -565,6 +565,8 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
   const [tabletComponent, setTabletComponent]       = useState('Background imagery');
   const [tabletShowForm, setTabletShowForm]         = useState(true);
   const [tabletShowQR, setTabletShowQR]             = useState(true);
+  const [tabletButtonStyle, setTabletButtonStyle]   = useState('tap-to-start'); // tap-to-start | sign-in-out | no-button
+  const [tabletQrPosition, setTabletQrPosition]     = useState('top-right');   // top-left | top-right
   const [tabletShowClock, setTabletShowClock]       = useState(true);
   const [tabletShowLang, setTabletShowLang]         = useState(true);
   const [tabletOverlayOpacity, setTabletOverlayOpacity] = useState(40);
@@ -962,7 +964,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                 {tabletShowLogo && (
                   tabletLogo
                     ? <img src={tabletLogo} alt="logo" className="h-20 object-contain self-start" />
-                    : <div className="h-16 flex items-center"><span className="text-white text-2xl font-black">TRIPOD</span></div>
+                    : <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod logo" className="h-20 object-contain self-start" />
                 )}
                 <h1 className="text-white font-black leading-tight" style={{ fontSize: 'clamp(32px,5vw,72px)' }}>{tabletWelcome || 'Hello,'}</h1>
                 <p className="text-white/70 font-medium text-2xl">{tabletSubtitle || 'Please sign in here.'}</p>
@@ -1027,27 +1029,60 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
 
               {tabletComponent === 'Buttons' && (
                 <div className="pt-2 space-y-3 border-t border-slate-100">
-                  <label className="block text-sm font-semibold text-slate-700 pt-2">Button colour</label>
-                  <div className="flex gap-2 items-center">
-                    <input type="color" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="h-10 w-10 rounded-lg border border-slate-300 cursor-pointer p-0.5" />
-                    <input type="text" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-[#2b4594]" />
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {['#2b4594','#16a34a','#dc2626','#7c3aed','#0891b2','#ea580c','#111827'].map(c => (
-                      <button key={c} onClick={() => setTabletTheme(c)} className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110" style={{ background: c, borderColor: tabletTheme === c ? '#1e293b' : 'transparent' }} />
-                    ))}
+                  <p className="text-sm font-semibold text-slate-700 pt-2">Button style</p>
+                  {[
+                    { val: 'tap-to-start', label: 'Tap to start button', desc: 'Tap start & select sign in or out on the following screen' },
+                    { val: 'sign-in-out',  label: 'Sign in & out buttons', desc: 'Tap in or out to begin flow immediately' },
+                    { val: 'no-button',    label: 'No button', desc: 'Tap anywhere & select sign in or out on the following screen' },
+                  ].map(opt => (
+                    <button key={opt.val} type="button" onClick={() => setTabletButtonStyle(opt.val)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-colors ${tabletButtonStyle === opt.val ? 'border-[#2b4594] bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${tabletButtonStyle === opt.val ? 'border-[#2b4594]' : 'border-slate-300'}`}>
+                        {tabletButtonStyle === opt.val && <div className="w-2.5 h-2.5 rounded-full bg-[#2b4594]" />}
+                      </div>
+                      <div>
+                        <p className={`text-sm font-semibold ${tabletButtonStyle === opt.val ? 'text-[#2b4594]' : 'text-slate-800'}`}>{opt.label}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                      </div>
+                    </button>
+                  ))}
+                  <div className="pt-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Button colour</label>
+                    <div className="flex gap-2 items-center flex-wrap">
+                      <input type="color" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="h-9 w-9 rounded-lg border border-slate-300 cursor-pointer p-0.5" />
+                      <input type="text" value={tabletTheme} onChange={e => setTabletTheme(e.target.value)} className="w-28 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-[#2b4594]" />
+                      {['#2b4594','#16a34a','#dc2626','#7c3aed','#0891b2','#111827'].map(c => (
+                        <button key={c} onClick={() => setTabletTheme(c)} className="h-7 w-7 rounded-full border-2 transition-transform hover:scale-110" style={{ background: c, borderColor: tabletTheme === c ? '#1e293b' : 'transparent' }} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
               {tabletComponent === 'Contactless sign in' && (
-                <div className="pt-2 border-t border-slate-100">
+                <div className="pt-2 border-t border-slate-100 space-y-4">
                   <div className="flex items-center justify-between pt-2">
-                    <div><p className="text-sm font-semibold text-slate-800">Show QR code</p><p className="text-xs text-slate-500">Visitors scan to sign in contactlessly</p></div>
+                    <div><p className="text-sm font-semibold text-slate-800">Display dynamic QR code</p><p className="text-xs text-slate-500">Visitors scan to sign in contactlessly</p></div>
                     <div onClick={() => setTabletShowQR(v => !v)} className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${tabletShowQR ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
                       <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${tabletShowQR ? 'translate-x-6' : 'translate-x-1'}`} />
                     </div>
                   </div>
+                  {tabletShowQR && (
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700 mb-2">Select position</p>
+                      <div className="flex gap-4">
+                        {[['top-left','Top left'],['top-right','Top right']].map(([val, label]) => (
+                          <label key={val} className="flex items-center gap-2 cursor-pointer">
+                            <div onClick={() => setTabletQrPosition(val)}
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${tabletQrPosition === val ? 'border-[#2b4594]' : 'border-slate-300'}`}>
+                              {tabletQrPosition === val && <div className="w-2.5 h-2.5 rounded-full bg-[#2b4594]" />}
+                            </div>
+                            <span className="text-sm text-slate-700">{label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1095,8 +1130,11 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
               </div>
               {tabletShowLogo && (
                 <div className="flex items-center gap-3">
-                  <div className="h-14 w-14 rounded-xl border border-slate-200 bg-white flex items-center justify-center overflow-hidden">
-                    {tabletLogo ? <img src={tabletLogo} alt="logo" className="h-full w-full object-contain p-1" /> : <span className="text-xs text-slate-400 text-center leading-tight">Default Tripod logo</span>}
+                  <div className="h-14 w-20 rounded-xl border border-slate-200 bg-white flex items-center justify-center overflow-hidden p-1">
+                    {tabletLogo
+                      ? <img src={tabletLogo} alt="logo" className="h-full w-full object-contain" />
+                      : <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod logo" className="h-full w-full object-contain" />
+                    }
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
@@ -1106,7 +1144,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                       }} />
                       Upload custom logo
                     </label>
-                    {tabletLogo && <button onClick={() => setTabletLogo(null)} className="text-xs text-red-500 hover:underline text-left">Use Tripod default</button>}
+                    {tabletLogo && <button onClick={() => setTabletLogo(null)} className="text-xs text-slate-500 hover:text-red-500 hover:underline text-left">Use Tripod default</button>}
                   </div>
                 </div>
               )}
@@ -1176,27 +1214,72 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
             <div className="relative w-full cursor-pointer group" style={{ aspectRatio: '4/3' }} onClick={() => setTabletFullscreen(true)}>
               <div className="absolute inset-0 bg-[#1c1c1e] rounded-[28px] shadow-2xl p-[14px]">
                 <div className="w-full h-full rounded-[18px] overflow-hidden flex flex-col relative"
-                  style={{ background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : (tabletNightMode ? '#0f172a' : tabletTheme) }}>
+                  style={{ background: tabletBgImage ? `url(${tabletBgImage}) center/cover no-repeat` : (tabletNightMode ? '#0f172a' : '#ffffff') }}>
                   {tabletBgImage && <div className="absolute inset-0 rounded-[18px]" style={{ background: `rgba(0,0,0,${tabletOverlayOpacity/100})` }} />}
                   {/* Status bar */}
                   <div className="relative z-10 flex items-center justify-between px-5 py-2 bg-black/10">
-                    <div className="flex items-center gap-2">{tabletShowLang && <span className="text-white text-xs opacity-80">🇬🇧</span>}</div>
-                    {tabletShowClock && <span className="text-white text-sm font-semibold opacity-90">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>}
-                    {tabletShowQR && <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="5" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="#1e293b" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="#1e293b" stroke="none"/></svg></div>}
+                    <div className="flex items-center gap-2">
+                      {tabletShowLang && <span className="text-white text-xs opacity-80">🇬🇧</span>}
+                      {tabletShowClock && <span className="text-white text-sm font-semibold opacity-90">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>}
+                    </div>
+                    {/* Real QR code in correct position */}
+                    {tabletShowQR && tabletQrPosition === 'top-right' && (
+                      <div className="bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm">
+                        <QRCode value={`${window.location.origin}/checkin/${currentSite.id}`} size={48} bgColor="#ffffff" fgColor="#1e293b" level="M" />
+                        <span className="text-[6px] text-slate-500 text-center leading-tight max-w-[52px]">Scan or visit</span>
+                      </div>
+                    )}
                   </div>
+
                   {/* Content */}
                   <div className="relative z-10 flex-1 flex items-center gap-6 px-8 py-3">
+                    {/* Left side: QR top-left position + logo + text */}
                     <div className="flex-1 flex flex-col justify-center">
-                      {tabletShowLogo && <div className="h-8 mb-2 flex items-center">{tabletLogo ? <img src={tabletLogo} alt="logo" className="h-full object-contain" /> : <span className="text-white font-black text-sm opacity-70">TRIPOD</span>}</div>}
-                      <p className="text-white font-black leading-tight mb-1" style={{ fontSize: 'clamp(16px,3vw,28px)' }}>{tabletWelcome || 'Hello,'}</p>
-                      <p className="text-white/70" style={{ fontSize: 'clamp(9px,1.5vw,13px)' }}>{tabletSubtitle || 'Please sign in here.'}</p>
+                      {tabletShowQR && tabletQrPosition === 'top-left' && (
+                        <div className="bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm mb-2 self-start">
+                          <QRCode value={`${window.location.origin}/checkin/${currentSite.id}`} size={40} bgColor="#ffffff" fgColor="#1e293b" level="M" />
+                          <span className="text-[6px] text-slate-500">Scan or visit</span>
+                        </div>
+                      )}
+                      {tabletShowLogo && (
+                        <div className="h-8 mb-2 flex items-center">
+                          {tabletLogo
+                            ? <img src={tabletLogo} alt="logo" className="h-full object-contain" />
+                            : <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod logo" className="h-full object-contain" />
+                          }
+                        </div>
+                      )}
+                      <p className="font-black leading-tight mb-1" style={{ fontSize: 'clamp(16px,3vw,28px)', color: tabletBgImage ? '#fff' : (tabletNightMode ? '#fff' : '#111827') }}>{tabletWelcome || 'Hello,'}</p>
+                      <p className="opacity-70" style={{ fontSize: 'clamp(9px,1.5vw,13px)', color: tabletBgImage ? '#fff' : (tabletNightMode ? '#e2e8f0' : '#374151') }}>{tabletSubtitle || 'Please sign in here.'}</p>
                     </div>
-                    {tabletShowForm && (
+
+                    {/* Right side: form / buttons based on selected style */}
+                    {tabletButtonStyle !== 'no-button' && (
                       <div className="w-[42%] bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-2">
-                        <div className="rounded-full py-2 flex items-center justify-center" style={{ background: '#111827' }}><span className="text-white text-xs font-semibold">Tap to get started</span></div>
-                        <div className="h-2 bg-slate-100 rounded-full w-2/5" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
-                        <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
-                        <div className="h-6 rounded-lg flex items-center justify-center mt-1" style={{ background: tabletTheme }}><span className="text-white text-xs font-bold">Sign in</span></div>
+                        {tabletButtonStyle === 'tap-to-start' && (
+                          <>
+                            <div className="rounded-full py-2 flex items-center justify-center" style={{ background: '#111827' }}>
+                              <span className="text-white text-xs font-semibold">Tap to get started</span>
+                            </div>
+                            {tabletShowForm && (
+                              <>
+                                <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
+                                <div className="h-2 bg-slate-100 rounded-full w-2/5 mt-1" /><div className="h-5 bg-slate-50 border border-slate-200 rounded-lg" />
+                                <div className="h-6 rounded-lg flex items-center justify-center mt-1" style={{ background: tabletTheme }}><span className="text-white text-xs font-bold">Sign in</span></div>
+                              </>
+                            )}
+                          </>
+                        )}
+                        {tabletButtonStyle === 'sign-in-out' && (
+                          <>
+                            <div className="rounded-lg py-2 flex items-center justify-center" style={{ background: tabletTheme }}>
+                              <span className="text-white text-xs font-semibold">Sign in</span>
+                            </div>
+                            <div className="rounded-lg py-2 flex items-center justify-center border-2" style={{ borderColor: tabletTheme }}>
+                              <span className="text-xs font-semibold" style={{ color: tabletTheme }}>Sign out</span>
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

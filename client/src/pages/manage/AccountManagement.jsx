@@ -280,16 +280,19 @@ const InviteModal = ({ onClose, onInvited }) => {
 // ─── Create mobile user modal (Guard/Manager) ─────────────────────────────────
 const MobileUserModal = ({ onClose, onCreated }) => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', mobileRole: 'guard', site_id: '' });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [sites, setSites] = useState([]);
+  const [sendWelcome, setSendWelcome]     = useState(true);
+  const [sendAppCode, setSendAppCode]     = useState(true);
+  const [saving, setSaving]   = useState(false);
+  const [error, setError]     = useState('');
+  const [sites, setSites]     = useState([]);
+  const [createdCreds, setCreatedCreds] = useState(null);
 
   useEffect(() => {
     api.get('/projects').then(res => setSites(res.data || [])).catch(() => setSites([]));
   }, []);
 
   const handleCreate = async () => {
-    if (!form.name.trim()) { setError('Name is required'); return; }
+    if (!form.name.trim()) { setError('Full name is required'); return; }
     setSaving(true); setError('');
     try {
       const parts = form.name.trim().split(/\s+/);
@@ -299,65 +302,149 @@ const MobileUserModal = ({ onClose, onCreated }) => {
         email: form.email.trim() || undefined,
         phone: form.phone.trim() || undefined,
         mobileRole: form.mobileRole,
-        role: form.mobileRole === 'guard' ? 'Guard' : form.mobileRole === 'manager' ? 'Manager' : 'Employee',
+        role: form.mobileRole === 'guard' ? 'Guard' : form.mobileRole === 'manager' ? 'Manager' : form.mobileRole === 'admin' ? 'Admin' : 'Employee',
         site_id: form.site_id || undefined,
         status: 'Current',
+        send_welcome: sendWelcome && !!form.email.trim(),
+        include_companion: sendAppCode && !!form.email.trim(),
       });
-      onCreated(res.data.member);
-      onClose();
+      setCreatedCreds({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: res.data.password || '(sent by email)',
+        role: form.mobileRole,
+        note: (sendWelcome || sendAppCode) && form.email.trim()
+          ? 'Welcome email with login credentials and Tripod Hub Connect invite code sent.'
+          : undefined,
+      });
+      onCreated?.(res.data.member);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create user');
-    } finally { setSaving(false); }
+      setSaving(false);
+    }
   };
+
+  const inp = 'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2b4594]';
+
+  // Step 2 — credentials
+  if (createdCreds) return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">✓ Mobile app user created</h2>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
+            <p className="text-sm font-bold text-green-800">Share these credentials with {createdCreds.name}:</p>
+            {createdCreds.email && (
+              <div>
+                <p className="text-xs text-green-600 font-semibold mb-1">EMAIL</p>
+                <p className="font-mono text-sm bg-white border border-green-200 rounded-lg px-3 py-2 select-all">{createdCreds.email}</p>
+              </div>
+            )}
+            <div>
+              <p className="text-xs text-green-600 font-semibold mb-1">PASSWORD</p>
+              <p className="font-mono text-sm bg-white border border-green-200 rounded-lg px-3 py-2 select-all font-bold tracking-wider">{createdCreds.password}</p>
+            </div>
+            <div>
+              <p className="text-xs text-green-600 font-semibold mb-1">ROLE</p>
+              <p className="text-sm font-semibold capitalize text-slate-800">{createdCreds.role}</p>
+            </div>
+          </div>
+          {createdCreds.note && (
+            <p className="text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">{createdCreds.note}</p>
+          )}
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            ⚠ Copy these credentials now — the password will not be shown again.
+          </p>
+        </div>
+        <div className="flex justify-end px-6 py-4 border-t border-slate-100">
+          <button onClick={onClose} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">Done</button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <h2 className="text-lg font-bold text-slate-800">Create mobile app user</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"><X size={18} /></button>
         </div>
-        <div className="px-6 py-5 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+          {/* Full name */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Full name <span className="text-red-500">*</span></label>
             <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="John Smith"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              placeholder="John Smith" className={inp} />
           </div>
+
+          {/* Email */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
             <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-              placeholder="john@company.com"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              placeholder="john@company.com" className={inp} />
           </div>
+
+          {/* Phone */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Phone</label>
             <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-              placeholder="+44 7700 900000"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+              placeholder="+44 7700 900000" className={inp} />
           </div>
+
+          {/* Mobile App Role */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
-            <select value={form.mobileRole} onChange={e => setForm(f => ({ ...f, mobileRole: e.target.value }))}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
-              {MOBILE_ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+            <select value={form.mobileRole} onChange={e => setForm(f => ({ ...f, mobileRole: e.target.value }))} className={inp}>
+              <option value="guard">Guard</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
             </select>
-            <div className="mt-2 text-xs text-slate-500 space-y-1">
-              <p><strong>Guard</strong> — sign in/out visitors, run evacuations</p>
-              <p><strong>Manager</strong> — view on-site people, receive notifications</p>
-              <p><strong>Employee</strong> — sign self in/out, view calendar</p>
-              <p><strong>Admin</strong> — full mobile app access</p>
+            <div className="mt-2 text-xs text-slate-500 space-y-0.5 pl-1">
+              <p><span className="font-semibold text-slate-700">Guard</span> — sign in/out visitors, run evacuations</p>
+              <p><span className="font-semibold text-slate-700">Manager</span> — view on-site people, receive notifications</p>
+              <p><span className="font-semibold text-slate-700">Employee</span> — sign self in/out, view calendar</p>
+              <p><span className="font-semibold text-slate-700">Admin</span> — full mobile app access</p>
             </div>
           </div>
+
+          {/* Site */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Site</label>
-            <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]">
+            <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))} className={inp}>
               <option value="">Select site…</option>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-              {sites.length === 0 && <option disabled>No sites found — create one in Manage → Sites</option>}
+              {sites.length === 0 && <option disabled>No sites — create one in Manage → Sites</option>}
             </select>
           </div>
+
+          {/* Email options — only show if email entered */}
+          {form.email.trim() && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email options</p>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" checked={sendWelcome} onChange={e => setSendWelcome(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Includes login credentials and getting started instructions</p>
+                </div>
+              </label>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" checked={sendAppCode} onChange={e => setSendAppCode(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Include Tripod Hub Connect app invite</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Sends a 12-digit code to connect the mobile companion app</p>
+                </div>
+              </label>
+            </div>
+          )}
+
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
@@ -446,14 +533,127 @@ const AccountManagement = () => {
       <p className="text-slate-500 text-sm mb-8">Manage subscription, user roles and permissions for your organisation.</p>
       <div className="space-y-3">
         <SectionCard icon={Users}       title="Portal users"         desc="Add and edit users who have access to this portal" onClick={() => setActiveSection('users')} />
-        <SectionCard icon={Shield}      title="Mobile app users"      desc="Create Guard, Manager, and Employee accounts for the companion app" onClick={() => setShowMobileUser(true)} />
+        <SectionCard icon={Shield}      title="Mobile app users"      desc="Create Guard, Manager, and Employee accounts for the companion app" onClick={() => setActiveSection('mobile-users')} />
         <SectionCard icon={Shield}      title="Roles and permissions" desc="Set up different user roles and what they can do"  onClick={() => setActiveSection('roles')} />
         <SectionCard icon={CreditCard}  title="Subscription details"  desc="Plans and payment details"                        onClick={() => setActiveSection('billing')} />
         <SectionCard icon={FileText}    title="Audit log"             desc="Record of system activity and events"              onClick={() => setActiveSection('audit')} />
       </div>
-      {showMobileUser && <MobileUserModal onClose={() => setShowMobileUser(false)} onCreated={(member) => console.log('Created mobile user:', member)} />}
     </div>
   );
+
+  // Mobile app users page
+  if (activeSection === 'mobile-users') {
+    const mobileUsers = users.filter(u => !u.isPortal);
+    return (
+      <div className="max-w-4xl">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => setActiveSection('overview')} className="text-sm text-[#2b4594] hover:underline">← Account management</button>
+        </div>
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 mb-1">Mobile app users</h1>
+            <p className="text-slate-500 text-sm">Create and manage Guard, Manager, and Employee accounts for the Tripod Hub Connect companion app.</p>
+          </div>
+          <button onClick={() => setShowMobileUser(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#2b4594] hover:bg-[#1e326e] text-white rounded-lg text-sm font-semibold">
+            <Plus size={15} /> Create mobile app user
+          </button>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          {[
+            { label: 'Total',     value: mobileUsers.length,                                                             color: 'text-slate-800' },
+            { label: 'Guards',    value: mobileUsers.filter(u => u.role === 'guard').length,                             color: 'text-[#2b4594]' },
+            { label: 'Managers',  value: mobileUsers.filter(u => u.role === 'manager').length,                           color: 'text-purple-700' },
+            { label: 'Employees', value: mobileUsers.filter(u => u.role === 'employee' || u.role === 'admin').length,    color: 'text-green-700' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-white rounded-xl border border-slate-200 px-5 py-4">
+              <p className={`text-2xl font-bold ${color}`}>{value}</p>
+              <p className="text-xs text-slate-500 mt-1">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <tr>
+                <th className="px-5 py-3 text-left">Name</th>
+                <th className="px-5 py-3 text-left">Email</th>
+                <th className="px-5 py-3 text-left">Role</th>
+                <th className="px-5 py-3 text-left">Site</th>
+                <th className="px-5 py-3 text-left">Status</th>
+                <th className="px-5 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {loadingUsers ? (
+                <tr><td colSpan="6" className="px-5 py-8 text-center text-slate-400">Loading...</td></tr>
+              ) : mobileUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-5 py-12 text-center">
+                    <p className="text-slate-500 font-semibold mb-1">No mobile app users yet</p>
+                    <p className="text-slate-400 text-xs mb-4">Create your first guard, manager, or employee to get started.</p>
+                    <button onClick={() => setShowMobileUser(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#2b4594] text-white rounded-lg text-sm font-semibold hover:bg-[#1e326e]">
+                      <Plus size={14} /> Create mobile app user
+                    </button>
+                  </td>
+                </tr>
+              ) : (
+                mobileUsers.map(u => (
+                  <tr key={u.id} className="hover:bg-slate-50 group">
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#2b4594]/10 flex items-center justify-center text-xs font-bold text-[#2b4594] flex-shrink-0">
+                          {(u.name || '?')[0].toUpperCase()}
+                        </div>
+                        <span className="font-medium text-slate-800">{u.name || '--'}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 text-slate-600">{u.email || '--'}</td>
+                    <td className="px-5 py-3">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
+                        u.role === 'guard'   ? 'bg-blue-100 text-[#2b4594]' :
+                        u.role === 'manager' ? 'bg-purple-100 text-purple-700' :
+                        u.role === 'admin'   ? 'bg-slate-200 text-slate-700' :
+                        'bg-green-100 text-green-700'
+                      }`}>{u.role}</span>
+                    </td>
+                    <td className="px-5 py-3 text-slate-500 text-xs">{u.site || '—'}</td>
+                    <td className="px-5 py-3">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                        u.status === 'active' || u.status === 'current'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}>{u.status === 'current' ? 'Active' : u.status}</span>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <button onClick={() => removeUser(u.id)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100" title="Remove">
+                        <Trash2 size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {showMobileUser && (
+          <MobileUserModal
+            onClose={() => setShowMobileUser(false)}
+            onCreated={(member) => {
+              setShowMobileUser(false);
+              fetchUsers();
+            }}
+          />
+        )}
+      </div>
+    );
+  }
 
   // Portal users
   if (activeSection === 'users') return (

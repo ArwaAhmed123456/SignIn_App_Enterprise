@@ -56,8 +56,16 @@ const MessageBubble = ({ msg, isOwn }) => (
 
 const MessagesScreen = ({ navigation, route }) => {
   const { user } = useAuth();
-  const siteId  = route?.params?.siteId || user?.project_id || '';
-  const siteName = route?.params?.siteName || 'Site';
+  // Get site_id from route params first, then try multiple user fields
+  const siteId  = route?.params?.siteId
+    || user?.project_id
+    || user?.site_id
+    || user?.siteId
+    || '';
+  const siteName = route?.params?.siteName
+    || user?.siteName
+    || user?.organization
+    || 'Site chat';
 
   const [messages, setMessages] = useState([]);
   const [text, setText]         = useState('');
