@@ -6,7 +6,8 @@ const PreRegistration  = require('../models/PreRegistration');
 const ActivityLog      = require('../models/ActivityLog');
 const Site             = require('../models/Site');
 const VisitorGroup     = require('../models/VisitorGroup');
-const { sendPreRegistrationInviteEmail } = require('../services/emailService');
+const Member           = require('../models/Member');
+const { sendPreRegistrationInviteEmail, sendVisitorArrivalNotificationEmail } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 const verifyAdmin = (req, res, next) => {
@@ -167,7 +168,6 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
     let groupName = 'Visitor';
     if (prereg.visitorGroupName) groupName = prereg.visitorGroupName;
     if (prereg.visitorGroupId) {
-      // Ignore invalid ObjectId values safely (CastError)
       try {
         const g = await VisitorGroup.findById(prereg.visitorGroupId).lean();
         if (g) groupName = g.name;
@@ -195,6 +195,86 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
     
     const io = req.app.get('io');
     if (io) io.emit('newAttendance', { name: prereg.name, date: dateStr });
+
+    // Notify the host (if attached) and all managers at this site
+    setImmediate(async () => {
+      try {
+        const site = prereg.siteId ? await Site.findById(prereg.siteId).lean() : null;
+        const siteName = site?.name || 'your site';
+        
+        // 1. Notify host if pre-registration had a member (host) attached
+        if (prereg.memberId) {
+          try {
+            const host = await Member.findById(prereg.memberId).lean();
+            if (host?.email) {
+              await sendVisitorArrivalNotificationEmail({
+                hostEmail: host.email,
+                hostName: `${host.firstName || ''} ${host.lastName || ''}`.trim() || host.email,
+                visitorName: prereg.name,
+                siteName,
+                arrivalTime: now,
+              });
+              console.log(`[PRE-REG] Arrival notification sent to host ${host.email} for visitor ${prereg.name}`);
+            }
+            // Emit socket notification to the host's dashboard
+            if (io && host) {
+              io.emit('visitorArrived', {
+                visitorName: prereg.name,
+                hostId: String(host._id),
+                siteName,
+                arrivedAt: now,
+              });
+            }
+          } catch (e) {
+            console.error('[PRE-REG] Host notification error:', e?.message || e);
+          }
+        }
+        
+        // 2. Notify all managers at this site
+        if (prereg.siteId) {
+          try {
+            const managers = await Member.find({
+              siteId: prereg.siteId,
+              mobileRole: 'manager',
+              status: 'Current',
+              email: { $exists: true, $ne: null, $ne: '' }
+            }).lean();
+            
+            for (const manager of managers) {
+              if (manager.email && (!prereg.memberId || String(manager._id) !== String(prereg.memberId))) {
+                try {
+                  await sendVisitorArrivalNotificationEmail({
+                    hostEmail: manager.email,
+                    hostName: `${manager.firstName || ''} ${manager.lastName || ''}`.trim() || manager.email,
+                    visitorName: prereg.name,
+                    siteName,
+                    arrivalTime: now,
+                  });
+                  console.log(`[PRE-REG] Arrival notification sent to manager ${manager.email} for visitor ${prereg.name}`);
+                } catch (e) {
+                  console.error(`[PRE-REG] Manager ${manager.email} notification error:`, e?.message || e);
+                }
+              }
+            }
+            
+            // Emit socket notification to all managers
+            if (io && managers.length > 0) {
+              io.emit('visitorArrivedToManagers', {
+                visitorName: prereg.name,
+                siteId: String(prereg.siteId),
+                siteName,
+                arrivedAt: now,
+                managerIds: managers.map(m => String(m._id)),
+              });
+            }
+          } catch (e) {
+            console.error('[PRE-REG] Managers notification error:', e?.message || e);
+          }
+        }
+      } catch (e) {
+        console.error('[PRE-REG] Arrival notification error:', e?.message || e);
+      }
+    });
     
     res.json({success:true, log_id: log._id});
   } catch(err){ console.error(err); res.status(500).json({error:'Server error'}); }

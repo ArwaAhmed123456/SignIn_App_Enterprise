@@ -25,6 +25,7 @@ import ManagerScreen       from './src/screens/ManagerScreen';
 import SecurityGuardScreen from './src/screens/SecurityGuardScreen';
 import GuardLogin          from './src/screens/GuardLogin';
 import GuardSignup         from './src/screens/GuardSignup';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab   = createBottomTabNavigator();
@@ -32,23 +33,27 @@ const Tab   = createBottomTabNavigator();
 // Tab style uses insets so it never overlaps the phone's gesture bar
 const useTabStyle = () => {
   const insets = useSafeAreaInsets();
-  const bottomPad = Math.max(insets.bottom, Platform.OS === 'ios' ? 20 : 8);
+  const bottomPad = Math.max(insets.bottom, Platform.OS === 'ios' ? 16 : 8);
   return {
     headerShown: false,
     tabBarActiveTintColor: '#2b4594',
     tabBarInactiveTintColor: '#9ca3af',
     tabBarStyle: {
-      borderTopWidth: 1,
-      borderTopColor: '#f3f4f6',
+      borderTopWidth: 1.5,
+      borderTopColor: '#cbd5e1', // Darker, clear separator line
       elevation: 0,
       shadowOpacity: 0,
-      height: 52 + bottomPad,
+      height: 62 + bottomPad,
       paddingBottom: bottomPad,
       paddingTop: 8,
       backgroundColor: '#ffffff',
-      position: 'absolute',
     },
-    tabBarShowLabel: false,
+    tabBarLabelStyle: {
+      fontSize: 11,
+      fontWeight: '600',
+      marginTop: 2,
+    },
+    tabBarShowLabel: true,
   };
 };
 
@@ -57,11 +62,11 @@ const EmployeeTabs = () => {
   const tabStyle = useTabStyle();
   return (
     <Tab.Navigator screenOptions={tabStyle}>
-      <Tab.Screen name="Today"        component={TodayScreen}      options={{ tabBarIcon: ({ color }) => <CheckCircle    color={color} size={26} /> }} />
-      <Tab.Screen name="Calendar"     component={CalendarScreen}   options={{ tabBarIcon: ({ color }) => <CalendarIcon   color={color} size={26} /> }} />
-      <Tab.Screen name="Messages"     component={MessagesScreen}   options={{ tabBarIcon: ({ color }) => <MessageCircle  color={color} size={26} /> }} />
-      <Tab.Screen name="EvacuationTab"component={EvacuationScreen} options={{ tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={26} /> }} />
-      <Tab.Screen name="Profile"      component={ProfileScreen}    options={{ tabBarIcon: ({ color }) => <User           color={color} size={26} /> }} />
+      <Tab.Screen name="Today"        component={TodayScreen}      options={{ tabBarLabel: 'Today', tabBarIcon: ({ color }) => <CheckCircle    color={color} size={22} /> }} />
+      <Tab.Screen name="Calendar"     component={CalendarScreen}   options={{ tabBarLabel: 'Calendar', tabBarIcon: ({ color }) => <CalendarIcon   color={color} size={22} /> }} />
+      <Tab.Screen name="Messages"     component={MessagesScreen}   options={{ tabBarLabel: 'Messages', tabBarIcon: ({ color }) => <MessageCircle  color={color} size={22} /> }} />
+      <Tab.Screen name="EvacuationTab"component={EvacuationScreen} options={{ tabBarLabel: 'Evacuation', tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={22} /> }} />
+      <Tab.Screen name="Profile"      component={ProfileScreen}    options={{ tabBarLabel: 'Profile', tabBarIcon: ({ color }) => <User           color={color} size={22} /> }} />
     </Tab.Navigator>
   );
 };
@@ -71,10 +76,10 @@ const ManagerTabs = () => {
   const tabStyle = useTabStyle();
   return (
     <Tab.Navigator screenOptions={tabStyle}>
-      <Tab.Screen name="ManagerHome"  component={ManagerScreen}    options={{ tabBarIcon: ({ color }) => <Users          color={color} size={26} /> }} />
-      <Tab.Screen name="Messages"     component={MessagesScreen}   options={{ tabBarIcon: ({ color }) => <MessageCircle  color={color} size={26} /> }} />
-      <Tab.Screen name="EvacuationTab"component={EvacuationScreen} options={{ tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={26} /> }} />
-      <Tab.Screen name="Profile"      component={ProfileScreen}    options={{ tabBarIcon: ({ color }) => <User           color={color} size={26} /> }} />
+      <Tab.Screen name="ManagerHome"  component={ManagerScreen}    options={{ tabBarLabel: 'Portal', tabBarIcon: ({ color }) => <Users          color={color} size={22} /> }} />
+      <Tab.Screen name="Messages"     component={MessagesScreen}   options={{ tabBarLabel: 'Messages', tabBarIcon: ({ color }) => <MessageCircle  color={color} size={22} /> }} />
+      <Tab.Screen name="EvacuationTab"component={EvacuationScreen} options={{ tabBarLabel: 'Evacuation', tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={22} /> }} />
+      <Tab.Screen name="Profile"      component={ProfileScreen}    options={{ tabBarLabel: 'Profile', tabBarIcon: ({ color }) => <User           color={color} size={22} /> }} />
     </Tab.Navigator>
   );
 };
@@ -84,10 +89,10 @@ const GuardTabs = () => {
   const tabStyle = useTabStyle();
   return (
     <Tab.Navigator screenOptions={tabStyle}>
-      <Tab.Screen name="GuardHome"    component={SecurityGuardScreen} options={{ tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={26} /> }} />
-      <Tab.Screen name="Messages"     component={MessagesScreen}      options={{ tabBarIcon: ({ color }) => <MessageCircle  color={color} size={26} /> }} />
-      <Tab.Screen name="EvacuationTab"component={EvacuationScreen}    options={{ tabBarIcon: ({ color }) => <AlertTriangle  color={color} size={26} /> }} />
-      <Tab.Screen name="Profile"      component={ProfileScreen}       options={{ tabBarIcon: ({ color }) => <User           color={color} size={26} /> }} />
+      <Tab.Screen name="GuardHome"    component={SecurityGuardScreen} options={{ tabBarLabel: 'Portal', tabBarIcon: ({ color }) => <ShieldCheck    color={color} size={22} /> }} />
+      <Tab.Screen name="Messages"     component={MessagesScreen}      options={{ tabBarLabel: 'Messages', tabBarIcon: ({ color }) => <MessageCircle  color={color} size={22} /> }} />
+      <Tab.Screen name="EvacuationTab"component={EvacuationScreen}    options={{ tabBarLabel: 'Evacuation', tabBarIcon: ({ color }) => <AlertTriangle  color={color} size={22} /> }} />
+      <Tab.Screen name="Profile"      component={ProfileScreen}       options={{ tabBarLabel: 'Profile', tabBarIcon: ({ color }) => <User           color={color} size={22} /> }} />
     </Tab.Navigator>
   );
 };
@@ -127,10 +132,11 @@ const Navigation = () => {
           </>
         ) : (
           <>
-            <Stack.Screen name="Onboarding"  component={OnboardingScreen} />
-            <Stack.Screen name="InviteCode"  component={InviteCodeScreen} />
-            <Stack.Screen name="GuardLogin"  component={GuardLogin} />
-            <Stack.Screen name="GuardSignup" component={GuardSignup} />
+            <Stack.Screen name="Onboarding"     component={OnboardingScreen} />
+            <Stack.Screen name="InviteCode"     component={InviteCodeScreen} />
+            <Stack.Screen name="GuardLogin"     component={GuardLogin} />
+            <Stack.Screen name="GuardSignup"    component={GuardSignup} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           </>
         )}
       </Stack.Navigator>

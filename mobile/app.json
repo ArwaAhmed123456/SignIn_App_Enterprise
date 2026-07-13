@@ -56,15 +56,12 @@
       "apiUrl": "https://tripod-signin-app.onrender.com/api",
       "webAppUrl": "https://tripod-signin-app.onrender.com",
       "eas": {
-        "projectId": "93a2574b-7e98-4ab5-a640-e8c08da3f5df"
+        "projectId": "d198d300-5db6-4012-aad7-d97993f314f4"
       }
     },
-    "owner": "ayeshaes-team",
+    "owner": "haalim",
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/93a2574b-7e98-4ab5-a640-e8c08da3f5df"
     }
   }
 }

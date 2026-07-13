@@ -239,7 +239,13 @@ router.get('/members', verifyAdmin, async (req, res) => {
     const filter = {};
     if (status && status !== 'All')    filter.status         = status;
     if (visitor_group_id)              filter.visitorGroupId = visitor_group_id;
-    if (site_id)                       filter.siteId         = site_id;
+    
+    if (req.user.role === 'superadmin') {
+      if (site_id) filter.siteId = site_id;
+    } else {
+      filter.siteId = req.user.site_id;
+    }
+
     if (search) {
       const re = new RegExp(search, 'i');
       filter.$or = [{ firstName: re }, { lastName: re }, { email: re }];
@@ -259,6 +265,9 @@ router.post('/members', verifyAdmin, async (req, res) => {
       if (existing) return res.status(400).json({ error: 'Email already exists' });
     }
     let resolvedSiteId = site_id;
+    if (req.user.role !== 'superadmin') {
+      resolvedSiteId = req.user.site_id;
+    }
     let resolvedSite = null;
     if (!resolvedSiteId) {
       resolvedSite = await Site.findOne().sort({ createdAt: 1 });
@@ -285,6 +294,15 @@ router.post('/members', verifyAdmin, async (req, res) => {
       siteId:         resolvedSiteId,
       siteName:       resolvedSite?.name || null,
     });
+
+    // Set password — use provided one or generate a readable temp password
+    const rawPassword = req.body.password?.trim() || null;
+    const tempPassword = rawPassword || (() => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('') + '@1';
+    })();
+    const hashedPw = await bcrypt.hash(tempPassword, 10);
+    await Member.findByIdAndUpdate(member._id, { password: hashedPw });
 
     // Generate companion code synchronously if needed
     let companionCode = null;
@@ -335,20 +353,21 @@ router.post('/members', verifyAdmin, async (req, res) => {
       success: true,
       member: await fmtMember(member.toObject()),
       email_sent: shouldSendEmail ? 'pending' : null,
-      password: companionCode // Include companion code to show in UI
+      password: rawPassword ? undefined : tempPassword, // only return auto-generated password; custom ones aren't returned for security
     });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
 // PUT /api/guards/members/:id
 router.put('/members/:id', verifyAdmin, async (req, res) => {
-  const { first_name, last_name, email, phone, role, status, start_date, end_date, visitor_group_id } = req.body;
+  const { first_name, last_name, email, phone, role, mobileRole, status, start_date, end_date, visitor_group_id, password } = req.body;
   const updates = {};
   if (first_name       !== undefined) updates.firstName      = first_name;
   if (last_name        !== undefined) updates.lastName       = last_name;
   if (email            !== undefined) updates.email          = email;
   if (phone            !== undefined) updates.phone          = phone;
-  if (role             !== undefined) updates.role           = role;
+  if (role             !== undefined) { updates.role = role; updates.mobileRole = mobileRole || deriveMobileRole(role); }
+  if (mobileRole       !== undefined) updates.mobileRole     = mobileRole;
   if (status           !== undefined) updates.status         = status;
   if (start_date       !== undefined) updates.startDate      = start_date ? new Date(start_date) : null;
   if (end_date         !== undefined) updates.endDate        = end_date   ? new Date(end_date)   : null;
@@ -356,7 +375,17 @@ router.put('/members/:id', verifyAdmin, async (req, res) => {
     const mongoose = require('mongoose');
     updates.visitorGroupId = visitor_group_id && mongoose.isValidObjectId(visitor_group_id) ? visitor_group_id : null;
   }
+  // Password reset support: only update if a non-blank password was provided
+  if (password && password.trim()) {
+    updates.password = await bcrypt.hash(password.trim(), 10);
+  }
   try {
+    if (req.user.role !== 'superadmin') {
+      const existingMember = await Member.findById(req.params.id);
+      if (!existingMember || String(existingMember.siteId) !== String(req.user.site_id)) {
+        return res.status(403).json({ error: 'Access denied to this member' });
+      }
+    }
     const member = await Member.findByIdAndUpdate(req.params.id, updates, { new: true }).lean();
     if (!member) return res.status(404).json({ error: 'Member not found' });
     res.json({ success: true, member: await fmtMember(member) });
@@ -366,14 +395,58 @@ router.put('/members/:id', verifyAdmin, async (req, res) => {
 // DELETE /api/guards/members/:id
 router.delete('/members/:id', verifyAdmin, async (req, res) => {
   try {
+    if (req.user.role !== 'superadmin') {
+      const existingMember = await Member.findById(req.params.id);
+      if (!existingMember || String(existingMember.siteId) !== String(req.user.site_id)) {
+        return res.status(403).json({ error: 'Access denied to this member' });
+      }
+    }
     await Member.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+// POST /api/guards/logout — check out the guard/manager from the site when they log out of the app
+router.post('/logout', async (req, res) => {
+  try {
+    const auth = req.headers['authorization'];
+    if (!auth) return res.json({ success: true }); // already logged out
+    let userId;
+    try {
+      const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+      userId = decoded.id;
+    } catch {
+      return res.json({ success: true }); // expired/invalid token, nothing to do
+    }
+    if (userId) {
+      const now = new Date();
+      const openLogs = await ActivityLog.find({ memberId: userId, timeOut: null });
+      for (const log of openLogs) {
+        const checkInTime = log.checkIn ? new Date(log.checkIn) : null;
+        const hours = checkInTime ? ((now - checkInTime) / 3600000).toFixed(2) : null;
+        await ActivityLog.findByIdAndUpdate(log._id, {
+          timeOut: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+          checkOut: now,
+          hours: hours ? parseFloat(hours) : undefined,
+        });
+      }
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[LOGOUT] Error:', err);
+    res.json({ success: true }); // always succeed logout
+  }
+});
+
 // POST /api/guards/members/:id/archive
 router.post('/members/:id/archive', verifyAdmin, async (req, res) => {
   try {
+    if (req.user.role !== 'superadmin') {
+      const existingMember = await Member.findById(req.params.id);
+      if (!existingMember || String(existingMember.siteId) !== String(req.user.site_id)) {
+        return res.status(403).json({ error: 'Access denied to this member' });
+      }
+    }
     await Member.findByIdAndUpdate(req.params.id, { status: 'Archived' });
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }

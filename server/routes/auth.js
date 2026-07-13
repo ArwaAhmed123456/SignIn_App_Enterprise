@@ -57,6 +57,7 @@ router.post('/login', async (req, res) => {
                 id:        admin._id,
                 email:     admin.email,
                 role:      admin.role,
+                site_id:   admin.site_id ? String(admin.site_id) : null,
                 firstName: admin.first_name || '',
                 lastName:  admin.last_name  || '',
             },
@@ -196,7 +197,7 @@ router.post('/change-password', verifyToken, async (req, res) => {
 // ─── Invite / create portal user (superadmin only) ────────────────────────────
 // Returns the generated password so superadmin can share credentials manually
 router.post('/invite', verifySuperAdmin, async (req, res) => {
-    const { email, role, first_name, last_name, organization } = req.body;
+    const { email, role, first_name, last_name, organization, site_id } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
     try {
         const existing = await Admin.findOne({ email: email.toLowerCase() });
@@ -216,6 +217,7 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
             last_name:    last_name  || '',
             organization: organization || '',
             role:         role || 'admin',
+            site_id:      site_id || null,
         });
 
         // Send credentials email using the proper email service
@@ -256,8 +258,28 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
 // ─── List admins ───────────────────────────────────────────────────────────────
 router.get('/admins', verifySuperAdmin, async (req, res) => {
     try {
-        const admins = await Admin.find({}, '-password -reset_token -reset_expires');
+        const admins = await Admin.find({}, '-password -reset_token -reset_expires').populate('site_id', 'name');
         res.json(admins);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ─── Update admin (superadmin only) ──────────────────────────────────────────
+router.put('/admins/:id', verifySuperAdmin, async (req, res) => {
+    try {
+        const { role, site_id, first_name, last_name } = req.body;
+        const admin = await Admin.findById(req.params.id);
+        if (!admin) return res.status(404).json({ error: 'Admin not found' });
+        if (admin.role === 'superadmin')
+            return res.status(400).json({ error: 'Cannot modify superadmin' });
+        const updates = {};
+        if (role       !== undefined) updates.role       = role;
+        if (site_id    !== undefined) updates.site_id    = site_id || null;
+        if (first_name !== undefined) updates.first_name = first_name;
+        if (last_name  !== undefined) updates.last_name  = last_name;
+        const updated = await Admin.findByIdAndUpdate(req.params.id, updates, { new: true }).populate('site_id', 'name');
+        res.json({ message: 'Admin updated', admin: updated });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }

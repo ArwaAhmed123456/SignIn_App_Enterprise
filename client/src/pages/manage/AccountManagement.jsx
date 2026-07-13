@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X, Mail } from 'lucide-react';
+import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X, Mail, Pencil, CheckCircle, XCircle, Clock } from 'lucide-react';
 import api from '../../api';
 
 const ROLES = ['superadmin', 'admin', 'viewer'];
@@ -17,6 +17,7 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [firstName, setFirstName]       = useState('');
   const [lastName, setLastName]         = useState('');
   const [phone, setPhone]               = useState('');
+  const [password, setPassword]         = useState('');
   const [organization, setOrganization] = useState('');
   const [role, setRole]                 = useState('admin');
   const [accountType, setAccountType]   = useState('portal');
@@ -45,11 +46,13 @@ const InviteModal = ({ onClose, onInvited }) => {
 
   const handleCreate = async () => {
     if (!email.trim()) { setError('Email is required'); return; }
+    if (!password.trim() || password.length < 8) { setError('Password must be at least 8 characters'); return; }
     setSaving(true); setError('');
     try {
       if (accountType === 'portal') {
         const res = await api.post('/auth/invite', {
           email: email.trim(), role,
+          password: password.trim(),
           first_name: firstName.trim() || undefined,
           last_name:  lastName.trim()  || undefined,
           phone:      phone.trim()     || undefined,
@@ -57,7 +60,7 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id:    siteId           || undefined,
           send_email: sendWelcome,
         });
-        setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: 'Portal account' });
+        setCreatedCreds({ email: email.trim(), password: password.trim(), role, type: 'Portal account' });
         onInvited({ email: email.trim(), role });
       } else {
         const res = await api.post('/guards/members', {
@@ -65,6 +68,7 @@ const InviteModal = ({ onClose, onInvited }) => {
           last_name:         lastName.trim()  || undefined,
           email:             email.trim(),
           phone:             phone.trim()     || undefined,
+          password:          password.trim(),
           mobileRole,
           role:              mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
           site_id:           siteId           || undefined,
@@ -73,9 +77,9 @@ const InviteModal = ({ onClose, onInvited }) => {
           include_companion: sendWelcome,
         });
         setCreatedCreds({
-          email: email.trim(), password: res.data.password || '(sent by welcome email)',
+          email: email.trim(), password: password.trim(),
           role: mobileRole, type: 'Mobile app account',
-          note: sendWelcome ? 'Welcome email with companion app code sent to their inbox.' : undefined,
+          note: sendWelcome ? 'Welcome email with companion app code sent to their inbox.' : 'User created. Share credentials with them.',
         });
         onInvited({ email: email.trim(), role: mobileRole, status: 'invited' });
       }
@@ -174,6 +178,13 @@ const InviteModal = ({ onClose, onInvited }) => {
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Phone <span className="text-slate-400 font-normal text-xs">(optional)</span></label>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+44 7700 900000" className={inp} />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Password <span className="text-red-500">*</span></label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 8 characters" className={inp} autoComplete="new-password" />
+            <p className="text-xs text-slate-500 mt-1">User will login with this password. Min 8 characters.</p>
           </div>
 
           {/* Portal fields */}
@@ -279,7 +290,7 @@ const InviteModal = ({ onClose, onInvited }) => {
 
 // ─── Create mobile user modal (Guard/Manager) ─────────────────────────────────
 const MobileUserModal = ({ onClose, onCreated }) => {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', mobileRole: 'guard', site_id: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', mobileRole: 'guard', site_id: '' });
   const [sendWelcome, setSendWelcome]     = useState(true);
   const [sendAppCode, setSendAppCode]     = useState(true);
   const [saving, setSaving]   = useState(false);
@@ -293,6 +304,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
 
   const handleCreate = async () => {
     if (!form.name.trim()) { setError('Full name is required'); return; }
+    if (!form.password.trim() || form.password.length < 8) { setError('Password must be at least 8 characters'); return; }
     setSaving(true); setError('');
     try {
       const parts = form.name.trim().split(/\s+/);
@@ -301,6 +313,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
         last_name: parts.slice(1).join(' ') || undefined,
         email: form.email.trim() || undefined,
         phone: form.phone.trim() || undefined,
+        password: form.password.trim(),
         mobileRole: form.mobileRole,
         role: form.mobileRole === 'guard' ? 'Guard' : form.mobileRole === 'manager' ? 'Manager' : form.mobileRole === 'admin' ? 'Admin' : 'Employee',
         site_id: form.site_id || undefined,
@@ -311,11 +324,11 @@ const MobileUserModal = ({ onClose, onCreated }) => {
       setCreatedCreds({
         name: form.name.trim(),
         email: form.email.trim(),
-        password: res.data.password || '(sent by email)',
+        password: form.password.trim(),
         role: form.mobileRole,
         note: (sendWelcome || sendAppCode) && form.email.trim()
           ? 'Welcome email with login credentials and Tripod Hub Connect invite code sent.'
-          : undefined,
+          : 'User created. Share the credentials below with them.',
       });
       onCreated?.(res.data.member);
     } catch (err) {
@@ -395,6 +408,14 @@ const MobileUserModal = ({ onClose, onCreated }) => {
               placeholder="+44 7700 900000" className={inp} />
           </div>
 
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Password <span className="text-red-500">*</span></label>
+            <input type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              placeholder="Min 8 characters" className={inp} autoComplete="new-password" />
+            <p className="text-xs text-slate-500 mt-1">User will login with this password. Min 8 characters.</p>
+          </div>
+
           {/* Mobile App Role */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
@@ -459,6 +480,111 @@ const MobileUserModal = ({ onClose, onCreated }) => {
   );
 };
 
+// ─── Edit mobile user modal (Guard/Manager/Employee) ──────────────────────────
+const EditMobileUserModal = ({ user, onClose, onUpdated }) => {
+  const [form, setForm] = useState({
+    name: user.name || '',
+    email: user.email === 'No email' ? '' : user.email || '',
+    phone: user.phone || '',
+    mobileRole: user.role || 'guard',
+    site_id: user.site_id || '',
+    password: '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [sites, setSites] = useState([]);
+
+  useEffect(() => {
+    api.get('/projects').then(res => setSites(res.data || [])).catch(() => setSites([]));
+  }, []);
+
+  const handleUpdate = async () => {
+    if (!form.name.trim()) { setError('Full name is required'); return; }
+    setSaving(true); setError('');
+    try {
+      const parts = form.name.trim().split(/\s+/);
+      await api.put(`/guards/members/${user.id}`, {
+        first_name: parts[0],
+        last_name: parts.slice(1).join(' ') || undefined,
+        email: form.email.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        role: form.mobileRole === 'guard' ? 'Guard' : form.mobileRole === 'manager' ? 'Manager' : form.mobileRole === 'admin' ? 'Admin' : 'Employee',
+        mobileRole: form.mobileRole,
+        site_id: form.site_id || undefined,
+        password: form.password?.trim() || undefined,
+      });
+      onUpdated();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update user');
+      setSaving(false);
+    }
+  };
+
+  const inp = 'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2b4594]';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">Edit mobile app user</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"><X size={18} /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Full name <span className="text-red-500">*</span></label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+            <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Phone</label>
+            <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile App Role</label>
+            <select value={form.mobileRole} onChange={e => setForm(f => ({ ...f, mobileRole: e.target.value }))} className={inp}>
+              <option value="guard">Guard</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Site</label>
+            <select value={form.site_id} onChange={e => setForm(f => ({ ...f, site_id: e.target.value }))} className={inp}>
+              <option value="">Select site…</option>
+              {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">
+              New password <span className="text-slate-400 font-normal text-xs">(leave blank to keep current)</span>
+            </label>
+            <input
+              type="password"
+              value={form.password || ''}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              placeholder="Enter new password…"
+              className={inp}
+              autoComplete="new-password"
+            />
+            <p className="text-xs text-slate-400 mt-1">Min 8 characters. Share this with the user after saving.</p>
+          </div>
+          {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+        </div>
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100">
+          <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button onClick={handleUpdate} disabled={saving} className="px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold">
+            {saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Section card ─────────────────────────────────────────────────────────────
 const SectionCard = ({ icon: Icon, title, desc, onClick }) => (
   <button onClick={onClick}
@@ -480,37 +606,84 @@ const AccountManagement = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [showInvite, setShowInvite] = useState(false);
   const [showMobileUser, setShowMobileUser] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [pendingGuards, setPendingGuards] = useState([]);
+  const [loadingPending, setLoadingPending] = useState(false);
+  const [approvingId, setApprovingId] = useState(null);
+
+  const fetchPendingGuards = useCallback(async () => {
+    setLoadingPending(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await api.get('/guards/pending', { headers: { Authorization: `Bearer ${token}` } });
+      setPendingGuards(res.data || []);
+    } catch {
+      setPendingGuards([]);
+    } finally {
+      setLoadingPending(false);
+    }
+  }, []);
+
+  const handleGuardApproval = async (guardId, status) => {
+    setApprovingId(guardId);
+    try {
+      const token = localStorage.getItem('adminToken');
+      await api.put(`/guards/${guardId}/approval`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+      fetchPendingGuards();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to update approval');
+    } finally {
+      setApprovingId(null);
+    }
+  };
 
   useEffect(() => {
-    if (activeSection === 'users') {
+    if (activeSection === 'users' || activeSection === 'mobile-users') {
       fetchUsers();
+    }
+    if (activeSection === 'approvals' || activeSection === 'mobile-users') {
+      fetchPendingGuards();
     }
   }, [activeSection]);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
+      const isSuper = adminRole === 'superadmin';
+      const currentSiteId = (() => {
+        try { const t = localStorage.getItem('adminToken'); return t ? JSON.parse(atob(t.split('.')[1])).site_id || '' : ''; } catch { return ''; }
+      })();
+
       const [adminsRes, membersRes] = await Promise.all([
-        api.get('/auth/admins'),
+        isSuper ? api.get('/auth/admins') : Promise.resolve({ data: [] }),
         api.get('/guards/members')
       ]);
-      const admins = adminsRes.data.map(a => ({ id: a._id, name: a.first_name ? `${a.first_name} ${a.last_name || ''}`.trim() : a.email?.split('@')[0] || 'Unknown', email: a.email, role: a.role, status: 'active', isPortal: true }));
+      const admins = adminsRes.data.map(a => ({
+        id: a._id,
+        name: a.first_name ? `${a.first_name} ${a.last_name || ''}`.trim() : a.email?.split('@')[0] || 'Unknown',
+        email: a.email,
+        role: a.role,
+        status: 'active',
+        isPortal: true,
+        site: a.site_id?.name || ''
+      }));
       const members = membersRes.data
-        .filter(m => ['guard', 'manager', 'employee'].includes((m.role || '').toLowerCase()))
         .map(m => ({
           id: m.id || m._id,
           name: m.name || m.first_name || m.email?.split('@')[0] || 'Unknown',
           email: m.email || 'No email',
-          role: (m.role || '').toLowerCase(),
+          phone: m.phone || '',
+          role: (m.mobileRole || m.role || 'employee').toLowerCase(),
           status: (m.status || 'current').toLowerCase(),
           isPortal: false,
-          site: m.site || ''
-        }));
+          site: m.site || '',
+          site_id: m.site_id || ''
+        }))
+        .filter(m => isSuper || !currentSiteId || m.site_id === currentSiteId); // Filter by site for managers
       
-      // Filter out superadmin if current user is not superadmin (though only superadmin should be here normally)
-      setUsers([...admins, ...members].filter(u => adminRole === 'superadmin' || u.role !== 'superadmin'));
+      setUsers([...admins, ...members].filter(u => isSuper || u.role !== 'superadmin'));
     } catch (err) {
       console.error('Failed to fetch users', err);
     } finally {
@@ -518,12 +691,24 @@ const AccountManagement = () => {
     }
   };
 
-  if (adminRole !== 'superadmin') {
+  if (adminRole !== 'superadmin' && adminRole !== 'admin') {
     return <Navigate to="/admin/manage/sites" replace />;
   }
 
   const addUser = (u) => setUsers(prev => [...prev, { ...u, id: Date.now(), status: 'invited' }]);
-  const removeUser = (id) => { if (confirm('Remove this user?')) setUsers(u => u.filter(x => x.id !== id)); };
+  const removeUser = async (user) => {
+    if (!confirm(`Are you sure you want to remove ${user.name || 'this user'}?`)) return;
+    try {
+      if (user.isPortal) {
+        await api.delete(`/auth/admins/${user.id}`);
+      } else {
+        await api.delete(`/guards/members/${user.id}`);
+      }
+      fetchUsers();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to remove user');
+    }
+  };
   const changeRole = (id, role) => setUsers(u => u.map(x => x.id === id ? { ...x, role } : x));
 
   // Overview
@@ -532,14 +717,115 @@ const AccountManagement = () => {
       <h1 className="text-3xl font-bold text-slate-800 mb-2">Account management</h1>
       <p className="text-slate-500 text-sm mb-8">Manage subscription, user roles and permissions for your organisation.</p>
       <div className="space-y-3">
-        <SectionCard icon={Users}       title="Portal users"         desc="Add and edit users who have access to this portal" onClick={() => setActiveSection('users')} />
+        {adminRole === 'superadmin' && (
+          <SectionCard icon={Users}       title="Portal users"         desc="Add and edit users who have access to this portal" onClick={() => setActiveSection('users')} />
+        )}
         <SectionCard icon={Shield}      title="Mobile app users"      desc="Create Guard, Manager, and Employee accounts for the companion app" onClick={() => setActiveSection('mobile-users')} />
-        <SectionCard icon={Shield}      title="Roles and permissions" desc="Set up different user roles and what they can do"  onClick={() => setActiveSection('roles')} />
-        <SectionCard icon={CreditCard}  title="Subscription details"  desc="Plans and payment details"                        onClick={() => setActiveSection('billing')} />
-        <SectionCard icon={FileText}    title="Audit log"             desc="Record of system activity and events"              onClick={() => setActiveSection('audit')} />
+        <SectionCard
+          icon={Clock}
+          title="Guard approvals"
+          desc={pendingGuards.length > 0 ? `${pendingGuards.length} guard${pendingGuards.length === 1 ? '' : 's'} pending approval` : 'Review and approve new guard sign-ups'}
+          onClick={() => setActiveSection('approvals')}
+        />
+        {adminRole === 'superadmin' && (
+          <>
+            <SectionCard icon={Shield}      title="Roles and permissions" desc="Set up different user roles and what they can do"  onClick={() => setActiveSection('roles')} />
+            <SectionCard icon={CreditCard}  title="Subscription details"  desc="Plans and payment details"                        onClick={() => setActiveSection('billing')} />
+            <SectionCard icon={FileText}    title="Audit log"             desc="Record of system activity and events"              onClick={() => setActiveSection('audit')} />
+          </>
+        )}
       </div>
     </div>
   );
+
+  // Guard approvals section
+  if (activeSection === 'approvals') {
+    const fmtDate = (val) => {
+      try { return val ? new Date(val).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; } catch { return val || '—'; }
+    };
+    return (
+      <div className="max-w-4xl">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => setActiveSection('overview')} className="text-sm text-[#2b4594] hover:underline">← Account management</button>
+        </div>
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 mb-1">Guard approvals</h1>
+            <p className="text-slate-500 text-sm">Guards who signed up via the mobile app and are awaiting your approval to access the system.</p>
+          </div>
+          <button onClick={fetchPendingGuards} className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            Refresh
+          </button>
+        </div>
+
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <tr>
+                <th className="px-5 py-3 text-left">Guard</th>
+                <th className="px-5 py-3 text-left">Email</th>
+                <th className="px-5 py-3 text-left">Site</th>
+                <th className="px-5 py-3 text-left">Signed up</th>
+                <th className="px-5 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {loadingPending ? (
+                <tr><td colSpan="5" className="px-5 py-8 text-center text-slate-400">Loading…</td></tr>
+              ) : pendingGuards.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-5 py-12 text-center">
+                    <div className="w-12 h-12 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle size={22} className="text-green-500" />
+                    </div>
+                    <p className="text-slate-600 font-semibold">All caught up!</p>
+                    <p className="text-slate-400 text-xs mt-1">No guards pending approval.</p>
+                  </td>
+                </tr>
+              ) : (
+                pendingGuards.map(g => (
+                  <tr key={g.id} className="hover:bg-slate-50 group">
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-600 flex-shrink-0">
+                          {(g.name || '?')[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-800">{g.name || '—'}</p>
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">Pending</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 text-slate-500 text-xs">{g.email || '—'}</td>
+                    <td className="px-5 py-3 text-slate-500 text-xs">{g.site || '—'}</td>
+                    <td className="px-5 py-3 text-slate-400 text-xs">{fmtDate(g.created_at)}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleGuardApproval(g.id, 'approved')}
+                          disabled={approvingId === g.id}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-lg text-xs font-semibold"
+                        >
+                          <CheckCircle size={13} /> Approve
+                        </button>
+                        <button
+                          onClick={() => handleGuardApproval(g.id, 'rejected')}
+                          disabled={approvingId === g.id}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold"
+                        >
+                          <XCircle size={13} /> Reject
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
 
   // Mobile app users page
   if (activeSection === 'mobile-users') {
@@ -559,6 +845,60 @@ const AccountManagement = () => {
             <Plus size={15} /> Create mobile app user
           </button>
         </div>
+
+        {/* Pending Guard Approvals */}
+        {pendingGuards.length > 0 && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-5 mb-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                  <Clock size={18} className="text-orange-600" />
+                  Pending Guard Approvals
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">{pendingGuards.length} guard{pendingGuards.length === 1 ? '' : 's'} awaiting approval</p>
+              </div>
+              <button onClick={() => setActiveSection('approvals')} className="text-sm text-[#2b4594] hover:underline font-semibold">
+                View all →
+              </button>
+            </div>
+            <div className="space-y-3">
+              {pendingGuards.slice(0, 3).map(g => (
+                <div key={g.id} className="bg-white rounded-lg p-4 border border-orange-100 flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-orange-600">
+                      {(g.name || '?')[0].toUpperCase()}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-slate-800">{g.name || '—'}</p>
+                      <p className="text-xs text-slate-500">{g.email || '—'} • {g.site || 'No site'} • {fmtDate(g.created_at)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleGuardApproval(g.id, 'approved')}
+                      disabled={approvingId === g.id}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-lg text-xs font-semibold"
+                    >
+                      <CheckCircle size={13} /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleGuardApproval(g.id, 'rejected')}
+                      disabled={approvingId === g.id}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold"
+                    >
+                      <XCircle size={13} /> Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {pendingGuards.length > 3 && (
+                <button onClick={() => setActiveSection('approvals')} className="w-full text-center text-sm text-slate-600 hover:text-[#2b4594] font-semibold py-2">
+                  + {pendingGuards.length - 3} more pending
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-4 mb-6">
@@ -629,9 +969,13 @@ const AccountManagement = () => {
                           : 'bg-yellow-100 text-yellow-700'
                       }`}>{u.status === 'current' ? 'Active' : u.status}</span>
                     </td>
-                    <td className="px-5 py-3 text-right">
-                      <button onClick={() => removeUser(u.id)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100" title="Remove">
+                    <td className="px-5 py-3 text-right flex items-center justify-end gap-1">
+                      <button onClick={() => setEditingUser(u)}
+                        className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#2b4594] transition-colors opacity-0 group-hover:opacity-100" title="Edit">
+                        <Pencil size={13} />
+                      </button>
+                      <button onClick={() => removeUser(u)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100" title="Remove">
                         <Trash2 size={13} />
                       </button>
                     </td>
@@ -647,6 +991,16 @@ const AccountManagement = () => {
             onClose={() => setShowMobileUser(false)}
             onCreated={(member) => {
               setShowMobileUser(false);
+              fetchUsers();
+            }}
+          />
+        )}
+        {editingUser && (
+          <EditMobileUserModal
+            user={editingUser}
+            onClose={() => setEditingUser(null)}
+            onUpdated={() => {
+              setEditingUser(null);
               fetchUsers();
             }}
           />
@@ -719,7 +1073,7 @@ const AccountManagement = () => {
                   </td>
                   <td className="px-5 py-3 text-right">
                     {u.role !== 'superadmin' && (
-                      <button onClick={() => removeUser(u.id)}
+                      <button onClick={() => removeUser(u)}
                         className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100" title="Remove account">
                         <Trash2 size={13} />
                       </button>

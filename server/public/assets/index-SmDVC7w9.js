@@ -17387,33 +17387,33 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$Z = [
+const __iconNode$10 = [
   ["rect", { width: "20", height: "5", x: "2", y: "3", rx: "1", key: "1wp1u1" }],
   ["path", { d: "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8", key: "1s80jp" }],
   ["path", { d: "M10 12h4", key: "a56b0p" }]
 ];
-const Archive = createLucideIcon("archive", __iconNode$Z);
-const __iconNode$Y = [
+const Archive = createLucideIcon("archive", __iconNode$10);
+const __iconNode$$ = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$Y);
-const __iconNode$X = [
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$$);
+const __iconNode$_ = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$X);
-const __iconNode$W = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$_);
+const __iconNode$Z = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$W);
-const __iconNode$V = [
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$Z);
+const __iconNode$Y = [
   ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
   ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$V);
-const __iconNode$U = [
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$Y);
+const __iconNode$X = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17424,8 +17424,8 @@ const __iconNode$U = [
   ],
   ["circle", { cx: "18", cy: "8", r: "3", key: "1g0gzu" }]
 ];
-const BellDot = createLucideIcon("bell-dot", __iconNode$U);
-const __iconNode$T = [
+const BellDot = createLucideIcon("bell-dot", __iconNode$X);
+const __iconNode$W = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   ["path", { d: "M22 8c0-2.3-.8-4.3-2-6", key: "5bb3ad" }],
   [
@@ -17437,8 +17437,8 @@ const __iconNode$T = [
   ],
   ["path", { d: "M4 2C2.8 3.7 2 5.7 2 8", key: "tap9e0" }]
 ];
-const BellRing = createLucideIcon("bell-ring", __iconNode$T);
-const __iconNode$S = [
+const BellRing = createLucideIcon("bell-ring", __iconNode$W);
+const __iconNode$V = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17448,8 +17448,8 @@ const __iconNode$S = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$S);
-const __iconNode$R = [
+const Bell = createLucideIcon("bell", __iconNode$V);
+const __iconNode$U = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
     "path",
@@ -17459,8 +17459,8 @@ const __iconNode$R = [
     }
   ]
 ];
-const BookOpen = createLucideIcon("book-open", __iconNode$R);
-const __iconNode$Q = [
+const BookOpen = createLucideIcon("book-open", __iconNode$U);
+const __iconNode$T = [
   ["path", { d: "M10 12h4", key: "a56b0p" }],
   ["path", { d: "M10 8h4", key: "1sr2af" }],
   ["path", { d: "M14 21v-3a2 2 0 0 0-4 0v3", key: "1rgiei" }],
@@ -17473,8 +17473,8 @@ const __iconNode$Q = [
   ],
   ["path", { d: "M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16", key: "16ra0t" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$Q);
-const __iconNode$P = [
+const Building2 = createLucideIcon("building-2", __iconNode$T);
+const __iconNode$S = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
@@ -17486,15 +17486,15 @@ const __iconNode$P = [
   ["path", { d: "M12 18h.01", key: "mhygvu" }],
   ["path", { d: "M16 18h.01", key: "kzsmim" }]
 ];
-const CalendarDays = createLucideIcon("calendar-days", __iconNode$P);
-const __iconNode$O = [
+const CalendarDays = createLucideIcon("calendar-days", __iconNode$S);
+const __iconNode$R = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
   ["path", { d: "M3 10h18", key: "8toen8" }]
 ];
-const Calendar = createLucideIcon("calendar", __iconNode$O);
-const __iconNode$N = [
+const Calendar = createLucideIcon("calendar", __iconNode$R);
+const __iconNode$Q = [
   [
     "path",
     {
@@ -17504,25 +17504,30 @@ const __iconNode$N = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$N);
-const __iconNode$M = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$M);
-const __iconNode$L = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$L);
-const __iconNode$K = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$K);
-const __iconNode$J = [
+const Camera = createLucideIcon("camera", __iconNode$Q);
+const __iconNode$P = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$P);
+const __iconNode$O = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$O);
+const __iconNode$N = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$N);
+const __iconNode$M = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$J);
-const __iconNode$I = [
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$M);
+const __iconNode$L = [
+  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+];
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$L);
+const __iconNode$K = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$I);
-const __iconNode$H = [
+const CircleCheck = createLucideIcon("circle-check", __iconNode$K);
+const __iconNode$J = [
   [
     "path",
     {
@@ -17532,63 +17537,69 @@ const __iconNode$H = [
   ],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$H);
-const __iconNode$G = [
+const CirclePlay = createLucideIcon("circle-play", __iconNode$J);
+const __iconNode$I = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$G);
-const __iconNode$F = [
+const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$I);
+const __iconNode$H = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }],
   ["path", { d: "M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662", key: "154egf" }]
 ];
-const CircleUser = createLucideIcon("circle-user", __iconNode$F);
-const __iconNode$E = [
+const CircleUser = createLucideIcon("circle-user", __iconNode$H);
+const __iconNode$G = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
+];
+const CircleX = createLucideIcon("circle-x", __iconNode$G);
+const __iconNode$F = [
   ["path", { d: "M12 6v6h4", key: "135r8i" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock3 = createLucideIcon("clock-3", __iconNode$E);
-const __iconNode$D = [
+const Clock3 = createLucideIcon("clock-3", __iconNode$F);
+const __iconNode$E = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$D);
-const __iconNode$C = [
+const Clock = createLucideIcon("clock", __iconNode$E);
+const __iconNode$D = [
   ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
   ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
 ];
-const Code = createLucideIcon("code", __iconNode$C);
-const __iconNode$B = [
+const Code = createLucideIcon("code", __iconNode$D);
+const __iconNode$C = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ];
-const Copy = createLucideIcon("copy", __iconNode$B);
-const __iconNode$A = [
+const Copy = createLucideIcon("copy", __iconNode$C);
+const __iconNode$B = [
   ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
   ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
 ];
-const CreditCard = createLucideIcon("credit-card", __iconNode$A);
-const __iconNode$z = [
+const CreditCard = createLucideIcon("credit-card", __iconNode$B);
+const __iconNode$A = [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const Download = createLucideIcon("download", __iconNode$z);
-const __iconNode$y = [
+const Download = createLucideIcon("download", __iconNode$A);
+const __iconNode$z = [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "19", cy: "12", r: "1", key: "1wjl8i" }],
   ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }]
 ];
-const Ellipsis = createLucideIcon("ellipsis", __iconNode$y);
-const __iconNode$x = [
+const Ellipsis = createLucideIcon("ellipsis", __iconNode$z);
+const __iconNode$y = [
   ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
   ["path", { d: "M10 14 21 3", key: "gplh6r" }],
   ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
 ];
-const ExternalLink = createLucideIcon("external-link", __iconNode$x);
-const __iconNode$w = [
+const ExternalLink = createLucideIcon("external-link", __iconNode$y);
+const __iconNode$x = [
   [
     "path",
     {
@@ -17606,8 +17617,8 @@ const __iconNode$w = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$w);
-const __iconNode$v = [
+const EyeOff = createLucideIcon("eye-off", __iconNode$x);
+const __iconNode$w = [
   [
     "path",
     {
@@ -17617,8 +17628,8 @@ const __iconNode$v = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$v);
-const __iconNode$u = [
+const Eye = createLucideIcon("eye", __iconNode$w);
+const __iconNode$v = [
   [
     "path",
     {
@@ -17631,8 +17642,8 @@ const __iconNode$u = [
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ];
-const FileText = createLucideIcon("file-text", __iconNode$u);
-const __iconNode$t = [
+const FileText = createLucideIcon("file-text", __iconNode$v);
+const __iconNode$u = [
   [
     "path",
     {
@@ -17641,14 +17652,14 @@ const __iconNode$t = [
     }
   ]
 ];
-const Funnel = createLucideIcon("funnel", __iconNode$t);
-const __iconNode$s = [
+const Funnel = createLucideIcon("funnel", __iconNode$u);
+const __iconNode$t = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$s);
-const __iconNode$r = [
+const Globe = createLucideIcon("globe", __iconNode$t);
+const __iconNode$s = [
   ["circle", { cx: "9", cy: "12", r: "1", key: "1vctgf" }],
   ["circle", { cx: "9", cy: "5", r: "1", key: "hp0tcf" }],
   ["circle", { cx: "9", cy: "19", r: "1", key: "fkjjf6" }],
@@ -17656,25 +17667,25 @@ const __iconNode$r = [
   ["circle", { cx: "15", cy: "5", r: "1", key: "19l28e" }],
   ["circle", { cx: "15", cy: "19", r: "1", key: "f4zoj3" }]
 ];
-const GripVertical = createLucideIcon("grip-vertical", __iconNode$r);
-const __iconNode$q = [
+const GripVertical = createLucideIcon("grip-vertical", __iconNode$s);
+const __iconNode$r = [
   ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
   ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
 ];
-const History = createLucideIcon("history", __iconNode$q);
-const __iconNode$p = [
+const History = createLucideIcon("history", __iconNode$r);
+const __iconNode$q = [
   ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
   ["path", { d: "M21 12H9", key: "dn1m92" }],
   ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
 ];
-const LogOut = createLucideIcon("log-out", __iconNode$p);
-const __iconNode$o = [
+const LogOut = createLucideIcon("log-out", __iconNode$q);
+const __iconNode$p = [
   ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
   ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
 ];
-const Mail = createLucideIcon("mail", __iconNode$o);
-const __iconNode$n = [
+const Mail = createLucideIcon("mail", __iconNode$p);
+const __iconNode$o = [
   [
     "path",
     {
@@ -17684,14 +17695,14 @@ const __iconNode$n = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$n);
-const __iconNode$m = [
+const MapPin = createLucideIcon("map-pin", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$m);
-const __iconNode$l = [
+const Menu = createLucideIcon("menu", __iconNode$n);
+const __iconNode$m = [
   [
     "path",
     {
@@ -17700,8 +17711,8 @@ const __iconNode$l = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$l);
-const __iconNode$k = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$m);
+const __iconNode$l = [
   [
     "path",
     {
@@ -17710,14 +17721,14 @@ const __iconNode$k = [
     }
   ]
 ];
-const MessageSquare = createLucideIcon("message-square", __iconNode$k);
-const __iconNode$j = [
+const MessageSquare = createLucideIcon("message-square", __iconNode$l);
+const __iconNode$k = [
   ["rect", { width: "20", height: "14", x: "2", y: "3", rx: "2", key: "48i651" }],
   ["line", { x1: "8", x2: "16", y1: "21", y2: "21", key: "1svkeh" }],
   ["line", { x1: "12", x2: "12", y1: "17", y2: "21", key: "vw1qmm" }]
 ];
-const Monitor = createLucideIcon("monitor", __iconNode$j);
-const __iconNode$i = [
+const Monitor = createLucideIcon("monitor", __iconNode$k);
+const __iconNode$j = [
   [
     "path",
     {
@@ -17729,8 +17740,8 @@ const __iconNode$i = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$i);
-const __iconNode$h = [
+const Package = createLucideIcon("package", __iconNode$j);
+const __iconNode$i = [
   [
     "path",
     {
@@ -17739,7 +17750,18 @@ const __iconNode$h = [
     }
   ]
 ];
-const Pen = createLucideIcon("pen", __iconNode$h);
+const Pen = createLucideIcon("pen", __iconNode$i);
+const __iconNode$h = [
+  [
+    "path",
+    {
+      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+      key: "1a8usu"
+    }
+  ],
+  ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+];
+const Pencil = createLucideIcon("pencil", __iconNode$h);
 const __iconNode$g = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
@@ -33196,7 +33218,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DzZu0FOj.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Cw6sAlZc.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66354,7 +66376,7 @@ const AdminLayout = () => {
     { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" },
     { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
     { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
-  ].filter((item) => adminRole === "superadmin" || item.to !== "/admin/manage/account");
+  ].filter((item) => ["superadmin", "admin"].includes(adminRole) || item.to !== "/admin/manage/account");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-[#f8fafc] flex flex-col font-sans", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "bg-white border-b border-slate-200 shadow-sm z-30 sticky top-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-[60px] lg:h-[72px] px-4 lg:px-6", children: [
@@ -71152,7 +71174,7 @@ const DEFAULT_COLS = ["Name", "Email", "Phone", "Role", "Latest activity"];
 const EXPORT_FIELDS = ["Full name", "Email", "Phone number", "Role", "QR Codes", "RFID Tags"];
 const DRAWER_TABS = ["Details", "Notifications", "Safety", "QR/RFID", "Documents", "Companion"];
 const initials = (name = "") => name.split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) || "??";
-const fmtDate$2 = (iso) => {
+const fmtDate$3 = (iso) => {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 };
@@ -72368,8 +72390,8 @@ const PeopleDirectory = () => {
   }, [activeTab]);
   const lastColLabel = activeTab === "upcoming" ? "Start date" : activeTab === "archived" ? "Archived date" : "Latest activity";
   const lastColValue = (m2) => {
-    if (activeTab === "upcoming") return m2.start_date ? fmtDate$2(m2.start_date) : "—";
-    if (activeTab === "archived") return m2.updated_at ? fmtDate$2(m2.updated_at) : "—";
+    if (activeTab === "upcoming") return m2.start_date ? fmtDate$3(m2.start_date) : "—";
+    if (activeTab === "archived") return m2.updated_at ? fmtDate$3(m2.updated_at) : "—";
     const key = (m2.name || "").trim().toLowerCase();
     const v2 = memberActivity[key];
     if (!v2) return "—";
@@ -72961,7 +72983,7 @@ function PrintBadgeSection() {
     )
   ] });
 }
-const fmtDate$1 = (iso) => {
+const fmtDate$2 = (iso) => {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 };
@@ -73833,7 +73855,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: posters.map((p2, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 font-medium text-slate-800", children: p2.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500 text-xs", children: p2.groups?.join(", ") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: fmtDate$1(p2.createdAt) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: fmtDate$2(p2.createdAt) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "button",
@@ -74150,14 +74172,28 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
                       tabletShowClock && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white text-sm font-semibold opacity-90", children: (/* @__PURE__ */ new Date()).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) })
                     ] }),
                     tabletShowQR && tabletQrPosition === "top-right" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: `${window.location.origin}/checkin/${currentSite.id}`, size: 48, bgColor: "#ffffff", fgColor: "#1e293b", level: "M" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-slate-100 rounded flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "32", height: "32", viewBox: "0 0 24 24", fill: "none", stroke: "#64748b", strokeWidth: "2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "7", height: "7" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "14", y: "3", width: "7", height: "7" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "14", width: "7", height: "7" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "5", width: "3", height: "3", fill: "#64748b", stroke: "none" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "16", y: "5", width: "3", height: "3", fill: "#64748b", stroke: "none" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "16", width: "3", height: "3", fill: "#64748b", stroke: "none" })
+                      ] }) }),
                       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[6px] text-slate-500 text-center leading-tight max-w-[52px]", children: "Scan or visit" })
                     ] })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 flex-1 flex items-center gap-6 px-8 py-3", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col justify-center", children: [
                       tabletShowQR && tabletQrPosition === "top-left" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-1.5 flex flex-col items-center gap-0.5 shadow-sm mb-2 self-start", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(QRCode, { value: `${window.location.origin}/checkin/${currentSite.id}`, size: 40, bgColor: "#ffffff", fgColor: "#1e293b", level: "M" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 bg-slate-100 rounded flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "28", height: "28", viewBox: "0 0 24 24", fill: "none", stroke: "#64748b", strokeWidth: "2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "7", height: "7" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "14", y: "3", width: "7", height: "7" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "3", y: "14", width: "7", height: "7" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "5", width: "3", height: "3", fill: "#64748b", stroke: "none" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "16", y: "5", width: "3", height: "3", fill: "#64748b", stroke: "none" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { x: "5", y: "16", width: "3", height: "3", fill: "#64748b", stroke: "none" })
+                        ] }) }),
                         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[6px] text-slate-500", children: "Scan or visit" })
                       ] }),
                       tabletShowLogo && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 mb-2 flex items-center", children: tabletLogo ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabletLogo, alt: "logo", className: "h-full object-contain" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod logo", className: "h-full object-contain" }) }),
@@ -75075,6 +75111,7 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [firstName, setFirstName] = reactExports.useState("");
   const [lastName, setLastName] = reactExports.useState("");
   const [phone2, setPhone] = reactExports.useState("");
+  const [password, setPassword] = reactExports.useState("");
   const [organization, setOrganization] = reactExports.useState("");
   const [role, setRole] = reactExports.useState("admin");
   const [accountType, setAccountType] = reactExports.useState("portal");
@@ -75114,6 +75151,10 @@ const InviteModal = ({ onClose, onInvited }) => {
       setError("Email is required");
       return;
     }
+    if (!password.trim() || password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -75121,6 +75162,7 @@ const InviteModal = ({ onClose, onInvited }) => {
         const res = await api.post("/auth/invite", {
           email: email.trim(),
           role,
+          password: password.trim(),
           first_name: firstName.trim() || void 0,
           last_name: lastName.trim() || void 0,
           phone: phone2.trim() || void 0,
@@ -75128,7 +75170,7 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id: siteId || void 0,
           send_email: sendWelcome
         });
-        setCreatedCreds({ email: email.trim(), password: res.data.password, role, type: "Portal account" });
+        setCreatedCreds({ email: email.trim(), password: password.trim(), role, type: "Portal account" });
         onInvited({ email: email.trim(), role });
       } else {
         const res = await api.post("/guards/members", {
@@ -75136,6 +75178,7 @@ const InviteModal = ({ onClose, onInvited }) => {
           last_name: lastName.trim() || void 0,
           email: email.trim(),
           phone: phone2.trim() || void 0,
+          password: password.trim(),
           mobileRole,
           role: mobileRole.charAt(0).toUpperCase() + mobileRole.slice(1),
           site_id: siteId || void 0,
@@ -75145,10 +75188,10 @@ const InviteModal = ({ onClose, onInvited }) => {
         });
         setCreatedCreds({
           email: email.trim(),
-          password: res.data.password || "(sent by welcome email)",
+          password: password.trim(),
           role: mobileRole,
           type: "Mobile app account",
-          note: sendWelcome ? "Welcome email with companion app code sent to their inbox." : void 0
+          note: sendWelcome ? "Welcome email with companion app code sent to their inbox." : "User created. Share credentials with them."
         });
         onInvited({ email: email.trim(), role: mobileRole, status: "invited" });
       }
@@ -75238,6 +75281,14 @@ const InviteModal = ({ onClose, onInvited }) => {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "tel", value: phone2, onChange: (e2) => setPhone(e2.target.value), placeholder: "+44 7700 900000", className: inp })
       ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+          "Password ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "password", value: password, onChange: (e2) => setPassword(e2.target.value), placeholder: "Min 8 characters", className: inp, autoComplete: "new-password" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-1", children: "User will login with this password. Min 8 characters." })
+      ] }),
       accountType === "portal" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Organisation" }),
@@ -75324,7 +75375,7 @@ const InviteModal = ({ onClose, onInvited }) => {
   ] }) });
 };
 const MobileUserModal = ({ onClose, onCreated }) => {
-  const [form, setForm] = reactExports.useState({ name: "", email: "", phone: "", mobileRole: "guard", site_id: "" });
+  const [form, setForm] = reactExports.useState({ name: "", email: "", phone: "", password: "", mobileRole: "guard", site_id: "" });
   const [sendWelcome, setSendWelcome] = reactExports.useState(true);
   const [sendAppCode, setSendAppCode] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
@@ -75339,6 +75390,10 @@ const MobileUserModal = ({ onClose, onCreated }) => {
       setError("Full name is required");
       return;
     }
+    if (!form.password.trim() || form.password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -75348,6 +75403,7 @@ const MobileUserModal = ({ onClose, onCreated }) => {
         last_name: parts2.slice(1).join(" ") || void 0,
         email: form.email.trim() || void 0,
         phone: form.phone.trim() || void 0,
+        password: form.password.trim(),
         mobileRole: form.mobileRole,
         role: form.mobileRole === "guard" ? "Guard" : form.mobileRole === "manager" ? "Manager" : form.mobileRole === "admin" ? "Admin" : "Employee",
         site_id: form.site_id || void 0,
@@ -75358,9 +75414,9 @@ const MobileUserModal = ({ onClose, onCreated }) => {
       setCreatedCreds({
         name: form.name.trim(),
         email: form.email.trim(),
-        password: res.data.password || "(sent by email)",
+        password: form.password.trim(),
         role: form.mobileRole,
-        note: (sendWelcome || sendAppCode) && form.email.trim() ? "Welcome email with login credentials and Tripod Hub Connect invite code sent." : void 0
+        note: (sendWelcome || sendAppCode) && form.email.trim() ? "Welcome email with login credentials and Tripod Hub Connect invite code sent." : "User created. Share the credentials below with them."
       });
       onCreated?.(res.data.member);
     } catch (err) {
@@ -75441,6 +75497,24 @@ const MobileUserModal = ({ onClose, onCreated }) => {
             className: inp
           }
         )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+          "Password ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "password",
+            value: form.password,
+            onChange: (e2) => setForm((f2) => ({ ...f2, password: e2.target.value })),
+            placeholder: "Min 8 characters",
+            className: inp,
+            autoComplete: "new-password"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-1", children: "User will login with this password. Min 8 characters." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile App Role" }),
@@ -75526,6 +75600,110 @@ const MobileUserModal = ({ onClose, onCreated }) => {
     ] })
   ] }) });
 };
+const EditMobileUserModal = ({ user, onClose, onUpdated }) => {
+  const [form, setForm] = reactExports.useState({
+    name: user.name || "",
+    email: user.email === "No email" ? "" : user.email || "",
+    phone: user.phone || "",
+    mobileRole: user.role || "guard",
+    site_id: user.site_id || "",
+    password: ""
+  });
+  const [saving, setSaving] = reactExports.useState(false);
+  const [error, setError] = reactExports.useState("");
+  const [sites, setSites] = reactExports.useState([]);
+  reactExports.useEffect(() => {
+    api.get("/projects").then((res) => setSites(res.data || [])).catch(() => setSites([]));
+  }, []);
+  const handleUpdate = async () => {
+    if (!form.name.trim()) {
+      setError("Full name is required");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      const parts2 = form.name.trim().split(/\s+/);
+      await api.put(`/guards/members/${user.id}`, {
+        first_name: parts2[0],
+        last_name: parts2.slice(1).join(" ") || void 0,
+        email: form.email.trim() || void 0,
+        phone: form.phone.trim() || void 0,
+        role: form.mobileRole === "guard" ? "Guard" : form.mobileRole === "manager" ? "Manager" : form.mobileRole === "admin" ? "Admin" : "Employee",
+        mobileRole: form.mobileRole,
+        site_id: form.site_id || void 0,
+        password: form.password?.trim() || void 0
+      });
+      onUpdated();
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to update user");
+      setSaving(false);
+    }
+  };
+  const inp = "w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#2b4594]";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between px-6 py-4 border-b border-slate-100", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-800", children: "Edit mobile app user" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X$1, { size: 18 }) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-6 py-5 space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+          "Full name ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: form.name, onChange: (e2) => setForm((f2) => ({ ...f2, name: e2.target.value })), className: inp })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Email" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", value: form.email, onChange: (e2) => setForm((f2) => ({ ...f2, email: e2.target.value })), className: inp })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Phone" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { value: form.phone, onChange: (e2) => setForm((f2) => ({ ...f2, phone: e2.target.value })), className: inp })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Mobile App Role" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: form.mobileRole, onChange: (e2) => setForm((f2) => ({ ...f2, mobileRole: e2.target.value })), className: inp, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "guard", children: "Guard" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "manager", children: "Manager" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "employee", children: "Employee" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "admin", children: "Admin" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Site" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: form.site_id, onChange: (e2) => setForm((f2) => ({ ...f2, site_id: e2.target.value })), className: inp, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select site…" }),
+          sites.map((s2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s2.id, children: s2.name }, s2.id))
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: [
+          "New password ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-normal text-xs", children: "(leave blank to keep current)" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "password",
+            value: form.password || "",
+            onChange: (e2) => setForm((f2) => ({ ...f2, password: e2.target.value })),
+            placeholder: "Enter new password…",
+            className: inp,
+            autoComplete: "new-password"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Min 8 characters. Share this with the user after saving." })
+      ] }),
+      error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: error })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 px-6 py-4 border-t border-slate-100", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: "Cancel" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: handleUpdate, disabled: saving, className: "px-5 py-2 bg-[#2b4594] hover:bg-[#1e326e] disabled:opacity-60 text-white rounded-lg text-sm font-semibold", children: saving ? "Saving…" : "Save changes" })
+    ] })
+  ] }) });
+};
 const SectionCard = ({ icon: Icon2, title, desc, onClick }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
   "button",
   {
@@ -75546,56 +75724,197 @@ const AccountManagement = () => {
   const [activeSection, setActiveSection] = reactExports.useState("overview");
   const [showInvite, setShowInvite] = reactExports.useState(false);
   const [showMobileUser, setShowMobileUser] = reactExports.useState(false);
+  const [editingUser, setEditingUser] = reactExports.useState(null);
   const [users, setUsers] = reactExports.useState([]);
   const [loadingUsers, setLoadingUsers] = reactExports.useState(false);
+  const [pendingGuards, setPendingGuards] = reactExports.useState([]);
+  const [loadingPending, setLoadingPending] = reactExports.useState(false);
+  const [approvingId, setApprovingId] = reactExports.useState(null);
+  const fetchPendingGuards = reactExports.useCallback(async () => {
+    setLoadingPending(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await api.get("/guards/pending", { headers: { Authorization: `Bearer ${token}` } });
+      setPendingGuards(res.data || []);
+    } catch {
+      setPendingGuards([]);
+    } finally {
+      setLoadingPending(false);
+    }
+  }, []);
+  const handleGuardApproval = async (guardId, status) => {
+    setApprovingId(guardId);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await api.put(`/guards/${guardId}/approval`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+      fetchPendingGuards();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to update approval");
+    } finally {
+      setApprovingId(null);
+    }
+  };
   reactExports.useEffect(() => {
-    if (activeSection === "users") {
+    if (activeSection === "users" || activeSection === "mobile-users") {
       fetchUsers();
+    }
+    if (activeSection === "approvals" || activeSection === "mobile-users") {
+      fetchPendingGuards();
     }
   }, [activeSection]);
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
+      const isSuper = adminRole === "superadmin";
+      const currentSiteId = (() => {
+        try {
+          const t3 = localStorage.getItem("adminToken");
+          return t3 ? JSON.parse(atob(t3.split(".")[1])).site_id || "" : "";
+        } catch {
+          return "";
+        }
+      })();
       const [adminsRes, membersRes] = await Promise.all([
-        api.get("/auth/admins"),
+        isSuper ? api.get("/auth/admins") : Promise.resolve({ data: [] }),
         api.get("/guards/members")
       ]);
-      const admins = adminsRes.data.map((a2) => ({ id: a2._id, name: a2.first_name ? `${a2.first_name} ${a2.last_name || ""}`.trim() : a2.email?.split("@")[0] || "Unknown", email: a2.email, role: a2.role, status: "active", isPortal: true }));
-      const members = membersRes.data.filter((m2) => ["guard", "manager", "employee"].includes((m2.role || "").toLowerCase())).map((m2) => ({
+      const admins = adminsRes.data.map((a2) => ({
+        id: a2._id,
+        name: a2.first_name ? `${a2.first_name} ${a2.last_name || ""}`.trim() : a2.email?.split("@")[0] || "Unknown",
+        email: a2.email,
+        role: a2.role,
+        status: "active",
+        isPortal: true,
+        site: a2.site_id?.name || ""
+      }));
+      const members = membersRes.data.map((m2) => ({
         id: m2.id || m2._id,
         name: m2.name || m2.first_name || m2.email?.split("@")[0] || "Unknown",
         email: m2.email || "No email",
-        role: (m2.role || "").toLowerCase(),
+        phone: m2.phone || "",
+        role: (m2.mobileRole || m2.role || "employee").toLowerCase(),
         status: (m2.status || "current").toLowerCase(),
         isPortal: false,
-        site: m2.site || ""
-      }));
-      setUsers([...admins, ...members].filter((u2) => adminRole === "superadmin" || u2.role !== "superadmin"));
+        site: m2.site || "",
+        site_id: m2.site_id || ""
+      })).filter((m2) => isSuper || !currentSiteId || m2.site_id === currentSiteId);
+      setUsers([...admins, ...members].filter((u2) => isSuper || u2.role !== "superadmin"));
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {
       setLoadingUsers(false);
     }
   };
-  if (adminRole !== "superadmin") {
+  if (adminRole !== "superadmin" && adminRole !== "admin") {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/manage/sites", replace: true });
   }
   const addUser = (u2) => setUsers((prev) => [...prev, { ...u2, id: Date.now(), status: "invited" }]);
-  const removeUser = (id) => {
-    if (confirm("Remove this user?")) setUsers((u2) => u2.filter((x2) => x2.id !== id));
+  const removeUser = async (user) => {
+    if (!confirm(`Are you sure you want to remove ${user.name || "this user"}?`)) return;
+    try {
+      if (user.isPortal) {
+        await api.delete(`/auth/admins/${user.id}`);
+      } else {
+        await api.delete(`/guards/members/${user.id}`);
+      }
+      fetchUsers();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to remove user");
+    }
   };
   const changeRole = (id, role) => setUsers((u2) => u2.map((x2) => x2.id === id ? { ...x2, role } : x2));
   if (activeSection === "overview") return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-2xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-bold text-slate-800 mb-2", children: "Account management" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-8", children: "Manage subscription, user roles and permissions for your organisation." }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Users, title: "Portal users", desc: "Add and edit users who have access to this portal", onClick: () => setActiveSection("users") }),
+      adminRole === "superadmin" && /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Users, title: "Portal users", desc: "Add and edit users who have access to this portal", onClick: () => setActiveSection("users") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Mobile app users", desc: "Create Guard, Manager, and Employee accounts for the companion app", onClick: () => setActiveSection("mobile-users") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Roles and permissions", desc: "Set up different user roles and what they can do", onClick: () => setActiveSection("roles") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: CreditCard, title: "Subscription details", desc: "Plans and payment details", onClick: () => setActiveSection("billing") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: FileText, title: "Audit log", desc: "Record of system activity and events", onClick: () => setActiveSection("audit") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        SectionCard,
+        {
+          icon: Clock,
+          title: "Guard approvals",
+          desc: pendingGuards.length > 0 ? `${pendingGuards.length} guard${pendingGuards.length === 1 ? "" : "s"} pending approval` : "Review and approve new guard sign-ups",
+          onClick: () => setActiveSection("approvals")
+        }
+      ),
+      adminRole === "superadmin" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: Shield, title: "Roles and permissions", desc: "Set up different user roles and what they can do", onClick: () => setActiveSection("roles") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: CreditCard, title: "Subscription details", desc: "Plans and payment details", onClick: () => setActiveSection("billing") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SectionCard, { icon: FileText, title: "Audit log", desc: "Record of system activity and events", onClick: () => setActiveSection("audit") })
+      ] })
     ] })
   ] });
+  if (activeSection === "approvals") {
+    const fmtDate2 = (val) => {
+      try {
+        return val ? new Date(val).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
+      } catch {
+        return val || "—";
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActiveSection("overview"), className: "text-sm text-[#2b4594] hover:underline", children: "← Account management" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-bold text-slate-800 mb-1", children: "Guard approvals" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Guards who signed up via the mobile app and are awaiting your approval to access the system." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: fetchPendingGuards, className: "flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: "Refresh" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Guard" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Email" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Site" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-left", children: "Signed up" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-5 py-3 text-right", children: "Actions" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loadingPending ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: "5", className: "px-5 py-8 text-center text-slate-400", children: "Loading…" }) }) : pendingGuards.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { colSpan: "5", className: "px-5 py-12 text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 22, className: "text-green-500" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 font-semibold", children: "All caught up!" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs mt-1", children: "No guards pending approval." })
+        ] }) }) : pendingGuards.map((g2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 group", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-600 flex-shrink-0", children: (g2.name || "?")[0].toUpperCase() }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-slate-800", children: g2.name || "—" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700", children: "Pending" })
+            ] })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs", children: g2.email || "—" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs", children: g2.site || "—" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-400 text-xs", children: fmtDate2(g2.created_at) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: () => handleGuardApproval(g2.id, "approved"),
+                disabled: approvingId === g2.id,
+                className: "flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-lg text-xs font-semibold",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 13 }),
+                  " Approve"
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                onClick: () => handleGuardApproval(g2.id, "rejected"),
+                disabled: approvingId === g2.id,
+                className: "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { size: 13 }),
+                  " Reject"
+                ]
+              }
+            )
+          ] }) })
+        ] }, g2.id)) })
+      ] }) })
+    ] });
+  }
   if (activeSection === "mobile-users") {
     const mobileUsers = users.filter((u2) => !u2.isPortal);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl", children: [
@@ -75616,6 +75935,71 @@ const AccountManagement = () => {
             ]
           }
         )
+      ] }),
+      pendingGuards.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-5 mb-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-lg font-bold text-slate-800 flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { size: 18, className: "text-orange-600" }),
+              "Pending Guard Approvals"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-slate-600 mt-1", children: [
+              pendingGuards.length,
+              " guard",
+              pendingGuards.length === 1 ? "" : "s",
+              " awaiting approval"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActiveSection("approvals"), className: "text-sm text-[#2b4594] hover:underline font-semibold", children: "View all →" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+          pendingGuards.slice(0, 3).map((g2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-4 border border-orange-100 flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 flex-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-orange-600", children: (g2.name || "?")[0].toUpperCase() }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-slate-800", children: g2.name || "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
+                  g2.email || "—",
+                  " • ",
+                  g2.site || "No site",
+                  " • ",
+                  fmtDate(g2.created_at)
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: () => handleGuardApproval(g2.id, "approved"),
+                  disabled: approvingId === g2.id,
+                  className: "flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-lg text-xs font-semibold",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 13 }),
+                    " Approve"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: () => handleGuardApproval(g2.id, "rejected"),
+                  disabled: approvingId === g2.id,
+                  className: "flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { size: 13 }),
+                    " Reject"
+                  ]
+                }
+              )
+            ] })
+          ] }, g2.id)),
+          pendingGuards.length > 3 && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => setActiveSection("approvals"), className: "w-full text-center text-sm text-slate-600 hover:text-[#2b4594] font-semibold py-2", children: [
+            "+ ",
+            pendingGuards.length - 3,
+            " more pending"
+          ] })
+        ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-4 gap-4 mb-6", children: [
         { label: "Total", value: mobileUsers.length, color: "text-slate-800" },
@@ -75658,15 +76042,26 @@ const AccountManagement = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${u2.role === "guard" ? "bg-blue-100 text-[#2b4594]" : u2.role === "manager" ? "bg-purple-100 text-purple-700" : u2.role === "admin" ? "bg-slate-200 text-slate-700" : "bg-green-100 text-green-700"}`, children: u2.role }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs", children: u2.site || "—" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${u2.status === "active" || u2.status === "current" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`, children: u2.status === "current" ? "Active" : u2.status }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => removeUser(u2.id),
-              className: "p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100",
-              title: "Remove",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 13 })
-            }
-          ) })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "px-5 py-3 text-right flex items-center justify-end gap-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => setEditingUser(u2),
+                className: "p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-[#2b4594] transition-colors opacity-0 group-hover:opacity-100",
+                title: "Edit",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { size: 13 })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => removeUser(u2),
+                className: "p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100",
+                title: "Remove",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 13 })
+              }
+            )
+          ] })
         ] }, u2.id)) })
       ] }) }),
       showMobileUser && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -75675,6 +76070,17 @@ const AccountManagement = () => {
           onClose: () => setShowMobileUser(false),
           onCreated: (member) => {
             setShowMobileUser(false);
+            fetchUsers();
+          }
+        }
+      ),
+      editingUser && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        EditMobileUserModal,
+        {
+          user: editingUser,
+          onClose: () => setEditingUser(null),
+          onUpdated: () => {
+            setEditingUser(null);
             fetchUsers();
           }
         }
@@ -75726,7 +76132,7 @@ const AccountManagement = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-right", children: u2.role !== "superadmin" && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
-            onClick: () => removeUser(u2.id),
+            onClick: () => removeUser(u2),
             className: "p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100",
             title: "Remove account",
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { size: 13 })
@@ -75802,7 +76208,7 @@ const navItems = [
 ];
 const ManageSettings = () => {
   const adminRole = localStorage.getItem("adminRole") || "";
-  const canManageAccounts = adminRole === "superadmin";
+  const canManageAccounts = adminRole === "superadmin" || adminRole === "admin";
   const visibleNavItems = navItems.filter((item) => canManageAccounts || item.id !== "account");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex bg-slate-50 overflow-hidden", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden md:flex w-52 lg:w-56 bg-white border-r border-slate-200 flex-col h-full flex-shrink-0", children: [
@@ -76502,7 +76908,7 @@ const SupportPage = () => {
     ] })
   ] }) });
 };
-const fmtDate = (iso) => {
+const fmtDate$1 = (iso) => {
   if (!iso) return "—";
   const d2 = new Date(iso);
   return d2.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " + d2.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + " GMT" + (-(d2.getTimezoneOffset() / 60) >= 0 ? "+" : "") + -(d2.getTimezoneOffset() / 60);
@@ -76678,7 +77084,7 @@ const EvacuationPage = () => {
       Group: participant.group,
       Safe: participant.safe ? "Yes" : "No",
       "Marked by": participant.marked_by || "",
-      "Marked at": participant.marked_at ? fmtDate(participant.marked_at) : ""
+      "Marked at": participant.marked_at ? fmtDate$1(participant.marked_at) : ""
     }));
     const csv = [
       Object.keys(rows[0]).join(","),
@@ -76899,7 +77305,7 @@ const EvacuationPage = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 font-semibold text-slate-800", children: p2.name }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-600", children: p2.group }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_by || "—" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_at ? fmtDate(p2.marked_at) : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_at ? fmtDate$1(p2.marked_at) : "—" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
                   {
@@ -76927,7 +77333,7 @@ const EvacuationPage = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-slate-500", children: [
                   notification.sent_by,
                   " at ",
-                  fmtDate(notification.sent_at)
+                  fmtDate$1(notification.sent_at)
                 ] })
               ] }, notification.id)) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: "No notifications have been sent yet." }) })
             ] }),
@@ -76951,7 +77357,7 @@ const EvacuationPage = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-3", children: "Completed by" })
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: reports.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/70", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-700", children: fmtDate(r.started_at) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-700", children: fmtDate$1(r.started_at) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: fmtDuration(r.duration_s) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: r.accounted_for }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: r.started_by }),

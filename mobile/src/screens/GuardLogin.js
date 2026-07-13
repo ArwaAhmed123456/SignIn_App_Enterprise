@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ActivityIndicator,
-    Image, Animated, StatusBar, ScrollView
+    Image, Animated, StatusBar, ScrollView, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shield, Mail, Lock, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react-native';
@@ -68,11 +68,16 @@ const GuardLogin = ({ navigation }) => {
             <StatusBar barStyle="dark-content" backgroundColor="#f0f4ff" />
             <View style={{ height: 4, backgroundColor: '#2b4594', width: '100%' }} />
 
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 32 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 32 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                 {/* Back Button */}
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
@@ -221,26 +226,35 @@ const GuardLogin = ({ navigation }) => {
                             </View>
                         </View>
 
-                        {/* Remember Me */}
-                        <TouchableOpacity
-                            onPress={() => setRememberMe(!rememberMe)}
-                            activeOpacity={0.7}
-                            style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 24 }}
-                        >
-                            <View style={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: 6,
-                                borderWidth: 2,
-                                borderColor: rememberMe ? '#2b4594' : '#cbd5e1',
-                                backgroundColor: rememberMe ? '#2b4594' : '#fff',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}>
-                                {rememberMe && <Text style={{ color: '#fff', fontSize: 12, fontWeight: '900' }}>✓</Text>}
-                            </View>
-                            <Text style={{ color: '#64748b', fontWeight: '600', fontSize: 14 }}>Remember me</Text>
-                        </TouchableOpacity>
+                        {/* Remember Me & Forgot Password */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                            <TouchableOpacity
+                                onPress={() => setRememberMe(!rememberMe)}
+                                activeOpacity={0.7}
+                                style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                            >
+                                <View style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: 6,
+                                    borderWidth: 2,
+                                    borderColor: rememberMe ? '#2b4594' : '#cbd5e1',
+                                    backgroundColor: rememberMe ? '#2b4594' : '#fff',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                                    {rememberMe && <Text style={{ color: '#fff', fontSize: 12, fontWeight: '900' }}>✓</Text>}
+                                </View>
+                                <Text style={{ color: '#64748b', fontWeight: '600', fontSize: 14 }}>Remember me</Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('ForgotPassword')}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={{ color: '#2b4594', fontWeight: '700', fontSize: 13 }}>Forgot Password?</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         {/* Error */}
                         {error ? (
@@ -304,6 +318,7 @@ const GuardLogin = ({ navigation }) => {
                     </View>
                 </Animated.View>
             </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };
