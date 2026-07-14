@@ -4,6 +4,7 @@ const jwt      = require('jsonwebtoken');
 const crypto   = require('crypto');
 const bcrypt   = require('bcryptjs');
 const Admin    = require('../models/Admin');
+const Member   = require('../models/Member');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
@@ -124,22 +125,46 @@ router.post('/signup', async (req, res) => {
 // ─── Forgot password ──────────────────────────────────────────────────────────
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
     try {
-        const admin = await Admin.findOne({ email: email.toLowerCase() });
-        if (!admin) return res.json({ message: 'If that email exists, a reset link has been sent.' });
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // Only allow password resets for Admin + Manager accounts that already exist in DB.
+        // - Portal admins live in Admin collection
+        // - Mobile managers/admins live in Member collection (mobileRole/role)
+        let record = await Admin.findOne({ email: normalizedEmail });
+        let accountLabel = 'Admin Portal';
+
+        if (!record) {
+            record = await Member.findOne({
+                email: normalizedEmail,
+                $or: [
+                    { mobileRole: { $in: ['manager', 'admin'] } },
+                    { role: { $regex: /manager|admin|supervisor/i } },
+                ],
+            });
+            accountLabel = 'Tripod Hub Connect';
+        }
+
+        // Product requirement: do not send reset emails for unknown / non-admin accounts.
+        if (!record) {
+            return res.status(404).json({ error: 'No admin/manager account found for that email.' });
+        }
 
         const token   = crypto.randomBytes(20).toString('hex');
-        const expires = new Date(Date.now() + 3600000);
+        // Keep expiry aligned with the email template wording (15 minutes).
+        const expires = new Date(Date.now() + 15 * 60 * 1000);
 
-        admin.reset_token   = token;
-        admin.reset_expires = expires;
-        await admin.save({ validateBeforeSave: false });
+        record.reset_token   = token;
+        record.reset_expires = expires;
+        await record.save({ validateBeforeSave: false });
 
         const { sendPasswordResetEmail } = require('../services/emailService');
-        await sendPasswordResetEmail(email, 'Admin Portal', token);
+        await sendPasswordResetEmail(normalizedEmail, accountLabel, token);
 
         res.json({
-            message:   'If that email exists, a reset link has been sent.',
+            success: true,
+            message: 'Reset code sent. Please check your email.',
             mockToken: process.env.NODE_ENV === 'development' ? token : undefined,
         });
     } catch (err) {
@@ -151,17 +176,20 @@ router.post('/forgot-password', async (req, res) => {
 // ─── Reset password ───────────────────────────────────────────────────────────
 router.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ error: 'Token and new password are required' });
+    if (newPassword.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
     try {
-        const admin = await Admin.findOne({
-            reset_token:   token,
-            reset_expires: { $gt: new Date() },
-        });
-        if (!admin) return res.status(400).json({ error: 'Invalid or expired token' });
+        const tokenFilter = { reset_token: token, reset_expires: { $gt: new Date() } };
 
-        admin.password      = await bcrypt.hash(newPassword, 10);
-        admin.reset_token   = undefined;
-        admin.reset_expires = undefined;
-        await admin.save({ validateBeforeSave: false });
+        // Search Admin first, then Member
+        let record = await Admin.findOne(tokenFilter);
+        if (!record) record = await Member.findOne(tokenFilter);
+        if (!record) return res.status(400).json({ error: 'Invalid or expired token' });
+
+        record.password      = await bcrypt.hash(newPassword, 10);
+        record.reset_token   = undefined;
+        record.reset_expires = undefined;
+        await record.save({ validateBeforeSave: false });
 
         res.json({ message: 'Password reset successful' });
     } catch (err) {
@@ -197,17 +225,26 @@ router.post('/change-password', verifyToken, async (req, res) => {
 // ─── Invite / create portal user (superadmin only) ────────────────────────────
 // Returns the generated password so superadmin can share credentials manually
 router.post('/invite', verifySuperAdmin, async (req, res) => {
-    const { email, role, first_name, last_name, organization, site_id } = req.body;
+    const { email, role, first_name, last_name, organization, site_id, password, send_email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
     try {
         const existing = await Admin.findOne({ email: email.toLowerCase() });
         if (existing) return res.status(400).json({ error: 'An account with this email already exists' });
 
-        // Generate a readable password
-        const words        = ['Solar','Gate','Guard','Site','Access','Tripod','Horton','Rayleigh','Secure'];
-        const word         = words[Math.floor(Math.random() * words.length)];
-        const num          = Math.floor(100 + Math.random() * 900);
-        const tempPassword = `${word}@${num}!`;
+        // Password:
+        // - If a password was provided by the UI, use it (must be >= 8 chars)
+        // - Otherwise generate a readable temp password
+        let tempPassword = null;
+        if (password && String(password).trim()) {
+            const p = String(password).trim();
+            if (p.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+            tempPassword = p;
+        } else {
+            const words = ['Solar', 'Gate', 'Guard', 'Site', 'Access', 'Tripod', 'Horton', 'Rayleigh', 'Secure'];
+            const word  = words[Math.floor(Math.random() * words.length)];
+            const num   = Math.floor(100 + Math.random() * 900);
+            tempPassword = `${word}@${num}!`;
+        }
 
         const hashed = await bcrypt.hash(tempPassword, 10);
         const newAdmin = await Admin.create({
@@ -222,24 +259,29 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
 
         // Send credentials email using the proper email service
         let emailSent = false;
-        try {
-            const { sendAdminCredentialsEmail } = require('../services/emailService');
-            const result = await sendAdminCredentialsEmail({
-                email:        email.toLowerCase(),
-                firstName:    first_name || email.split('@')[0],
-                tempPassword: tempPassword,
-                role:         role || 'admin',
-            });
-            emailSent = result?.success || false;
-            if (!emailSent) {
-                console.warn('Credentials email not sent:', result?.error);
+        const shouldSendEmail = send_email !== false; // default true
+        if (shouldSendEmail) {
+            try {
+                const { sendAdminCredentialsEmail } = require('../services/emailService');
+                const result = await sendAdminCredentialsEmail({
+                    email:        email.toLowerCase(),
+                    firstName:    first_name || email.split('@')[0],
+                    tempPassword: tempPassword,
+                    role:         role || 'admin',
+                });
+                emailSent = result?.success || false;
+                if (!emailSent) {
+                    console.warn('Credentials email not sent:', result?.error);
+                }
+            } catch (emailErr) {
+                console.warn('Could not send credentials email:', emailErr.message);
             }
-        } catch (emailErr) {
-            console.warn('Could not send credentials email:', emailErr.message);
         }
 
         res.status(201).json({
-            message:    emailSent ? 'Account created and credentials sent by email' : 'Account created (email delivery pending — check RESEND_API_KEY in .env)',
+            message:    shouldSendEmail
+                ? (emailSent ? 'Account created and credentials sent by email' : 'Account created (email delivery pending — check RESEND_API_KEY in .env)')
+                : 'Account created (email not sent)',
             password:   tempPassword,
             email_sent: emailSent,
             user: {

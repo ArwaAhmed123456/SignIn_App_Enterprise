@@ -58,7 +58,7 @@ const AdminLogin = () => {
         setMessage('');
         try {
             const res = await api.post('/auth/forgot-password', { email });
-            setMessage(res.data.message);
+            setMessage(res.data.message || 'Reset code sent. Please check your email.');
             if (res.data.mockToken) {
                 console.log("Mock Token:", res.data.mockToken);
                 // In a real app, you'd click a link in an email. 
@@ -66,7 +66,7 @@ const AdminLogin = () => {
                 setToken(res.data.mockToken);
             }
         } catch (err) {
-            setError('Error sending request');
+            setError(err.response?.data?.error || 'Error sending request');
         }
     };
 

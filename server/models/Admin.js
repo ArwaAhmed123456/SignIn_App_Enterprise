@@ -8,6 +8,7 @@ const adminSchema = new mongoose.Schema({
     phone: String,
     organization: String,
     role: { type: String, enum: ['admin', 'superadmin'], default: 'admin' },
+    site_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null },
     reset_token: String,
     reset_expires: Date,
     created_at: { type: Date, default: Date.now }

@@ -571,17 +571,25 @@ router.post('/members/:id/send-welcome', verifyAdmin, async (req, res) => {
       permissions: JSON.stringify({ can_mobile_sign_in: true }),
     });
 
-    const { sendWelcomeEmail } = require('../services/emailService');
-    await sendWelcomeEmail({
-      email:        targetEmail,
-      name:         member.firstName || targetEmail.split('@')[0],
-      groupName:    group?.name  || member.role  || 'Employees',
-      siteName:     site?.name   || 'our site',
-      orgName:      process.env.ORG_NAME || site?.name || 'Sign In App',
-      companionCode: plainToken,
-    });
+    // Respond immediately — send email in background so UI doesn't hang
+    res.json({ success: true, message: 'Welcome email queued' });
 
-    res.json({ success: true, message: 'Welcome email sent' });
+    setImmediate(async () => {
+      try {
+        const { sendWelcomeEmail } = require('../services/emailService');
+        await sendWelcomeEmail({
+          email:        targetEmail,
+          name:         member.firstName || targetEmail.split('@')[0],
+          groupName:    group?.name  || member.role  || 'Employees',
+          siteName:     site?.name   || 'our site',
+          orgName:      process.env.ORG_NAME || site?.name || 'Sign In App',
+          companionCode: plainToken,
+        });
+        console.log(`[send-welcome] Email sent to ${targetEmail}`);
+      } catch (emailErr) {
+        console.error('[send-welcome] Background email error:', emailErr.message);
+      }
+    });
   } catch (err) {
     console.error('send-welcome error:', err);
     res.status(500).json({ error: 'Failed to send email: ' + err.message });
@@ -606,6 +614,68 @@ router.get('/test-email', async (req, res) => {
     res.json({ success: result.success, error: result.error || null, to });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/guards/contacts?site_id=xxx
+// Returns a list of contacts the caller can send DMs to.
+// Guards see managers/admins on their site; managers see guards on their site.
+router.get('/contacts', async (req, res) => {
+  const auth = req.headers['authorization'];
+  if (!auth) return res.status(401).json({ error: 'No token' });
+  let caller;
+  try { caller = require('jsonwebtoken').verify(auth.split(' ')[1], JWT_SECRET); }
+  catch { return res.status(401).json({ error: 'Unauthorized' }); }
+
+  const siteId = req.query.site_id || caller.project_id;
+  if (!siteId) return res.json([]);
+
+  try {
+    const callerRole = String(caller.mobileRole || caller.role || '').toLowerCase();
+    // IMPORTANT: some older records may have a correct `role` label (e.g. "Manager")
+    // but an incorrect/missing `mobileRole`. We therefore match on both fields.
+    const isCallerGuard = callerRole.includes('guard') || callerRole.includes('security');
+
+    const filter = isCallerGuard
+      // Guards can DM managers/admins on their site
+      ? {
+          siteId,
+          $and: [
+            { _id: { $ne: caller.id } },
+            {
+              $or: [
+                { mobileRole: { $in: ['manager', 'admin'] } },
+                { role: { $regex: /manager|admin|supervisor/i } },
+              ],
+            },
+          ],
+        }
+      // Managers/admins can DM guards on their site
+      : {
+          siteId,
+          $and: [
+            { _id: { $ne: caller.id } },
+            {
+              $or: [
+                { mobileRole: 'guard' },
+                { role: { $regex: /guard|security/i } },
+              ],
+            },
+          ],
+        };
+
+    const contacts = await Member.find(filter)
+      .select('_id firstName lastName email mobileRole role')
+      .lean();
+
+    res.json(contacts.map(c => ({
+      id:   String(c._id),
+      name: `${c.firstName} ${c.lastName || ''}`.trim(),
+      email: c.email || '',
+      role: c.mobileRole || deriveMobileRole(c.role),
+    })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

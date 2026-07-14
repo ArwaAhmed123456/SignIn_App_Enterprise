@@ -89,6 +89,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                // Notify server to check out this guard/manager from active visit logs
+                await api.post('/guards/logout', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+            }
+        } catch { /* ignore network errors on logout */ }
         await AsyncStorage.removeItem('token');
         await AsyncStorage.removeItem('user');
         setUser(null);

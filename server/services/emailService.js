@@ -284,6 +284,29 @@ const sendAdminCredentialsEmail = async ({ email, firstName, tempPassword, role 
   });
 };
 
+// ── Visitor arrival notification (to host/manager) ───────────────────────────
+const sendVisitorArrivalNotificationEmail = async ({ hostEmail, hostName, visitorName, siteName, arrivalTime }) => {
+  const timeLabel = arrivalTime
+    ? new Date(arrivalTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : 'just now';
+  return sendMail({
+    to: hostEmail,
+    subject: `Your visitor ${visitorName} has arrived — ${siteName || 'Sign In App'}`,
+    html: `
+<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;">
+  <div style="background:#2b4594;height:5px;border-radius:4px 4px 0 0;margin:-32px -32px 24px;"></div>
+  <h2 style="color:#0f172a;margin:0 0 8px;">Your visitor has arrived</h2>
+  <p style="color:#475569;font-size:15px;margin:0 0 20px;">Hi <strong>${hostName || 'there'}</strong>,</p>
+  <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:20px;margin-bottom:20px;">
+    <p style="margin:0 0 8px;font-size:14px;color:#166534;"><strong>👤 Visitor:</strong> ${visitorName}</p>
+    <p style="margin:0 0 8px;font-size:14px;color:#166534;"><strong>📍 Site:</strong> ${siteName || 'Your site'}</p>
+    <p style="margin:0;font-size:14px;color:#166534;"><strong>🕐 Arrived at:</strong> ${timeLabel}</p>
+  </div>
+  <p style="color:#6b7280;font-size:13px;margin:0;">Please proceed to reception to greet your visitor.</p>
+</div>`,
+  });
+};
+
 module.exports = {
   sendMail,
   generateResetToken,
@@ -293,4 +316,5 @@ module.exports = {
   sendPreRegistrationInviteEmail,
   sendWelcomeEmail,
   sendAdminCredentialsEmail,
+  sendVisitorArrivalNotificationEmail,
 };

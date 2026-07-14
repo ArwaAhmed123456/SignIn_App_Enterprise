@@ -31,6 +31,7 @@ const TodayScreen = ({ navigation }) => {
   const [siteOpen, setSiteOpen]     = useState(false);
   const [counts, setCounts]         = useState({ all: 0, visitors: 0, employees: 0 });
   const [expected, setExpected]     = useState([]);
+  const [signedInList, setSignedInList] = useState([]);
   const [schedule, setSchedule]     = useState({ worked: 0, total: 0 });
   const [loading, setLoading]       = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -47,9 +48,10 @@ const TodayScreen = ({ navigation }) => {
       if (site && !selectedSite) setSelectedSite(site);
 
       if (site) {
-        const [statsRes, preregRes] = await Promise.all([
+        const [statsRes, preregRes, visitsRes] = await Promise.all([
           api.get(`/visits/stats?site_id=${site.id}`).catch(() => ({ data: { totalIn: 0, groupCounts: [] } })),
           api.get(`/pre-registrations?site_id=${site.id}`).catch(() => ({ data: [] })),
+          api.get(`/visits/today?site_id=${site.id}`).catch(() => ({ data: [] })),
         ]);
         const stats = statsRes.data;
         const gc = stats.groupCounts || [];
@@ -57,6 +59,18 @@ const TodayScreen = ({ navigation }) => {
         const visCount = (stats.totalIn || 0) - empCount;
         setCounts({ all: stats.totalIn || 0, visitors: visCount, employees: empCount });
         setExpected((preregRes.data || []).filter(p => p.status === 'Pending').slice(0, 5));
+        
+        // Parse today's visits to show signed-in members (guards, managers, employees)
+        const visits = visitsRes.data || [];
+        const signedInMembers = visits
+          .filter(v => v.checkIn && !v.checkOut)
+          .map(v => ({
+            name: v.name || 'Unknown',
+            group: v.userType || v.group || 'Member',
+            checkInTime: v.checkIn,
+          }))
+          .slice(0, 10);
+        setSignedInList(signedInMembers);
       }
 
       // Weekly schedule
@@ -184,7 +198,7 @@ const TodayScreen = ({ navigation }) => {
         </View>
 
         {/* Counters */}
-        <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, marginBottom: 16 }}>
+        <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, marginBottom: 16 }}>
           {[['All', counts.all], ['Visitors', counts.visitors], ['Employees', counts.employees]].map(([label, val]) => (
             <View key={label} style={s.counterCard}>
               <Text style={s.counterVal}>{val}</Text>
@@ -192,6 +206,25 @@ const TodayScreen = ({ navigation }) => {
             </View>
           ))}
         </ScrollView>
+
+        {/* Signed In Now */}
+        {signedInList.length > 0 && (
+          <>
+            <Text style={[s.sectionTitle, { paddingHorizontal: 16, marginBottom: 8 }]}>Signed In Now</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, marginBottom: 16 }}>
+              {signedInList.map((member, idx) => (
+                <View key={idx} style={s.memberCard}>
+                  <View style={s.memberAvatar}>
+                    <Text style={s.memberAvatarText}>{(member.name || 'M')[0].toUpperCase()}</Text>
+                  </View>
+                  <Text style={s.memberName} numberOfLines={1}>{member.name}</Text>
+                  <Text style={s.memberGroup}>{member.group}</Text>
+                  <Text style={s.memberTime}>{fmtTime(member.checkInTime)}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </>
+        )}
 
         {/* Expected Visitors */}
         <Text style={[s.sectionTitle, { paddingHorizontal: 16, marginBottom: 8 }]}>Expected Visitors</Text>
@@ -261,6 +294,12 @@ const s = StyleSheet.create({
   counterCard:    { backgroundColor: '#fff', borderRadius: 12, padding: 16, minWidth: 90, alignItems: 'center', borderWidth: 1, borderColor: '#f3f4f6' },
   counterVal:     { fontSize: 24, fontWeight: '700', color: '#111827' },
   counterLabel:   { fontSize: 12, color: '#9ca3af', marginTop: 2 },
+  memberCard:     { backgroundColor: '#fff', borderRadius: 12, padding: 12, minWidth: 110, alignItems: 'center', borderWidth: 1, borderColor: '#f3f4f6' },
+  memberAvatar:   { width: 48, height: 48, borderRadius: 24, backgroundColor: '#e5e7eb', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  memberAvatarText: { fontSize: 18, fontWeight: '700', color: '#6b7280' },
+  memberName:     { fontSize: 14, fontWeight: '600', color: '#111827', textAlign: 'center', maxWidth: 100 },
+  memberGroup:    { fontSize: 11, color: '#9ca3af', marginTop: 2 },
+  memberTime:     { fontSize: 11, color: '#2b4594', fontWeight: '600', marginTop: 2 },
   expAvatar:      { width: 44, height: 44, borderRadius: 22, backgroundColor: '#e5e7eb', alignItems: 'center', justifyContent: 'center' },
   expAvatarText:  { fontSize: 18, fontWeight: '700', color: '#6b7280' },
   expName:        { fontSize: 15, fontWeight: '700', color: '#111827' },

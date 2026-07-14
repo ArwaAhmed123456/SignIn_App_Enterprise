@@ -1,0 +1,57 @@
+﻿node.exe : - Fetching the buildÔÇª
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (- Fetching the buildÔÇª:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ÔêÜ Found a matching build for the project @ayeshaes-team/tripodhubauth
+{
+  "id": "430b8802-89c3-47da-be76-4b78f9d46bcb",
+  "status": "FINISHED",
+  "platform": "ANDROID",
+  "artifacts": {
+    "buildUrl": "https://expo.dev/artifacts/eas/mL7Pzsbb5JtpR8l2ofz27xR2t4CVjfKU4pKxVYeL8dU.apk",
+    "applicationArchiveUrl": "https://expo.dev/artifacts/eas/mL7Pzsbb5JtpR8l2ofz27xR2t4CVjfKU4pKxVYeL8dU.apk"
+  },
+  "fingerprint": {
+    "id": "019f40bc-3a09-7c2e-ab3f-e161c0582eaa",
+    "hash": "3fd14d5f32dc4e35e4fdfb15d5bb829702ca3ec9"
+  },
+  "initiatingActor": {
+    "id": "3662d66e-09bf-4930-8bd3-cbf2770c2343",
+    "displayName": "ayeshae"
+  },
+  "logFiles": [
+    "https://storage.googleapis.com/eas-workflows-production/logs/93a2574b-7e98-4ab5-a640-e8c08da3f5df/430b8802-89c3-47da-be76-4b78f9d46bcb/2026-07-08T08%3A14%3A14Z-cb543d23-62fe-4345-a5e8-9815a8008094.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260708%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260708T083740Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=5b4379d37a30bb909732d38f908a256e344920e8db27d2161451e97e698c5bd711aa3172097396a48bdc6734a6af3e799c5962cfbe77aa713d97357db310b04579bfdc36bc974a018482f04ed1e6938a276e74592926565c22afe98efa28f0e0cf295444287d7a6e87d943c946b38055fa210f1a6001c5880f448fb8c095ef031335e5b8822e0376d7b567c37920d12c7dc85926f341284336fdbe43ac2e0d8f00b78e6584c060d6a7f307935cbf79328e1c6914c852b95cef623e6ab02871e95a3bf0423a2b548cbb54a743d5022253b718fa7db30a0590c24ea2b07c40bc4f5e945a4669645bd0a0369cf59d78ed87c833aaa686752ce79e867803165ae069"
+  ],
+  "project": {
+    "id": "93a2574b-7e98-4ab5-a640-e8c08da3f5df",
+    "name": "Tripod_Hub_Auth",
+    "slug": "tripodhubauth",
+    "ownerAccount": {
+      "id": "3ca8ee5b-f9b4-4aac-b123-246454ffeb80",
+      "name": "ayeshaes-team"
+    }
+  },
+  "channel": "preview",
+  "distribution": "INTERNAL",
+  "buildProfile": "preview",
+  "sdkVersion": "54.0.0",
+  "appVersion": "1.1.0",
+  "appBuildVersion": "10",
+  "runtimeVersion": "1.1.0",
+  "gitCommitHash": "76b09dd7d721b7f280f46b87659065f595d072bf",
+  "gitCommitMessage": "fix(mobile): move nativewind/babel to presets, bump worklets to 0.5.2",
+  "priority": "NORMAL",
+  "createdAt": "2026-07-08T08:14:10.395Z",
+  "updatedAt": "2026-07-08T08:36:14.162Z",
+  "completedAt": "2026-07-08T08:36:13.968Z",
+  "expirationDate": "2026-07-22T08:14:10.425Z",
+  "isForIosSimulator": false,
+  "metrics": {
+    "buildWaitTime": 921,
+    "buildQueueTime": 7965,
+    "buildDuration": 1314687
+  }
+}

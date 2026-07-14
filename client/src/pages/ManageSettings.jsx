@@ -19,7 +19,7 @@ const navItems = [
 
 const ManageSettings = () => {
   const adminRole = localStorage.getItem('adminRole') || '';
-  const canManageAccounts = adminRole === 'superadmin';
+  const canManageAccounts = adminRole === 'superadmin' || adminRole === 'admin';
   const visibleNavItems = navItems.filter((item) => canManageAccounts || item.id !== 'account');
 
   return (

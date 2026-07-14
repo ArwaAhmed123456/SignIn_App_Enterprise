@@ -13,8 +13,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X } from 'lucide-react-native';
+import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X, Bell } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
@@ -29,6 +30,72 @@ import {
 } from '../services/enterprisePortal';
 
 const TABS = ['On Site', 'Signed Out', 'Pre-register'];
+
+const fmtDetailDate = (val) => {
+  if (!val) return '—';
+  try {
+    return new Date(val).toLocaleString('en-GB', {
+      weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    });
+  } catch { return val; }
+};
+
+const PersonDetailsModal = ({ visible, onClose, person }) => {
+  if (!person) return null;
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <View style={{ backgroundColor: '#fff', borderRadius: 20, width: '100%', maxWidth: 360, padding: 20, elevation: 5 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', paddingBottom: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Person Details</Text>
+            <TouchableOpacity onPress={onClose}><X size={20} color="#9ca3af" /></TouchableOpacity>
+          </View>
+          <View style={{ alignItems: 'center', marginBottom: 20 }}>
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: person.sign_out_time ? '#e5e7eb' : '#dcfce7', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: person.sign_out_time ? '#6b7280' : '#16a34a' }}>
+                {(person.name || 'P')[0].toUpperCase()}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827', textAlign: 'center' }}>{person.name}</Text>
+            <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>{person.group || 'Visitor'}</Text>
+          </View>
+          <View style={{ gap: 12 }}>
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Status</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: person.sign_out_time ? '#ef4444' : '#16a34a', marginTop: 2 }}>
+                {person.sign_out_time ? 'Signed Out' : person.expected_date ? 'Expected (Pre-registered)' : 'On Site (Active)'}
+              </Text>
+            </View>
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Time</Text>
+              <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>
+                {fmtDetailDate(person.sign_in_time || person.expected_date || person.check_in_time)}
+              </Text>
+            </View>
+            {person.sign_out_time ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Sign Out</Text>
+                <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>{fmtDetailDate(person.sign_out_time)}</Text>
+              </View>
+            ) : null}
+            {person.notes ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Notes</Text>
+                <Text style={{ fontSize: 14, color: '#4b5563', marginTop: 2, fontStyle: 'italic' }}>{person.notes}</Text>
+              </View>
+            ) : null}
+            {person.email ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Email</Text>
+                <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>{person.email}</Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const fmtTime = (value) => {
   if (!value) return '—';
@@ -78,7 +145,7 @@ const CheckInModal = ({
             style={s.input}
           />
 
-          <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.groupPicker}>
+          <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.groupPicker}>
             {visitorGroups.map((item) => {
               const groupName = item?.name || 'Visitor';
               const active = group === groupName;
@@ -128,7 +195,7 @@ const CheckInModal = ({
 };
 
 const SecurityGuardScreen = ({ navigation }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('On Site');
   const [sites, setSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState(null);
@@ -146,8 +213,20 @@ const SecurityGuardScreen = ({ navigation }) => {
   const [signingOutVisitor, setSigningOutVisitor] = useState(false);
   const [arrivingId, setArrivingId] = useState(null);
   const [exporting, setExporting] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   const guardName = user?.name || user?.firstName || 'Security guard';
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Log Out', style: 'destructive', onPress: logout },
+      ]
+    );
+  };
 
   const loadSiteData = useCallback(async (siteIdOverride) => {
     const siteId = siteIdOverride || selectedSite?.id;
@@ -338,6 +417,18 @@ const SecurityGuardScreen = ({ navigation }) => {
     setArrivingId(item.id);
     try {
       await markPreRegisteredArrival(item.id);
+
+      // Auto-notify manager about arrival in chat without high-priority red alert icons
+      try {
+        await api.post('/messages', {
+          text: `📢 Info: Pre-registered visitor ${item.name} has arrived on site.`,
+          site_id: selectedSite?.id,
+          type: 'message',
+        });
+      } catch (msgErr) {
+        console.log('Failed to post arrival message:', msgErr.message);
+      }
+
       await loadSiteData(selectedSite?.id);
       setActiveTab('On Site');
     } catch (error) {
@@ -345,6 +436,32 @@ const SecurityGuardScreen = ({ navigation }) => {
     } finally {
       setArrivingId(null);
     }
+  };
+
+  const handleAlertArrival = async (item) => {
+    if (!selectedSite?.id) return;
+    Alert.alert(
+      'Alert Manager',
+      `Send an alert to the manager about ${item.name}'s arrival?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Send Alert',
+          onPress: async () => {
+            try {
+              await api.post('/messages', {
+                text: `🔔 Visitor pre-registered: ${item.name} is at the gate.`,
+                site_id: selectedSite.id,
+                type: 'alert',
+              });
+              Alert.alert('Sent', 'Manager has been notified.');
+            } catch (err) {
+              Alert.alert('Failed', err.response?.data?.error || 'Could not send notification.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const filterItems = useCallback(
@@ -384,6 +501,9 @@ const SecurityGuardScreen = ({ navigation }) => {
           </View>
         </View>
         <View style={s.headerActions}>
+          <TouchableOpacity onPress={handleLogout} style={[s.refreshBtn, { marginRight: 8 }]}>
+            <LogOut size={18} color="#ef4444" />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => Alert.alert(
               'Export',
@@ -437,7 +557,7 @@ const SecurityGuardScreen = ({ navigation }) => {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
               <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
             </View>
-            <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
               {sites.length === 0 ? (
                 <View style={{ paddingVertical: 20, alignItems: 'center' }}>
                   <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>
@@ -507,7 +627,7 @@ const SecurityGuardScreen = ({ navigation }) => {
               </View>
             ) : (
               filteredOnSite.map((visit) => (
-                <View key={visit.id} style={s.visitCard}>
+                <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
                     <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
@@ -517,11 +637,11 @@ const SecurityGuardScreen = ({ navigation }) => {
                     <Text style={s.visitSub}>{visit.group} · in {fmtTime(visit.sign_in_time)}</Text>
                     {visit.pre_registered ? <Text style={s.visitNote}>Pre-registered arrival</Text> : null}
                   </View>
-                  <TouchableOpacity onPress={() => setSignOutTarget(visit)} style={s.signOutChip}>
+                  <TouchableOpacity onPress={(e) => { e.stopPropagation?.(); setSignOutTarget(visit); }} style={s.signOutChip}>
                     <LogOut size={14} color="#ef4444" />
                     <Text style={s.signOutChipTxt}>Sign out</Text>
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -536,7 +656,7 @@ const SecurityGuardScreen = ({ navigation }) => {
               </View>
             ) : (
               filteredSignedOut.map((visit) => (
-                <View key={visit.id} style={s.visitCard}>
+                <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{visit.name[0]?.toUpperCase()}</Text>
                   </View>
@@ -546,7 +666,7 @@ const SecurityGuardScreen = ({ navigation }) => {
                       {visit.group} · in {fmtTime(visit.sign_in_time)} · out {fmtTime(visit.sign_out_time)}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -569,7 +689,7 @@ const SecurityGuardScreen = ({ navigation }) => {
               </View>
             ) : (
               filteredExpected.map((item) => (
-                <View key={item.id} style={s.visitCard}>
+                <TouchableOpacity key={item.id} style={s.visitCard} onPress={() => setSelectedPerson(item)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{item.name[0]?.toUpperCase()}</Text>
                   </View>
@@ -578,17 +698,22 @@ const SecurityGuardScreen = ({ navigation }) => {
                     <Text style={s.visitSub}>Expected at {fmtTime(item.expected_date)}</Text>
                     {item.notes ? <Text style={s.visitNote}>{item.notes}</Text> : null}
                   </View>
-                  <TouchableOpacity onPress={() => handleArrive(item)} style={s.arriveBtn} disabled={arrivingId === item.id}>
-                    {arrivingId === item.id ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <>
-                        <LogIn size={14} color="#fff" />
-                        <Text style={s.arriveBtnTxt}>Arrived</Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                </View>
+                  <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={(e) => { e.stopPropagation?.(); handleAlertArrival(item); }} style={s.alertArrivalBtn}>
+                      <Bell size={14} color="#2b4594" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={(e) => { e.stopPropagation?.(); handleArrive(item); }} style={s.arriveBtn} disabled={arrivingId === item.id}>
+                      {arrivingId === item.id ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <>
+                          <LogIn size={14} color="#fff" />
+                          <Text style={s.arriveBtnTxt}>Arrived</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -619,6 +744,12 @@ const SecurityGuardScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      <PersonDetailsModal
+        visible={Boolean(selectedPerson)}
+        onClose={() => setSelectedPerson(null)}
+        person={selectedPerson}
+      />
     </SafeAreaView>
   );
 };
@@ -796,6 +927,16 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   arriveBtnTxt: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  alertArrivalBtn: {
+    borderWidth: 1.5,
+    borderColor: '#2b4594',
+    borderRadius: 20,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#eff6ff',
+  },
   emptyCard: {
     backgroundColor: '#fff',
     borderRadius: 12,

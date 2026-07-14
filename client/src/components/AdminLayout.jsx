@@ -76,7 +76,7 @@ const AdminLayout = () => {
     { to: '/admin/manage/safety',         icon: ShieldCheck,  label: 'Safety check',           desc: 'Manage people to be identified at sign in' },
     { to: '/admin/manage/account',        icon: SettingsIcon, label: 'Account management',     desc: 'Manage subscription, user roles and permissions' },
     { to: '/admin/manage/api',            icon: Code,         label: 'Client API',             desc: 'Add an API key for external access to your data' },
-  ].filter((item) => adminRole === 'superadmin' || item.to !== '/admin/manage/account');
+  ].filter((item) => ['superadmin', 'admin'].includes(adminRole) || item.to !== '/admin/manage/account');
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">

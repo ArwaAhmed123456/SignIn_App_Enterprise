@@ -27,6 +27,8 @@ const memberSchema = new mongoose.Schema({
   mobilePairedAt:     { type: Date },
   mobileTokenHash:    { type: String },
   mobileTokenExpiry:  { type: Date },
+  reset_token:        { type: String },
+  reset_expires:      { type: Date },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Member', memberSchema);

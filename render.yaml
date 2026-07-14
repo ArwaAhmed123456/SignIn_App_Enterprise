@@ -18,11 +18,13 @@ services:
         value: mongodb+srv://arwa95025:arwa95025@cluster0.xalem4o.mongodb.net/Tripod_SignIn_App?retryWrites=true&w=majority
       - key: JWT_SECRET
         value: e7b92c4a16904f839218391294801235123985712123
-      - key: EMAIL_SERVICE
-        value: gmail
+      - key: SMTP_HOST
+        value: smtp.office365.com
+      - key: SMTP_PORT
+        value: "587"
       - key: EMAIL_USER
-        value: aryaanamalik994@gmail.com
+        value: Abid.fiaz@tripodsvcs.co.uk
       - key: EMAIL_PASSWORD
-        value: xxskqwogpozdzrhz
+        value: Eyesave1986
       - key: EMAIL_FROM
-        value: "Attendance Pro <aryaanamalik994@gmail.com>"
+        value: "Tripod Services <Abid.fiaz@tripodsvcs.co.uk>"

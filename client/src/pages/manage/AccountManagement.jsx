@@ -25,6 +25,7 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [siteId, setSiteId]             = useState('');
   const [sites, setSites]               = useState([]);
   const [sendWelcome, setSendWelcome]   = useState(true);
+  const [sendAppCode, setSendAppCode]   = useState(true);
   const [saving, setSaving]             = useState(false);
   const [error, setError]               = useState('');
   const [createdCreds, setCreatedCreds] = useState(null);
@@ -60,7 +61,8 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id:    siteId           || undefined,
           send_email: sendWelcome,
         });
-        setCreatedCreds({ email: email.trim(), password: password.trim(), role, type: 'Portal account' });
+        const returnedPassword = res?.data?.password || password.trim();
+        setCreatedCreds({ email: email.trim(), password: returnedPassword, role, type: 'Portal account' });
         onInvited({ email: email.trim(), role });
       } else {
         const res = await api.post('/guards/members', {
@@ -74,12 +76,14 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id:           siteId           || undefined,
           status:            'Current',
           send_welcome:      sendWelcome,
-          include_companion: sendWelcome,
+          include_companion: sendAppCode,
         });
         setCreatedCreds({
           email: email.trim(), password: password.trim(),
           role: mobileRole, type: 'Mobile app account',
-          note: sendWelcome ? 'Welcome email with companion app code sent to their inbox.' : 'User created. Share credentials with them.',
+          note: (sendWelcome || sendAppCode)
+            ? 'Email queued. If “Send app code” is enabled, the invite code will be included in the email.'
+            : 'User created. Share credentials with them.',
         });
         onInvited({ email: email.trim(), role: mobileRole, status: 'invited' });
       }
@@ -253,26 +257,59 @@ const InviteModal = ({ onClose, onInvited }) => {
             </>
           )}
 
-          {/* Welcome email toggle */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0">
-                  <Mail size={15} className="text-[#2b4594]" />
+          {/* Email options */}
+          {accountType === 'portal' ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0">
+                    <Mail size={15} className="text-[#2b4594]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Includes credentials and portal access link</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {accountType === 'mobile' ? 'Includes credentials and Tripod Hub Connect app invite code' : 'Includes credentials and portal access link'}
-                  </p>
+                <div
+                  onClick={() => setSendWelcome(v => !v)}
+                  className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? 'bg-[#2b4594]' : 'bg-slate-300'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? 'translate-x-6' : 'translate-x-1'}`} />
                 </div>
-              </div>
-              <div onClick={() => setSendWelcome(v => !v)}
-                className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors flex-shrink-0 ${sendWelcome ? 'bg-[#2b4594]' : 'bg-slate-300'}`}>
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? 'translate-x-6' : 'translate-x-1'}`} />
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email options</p>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={sendWelcome}
+                  onChange={e => setSendWelcome(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Send welcome email</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Includes login credentials and getting started instructions</p>
+                </div>
+              </label>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={sendAppCode}
+                  onChange={e => setSendAppCode(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Send app code</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Includes the Tripod Hub Connect invite code in the email</p>
+                </div>
+              </label>
+              {!email.trim() && (
+                <p className="text-xs text-slate-500">Enter an email address to enable email sending.</p>
+              )}
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         </div>

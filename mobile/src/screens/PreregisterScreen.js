@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -10,8 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, ChevronDown } from 'lucide-react-native';
+import { ArrowLeft, Calendar, ChevronDown, Clock } from 'lucide-react-native';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import {
   createPreRegistration,
   getAccessibleSites,
@@ -76,6 +80,7 @@ const SuccessStep = ({ result, onDone }) => {
 const PreregisterScreen = ({ navigation, route }) => {
   const initialSiteId = route?.params?.siteId || null;
   const initialSiteName = route?.params?.siteName || '';
+  const { user } = useAuth();
 
   const [sites, setSites] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -90,10 +95,27 @@ const PreregisterScreen = ({ navigation, route }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [arrivalDate, setArrivalDate] = useState(getDefaultDate());
-  const [arrivalTime, setArrivalTime] = useState(getDefaultTime());
+  // Date/time stored as JS Date objects for the picker
+  const [arrivalDateObj, setArrivalDateObj] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate()); // today
+    return d;
+  });
+  const [arrivalTimeObj, setArrivalTimeObj] = useState(() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1, 0, 0, 0); // 1 hour from now
+    return d;
+  });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [notes, setNotes] = useState('');
   const [sendInvite, setSendInvite] = useState(true);
+
+  // Formatted strings for display and API
+  const arrivalDateDisplay = arrivalDateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const arrivalTimeDisplay = arrivalTimeObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const arrivalDate = arrivalDateObj.toISOString().slice(0, 10);
+  const arrivalTime = `${String(arrivalTimeObj.getHours()).padStart(2, '0')}:${String(arrivalTimeObj.getMinutes()).padStart(2, '0')}`;
 
   useEffect(() => {
     const load = async () => {
@@ -153,8 +175,8 @@ const PreregisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    if (!arrivalDate.trim() || !arrivalTime.trim()) {
-      Alert.alert('Arrival required', 'Please enter an arrival date and time.');
+    if (!arrivalDate || !arrivalTime) {
+      Alert.alert('Arrival required', 'Please select an arrival date and time.');
       return;
     }
 
@@ -171,6 +193,22 @@ const PreregisterScreen = ({ navigation, route }) => {
         visitorGroupName: selectedGroup?.name || undefined,
         sendInvitation: sendInvite,
       });
+
+      // Post a team chat notification
+      try {
+        const siteId = selectedSiteId || user?.project_id || user?.site_id;
+        if (siteId) {
+          await api.post('/messages', {
+            // IMPORTANT: pre-registration ≠ arrival. Keep wording explicit so managers
+            // don't interpret this as "visitor is at the door".
+            text: `📝 Pre-registered (not arrived yet): ${name.trim()}`,
+            site_id: siteId,
+            type: 'message',
+          });
+        }
+      } catch (msgErr) {
+        console.log('Pre-registration chat message failed:', msgErr.message);
+      }
 
       setSuccess({
         name: name.trim(),
@@ -290,11 +328,47 @@ const PreregisterScreen = ({ navigation, route }) => {
         <View style={s.row}>
           <View style={[s.inputGroup, s.rowItem]}>
             <Text style={s.label}>Arrival date</Text>
-            <TextInput value={arrivalDate} onChangeText={setArrivalDate} style={s.input} placeholder="YYYY-MM-DD" placeholderTextColor="#9ca3af" />
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              style={[s.selector, { gap: 8 }]}
+            >
+              <Calendar size={16} color="#6b7280" />
+              <Text style={[s.selectorText, { flex: 1 }]}>{arrivalDateDisplay}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={arrivalDateObj}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'inline' : 'calendar'}
+                minimumDate={new Date()}
+                onChange={(event, selected) => {
+                  setShowDatePicker(Platform.OS === 'ios');
+                  if (selected) setArrivalDateObj(selected);
+                }}
+              />
+            )}
           </View>
           <View style={[s.inputGroup, s.rowItem]}>
             <Text style={s.label}>Arrival time</Text>
-            <TextInput value={arrivalTime} onChangeText={setArrivalTime} style={s.input} placeholder="HH:MM" placeholderTextColor="#9ca3af" />
+            <TouchableOpacity
+              onPress={() => setShowTimePicker(true)}
+              style={[s.selector, { gap: 8 }]}
+            >
+              <Clock size={16} color="#6b7280" />
+              <Text style={[s.selectorText, { flex: 1 }]}>{arrivalTimeDisplay}</Text>
+            </TouchableOpacity>
+            {showTimePicker && (
+              <DateTimePicker
+                value={arrivalTimeObj}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'clock'}
+                is24Hour={false}
+                onChange={(event, selected) => {
+                  setShowTimePicker(Platform.OS === 'ios');
+                  if (selected) setArrivalTimeObj(selected);
+                }}
+              />
+            )}
           </View>
         </View>
 

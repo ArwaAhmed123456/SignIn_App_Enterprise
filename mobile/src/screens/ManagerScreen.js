@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, CheckCircle, ChevronDown, Download, RefreshCw, X } from 'lucide-react-native';
+import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
@@ -51,8 +51,100 @@ const fmtDate = (value) => {
   }
 };
 
-const ManagerScreen = () => {
-  const { user } = useAuth();
+const PersonDetailsModal = ({ visible, onClose, person }) => {
+  if (!person) return null;
+
+  const fmtDetailDate = (val) => {
+    if (!val) return '—';
+    try {
+      return new Date(val).toLocaleString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return val;
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <View style={{ backgroundColor: '#fff', borderRadius: 20, width: '100%', maxWidth: 360, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', paddingBottom: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Person Details</Text>
+            <TouchableOpacity onPress={onClose}>
+              <X size={20} color="#9ca3af" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ alignItems: 'center', marginBottom: 20 }}>
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: person.sign_out_time ? '#e5e7eb' : '#dcfce7', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: person.sign_out_time ? '#6b7280' : '#16a34a' }}>
+                {(person.name || person.firstName || 'P')[0].toUpperCase()}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827', textAlign: 'center' }}>{person.name || `${person.firstName || ''} ${person.lastName || ''}`.trim()}</Text>
+            <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2, fontWeight: '500' }}>{person.group || person.role || 'Visitor'}</Text>
+          </View>
+
+          <View style={{ gap: 12 }}>
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Status</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: person.sign_out_time ? '#ef4444' : '#16a34a', marginTop: 2 }}>
+                {person.sign_out_time ? 'Signed Out' : 'On Site (Active)'}
+              </Text>
+            </View>
+
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Sign In Time</Text>
+              <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>
+                {fmtDetailDate(person.sign_in_time || person.expected_date || person.check_in_time)}
+              </Text>
+            </View>
+
+            {person.sign_out_time ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Sign Out Time</Text>
+                <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>
+                  {fmtDetailDate(person.sign_out_time)}
+                </Text>
+              </View>
+            ) : null}
+
+            {person.notes || person.reason ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Notes</Text>
+                <Text style={{ fontSize: 14, color: '#4b5563', marginTop: 2, fontStyle: 'italic' }}>
+                  {person.notes || person.reason}
+                </Text>
+              </View>
+            ) : null}
+
+            {person.email ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Email</Text>
+                <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>{person.email}</Text>
+              </View>
+            ) : null}
+
+            {person.phone ? (
+              <View>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Phone</Text>
+                <Text style={{ fontSize: 14, color: '#111827', marginTop: 2 }}>{person.phone}</Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const ManagerScreen = ({ navigation }) => {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
   const [sites, setSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState(null);
@@ -69,8 +161,20 @@ const ManagerScreen = () => {
   const [exporting, setExporting] = useState(false);
   const [updatingApproval, setUpdatingApproval] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   const managerName = user?.name || user?.firstName || 'Manager';
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Log Out', style: 'destructive', onPress: logout },
+      ]
+    );
+  };
 
   const loadSiteData = useCallback(async (siteIdOverride) => {
     const siteId = siteIdOverride || selectedSite?.id;
@@ -282,6 +386,9 @@ const ManagerScreen = () => {
           <Text style={s.headerSub}>{managerName}</Text>
         </View>
         <View style={s.headerActions}>
+          <TouchableOpacity onPress={handleLogout} style={[s.notifBtn, { marginRight: 8 }]}>
+            <LogOut size={20} color="#ef4444" />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => Alert.alert(
               'Export',
@@ -316,7 +423,7 @@ const ManagerScreen = () => {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>Select site</Text>
               <TouchableOpacity onPress={() => setSiteOpen(false)}><X size={20} color="#9ca3af" /></TouchableOpacity>
             </View>
-            <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" style={{ paddingHorizontal: 16 }}>
               {sites.length === 0 ? (
                 <View style={{ paddingVertical: 20, alignItems: 'center' }}>
                   <Text style={{ fontSize: 15, color: '#6b7280' }}>No sites available</Text>
@@ -344,7 +451,7 @@ const ManagerScreen = () => {
         </TouchableOpacity>
       </Modal>
 
-      <ScrollView keyboardShouldPersistTaps="handled" keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
+      <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
         {TABS.map((tab) => (
           <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
             <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>
@@ -378,7 +485,7 @@ const ManagerScreen = () => {
               </View>
             ) : (
               expected.slice(0, 4).map((item) => (
-                <View key={item.id} style={s.visitCard}>
+                <TouchableOpacity key={item.id} style={s.visitCard} onPress={() => setSelectedPerson(item)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{item.name[0]?.toUpperCase()}</Text>
                   </View>
@@ -390,7 +497,7 @@ const ManagerScreen = () => {
                   <View style={s.pendingBadge}>
                     <Text style={s.pendingBadgeTxt}>Pending</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             )}
 
@@ -401,7 +508,7 @@ const ManagerScreen = () => {
               </View>
             ) : (
               onSite.slice(0, 5).map((visit) => (
-                <View key={visit.id} style={s.visitCard}>
+                <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
                     <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
@@ -411,7 +518,7 @@ const ManagerScreen = () => {
                     <Text style={s.visitSub}>{visit.group} · signed in {fmtTime(visit.sign_in_time)}</Text>
                   </View>
                   <CheckCircle size={18} color="#16a34a" />
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -431,7 +538,7 @@ const ManagerScreen = () => {
               </View>
             ) : (
               onSite.map((visit) => (
-                <View key={visit.id} style={s.visitCard}>
+                <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
                     <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
@@ -443,7 +550,7 @@ const ManagerScreen = () => {
                       <Text style={s.visitNote}>Pre-registered visitor checked in by security</Text>
                     ) : null}
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -458,7 +565,7 @@ const ManagerScreen = () => {
               </View>
             ) : (
               signedOut.map((visit) => (
-                <View key={visit.id} style={s.visitCard}>
+                <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{visit.name[0]?.toUpperCase()}</Text>
                   </View>
@@ -468,7 +575,7 @@ const ManagerScreen = () => {
                       {visit.group} · in {fmtTime(visit.sign_in_time)} · out {fmtTime(visit.sign_out_time)}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </>
@@ -619,22 +726,48 @@ const ManagerScreen = () => {
               </View>
             ) : (
               presentGuards.map((g) => (
-                <View key={g.id} style={s.visitCard}>
-                  <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
-                    <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{(g.name || 'G')[0]?.toUpperCase()}</Text>
-                    <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
-                  </View>
-                  <View style={s.visitMeta}>
-                    <Text style={s.visitName}>{g.name || 'Guard'}</Text>
-                    <Text style={s.visitSub}>Signed in {fmtTime(g.check_in_time)}</Text>
-                    {g.email ? <Text style={s.visitNote}>{g.email}</Text> : null}
-                  </View>
+                <View key={g.id} style={[s.visitCard, { alignItems: 'center' }]}>
+                  <TouchableOpacity
+                    style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}
+                    onPress={() => setSelectedPerson(g)}
+                    activeOpacity={0.75}
+                  >
+                    <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
+                      <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{(g.name || 'G')[0]?.toUpperCase()}</Text>
+                      <View style={{ position: 'absolute', bottom: -1, right: -1, width: 14, height: 14, backgroundColor: '#16a34a', borderRadius: 7, borderWidth: 2, borderColor: '#fff' }} />
+                    </View>
+                    <View style={s.visitMeta}>
+                      <Text style={s.visitName}>{g.name || 'Guard'}</Text>
+                      <Text style={s.visitSub}>Signed in {fmtTime(g.check_in_time)}</Text>
+                      {g.email ? <Text style={s.visitNote}>{g.email}</Text> : null}
+                    </View>
+                  </TouchableOpacity>
+                  {/* DM button — navigate to Messages tab with this guard as DM contact */}
+                  {g.member_id && navigation && (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Messages', {
+                        receiverId:   String(g.member_id),
+                        receiverName: g.name,
+                        siteId:       selectedSite?.id,
+                        siteName:     selectedSite?.name,
+                      })}
+                      style={s.dmBtn}
+                    >
+                      <MessageSquare size={18} color="#2b4594" />
+                    </TouchableOpacity>
+                  )}
                 </View>
               ))
             )}
           </>
         )}
       </ScrollView>
+
+      <PersonDetailsModal
+        visible={Boolean(selectedPerson)}
+        onClose={() => setSelectedPerson(null)}
+        person={selectedPerson}
+      />
     </SafeAreaView>
   );
 };
@@ -702,9 +835,9 @@ const s = StyleSheet.create({
   siteOption: { paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   siteOptionTxt: { fontSize: 15, color: '#111827' },
   siteOptionTxtActive: { color: '#2b4594', fontWeight: '700' },
-  tabBar: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6', maxHeight: 48, flexGrow: 0 },
-  tabBarContent: { paddingHorizontal: 12 },
-  tab: { paddingHorizontal: 16, paddingVertical: 12, marginRight: 4 },
+  tabBar: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6', height: 48, flexGrow: 0 },
+  tabBarContent: { paddingHorizontal: 12, alignItems: 'center' },
+  tab: { paddingHorizontal: 16, height: '100%', justifyContent: 'center', alignItems: 'center', marginRight: 4 },
   tabActive: { borderBottomWidth: 2, borderBottomColor: '#2b4594' },
   tabText: { fontSize: 14, fontWeight: '500', color: '#6b7280' },
   tabTextActive: { color: '#2b4594', fontWeight: '700' },
@@ -787,6 +920,17 @@ const s = StyleSheet.create({
   togglePillOn: { backgroundColor: '#2b4594' },
   toggleTextOn: { color: '#fff', fontSize: 13, fontWeight: '600' },
   toggleTextOff: { color: '#6b7280', fontSize: 13, fontWeight: '600' },
+  dmBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#eff6ff',
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
 });
 
 export default ManagerScreen;

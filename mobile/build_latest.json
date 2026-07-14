@@ -1,0 +1,64 @@
+﻿node.exe : - Fetching the buildÔÇª\ Fetching the 
+buildÔÇª| Fetching the buildÔÇª/ Fetching the 
+buildÔÇªÔêÜ Found a matching build for the 
+project @ayeshaes-team/tripodhubauth
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (- Fe 
+   tching the ...m/tripodhubauth:String) [], Rem  
+  oteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+{
+  "id": "5467d47c-bb00-460d-8b9a-706bacda6cd9",
+  "status": "ERRORED",
+  "platform": "ANDROID",
+  "error": {
+    "errorCode": "UNKNOWN_ERROR",
+    "message": "Unknown error. See logs of the Bundle JavaScript build phase for more information."
+  },
+  "artifacts": {},
+  "fingerprint": {
+    "id": "019f40bc-3a09-7c2e-ab3f-e161c0582eaa",
+    "hash": "3fd14d5f32dc4e35e4fdfb15d5bb829702ca3ec9"
+  },
+  "initiatingActor": {
+    "id": "3662d66e-09bf-4930-8bd3-cbf2770c2343",
+    "displayName": "ayeshae"
+  },
+  "logFiles": [
+    "https://storage.googleapis.com/eas-workflows-production/logs/93a2574b-7e98-4ab5-a640-e8c08da3f5df/5467d47c-bb00-460d-8b9a-706bacda6cd9/2026-07-08T07%3A58%3A32Z-7d0060c4-d73b-4278-bdcf-aaf600682465.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260708%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260708T080946Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=a5fab02206e81a67d0cb38956457fd227e5ea89777e86608d7e35e42734227e3fbc493e10fa63a9385f0bf0f1093b02892582768de11d1ee5e39a224e63f2e0ff174f1e97aa45d56d4fba0a9ce872344705c1ed6d45e0651c5c5ac59708b807cbf0f54c530455cd258646be9ca53d9c7c66a4a43d9f6822797bf823fa787b4ae8d70337331a4a0f0da278a5044df84c4bab3b0a88c455bad3851756f8686db265fe7a1aaee1b79adbd1752d833235f550bd434a9c62f7f21fa9d1e8a8074f8c8612c177378c4a49723e1e33ea6c3806b4b80f0cfede6956de58aa28a37d76826b244d12f4c2b433bfd8128b974d02b239b6c1e0c341eab79e432e620c66210f9"
+  ],
+  "project": {
+    "id": "93a2574b-7e98-4ab5-a640-e8c08da3f5df",
+    "name": "Tripod_Hub_Auth",
+    "slug": "tripodhubauth",
+    "ownerAccount": {
+      "id": "3ca8ee5b-f9b4-4aac-b123-246454ffeb80",
+      "name": "ayeshaes-team"
+    }
+  },
+  "channel": "preview",
+  "distribution": "INTERNAL",
+  "buildProfile": "preview",
+  "sdkVersion": "54.0.0",
+  "appVersion": "1.1.0",
+  "appBuildVersion": "10",
+  "runtimeVersion": "1.1.0",
+  "gitCommitHash": "408a45381617107cfa92eee36406d30778272219",
+  "gitCommitMessage": "fix(mobile): upgrade all deps to SDK 54 targets, add worklets for reanimated v4",
+  "priority": "NORMAL",
+  "createdAt": "2026-07-08T07:58:25.234Z",
+  "updatedAt": "2026-07-08T07:59:33.144Z",
+  "completedAt": "2026-07-08T07:59:32.931Z",
+  "expirationDate": "2026-07-22T07:58:25.271Z",
+  "isForIosSimulator": false,
+  "metrics": {
+    "buildWaitTime": 6072,
+    "buildQueueTime": 5739,
+    "buildDuration": 55886
+  }
+}
