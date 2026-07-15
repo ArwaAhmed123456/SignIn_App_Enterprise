@@ -42,7 +42,16 @@ export const getAccessibleSites = async (preferredSiteId) => {
     }
   }
 
-  return [];
+  // Some pre-existing manager sessions were created before a site ID was saved
+  // on the device. The site directory is intentionally public for mobile
+  // onboarding, so use it as a final fallback instead of showing an empty
+  // manager portal.
+  try {
+    const response = await api.get('/projects/all-public');
+    return sortByName(response.data || []);
+  } catch {
+    return [];
+  }
 };
 
 const normalizeVisit = (visit) => ({
