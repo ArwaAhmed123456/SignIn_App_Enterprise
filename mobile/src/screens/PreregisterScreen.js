@@ -111,6 +111,9 @@ const PreregisterScreen = ({ navigation, route }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [notes, setNotes] = useState('');
   const [sendInvite, setSendInvite] = useState(true);
+  const [guards, setGuards] = useState([]);
+  const [selectedGuardId, setSelectedGuardId] = useState(null);
+  const [guardOpen, setGuardOpen] = useState(false);
 
   // Formatted strings for display and API
   const arrivalDateDisplay = arrivalDateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -153,6 +156,16 @@ const PreregisterScreen = ({ navigation, route }) => {
     };
 
     loadGroups();
+  }, [selectedSiteId]);
+
+  useEffect(() => {
+    if (!selectedSiteId) return;
+    api.get(`/guards/contacts?site_id=${selectedSiteId}`)
+      .then((response) => {
+        const guardContacts = (response.data || []).filter((person) => /guard|security/i.test(String(person.role || '')));
+        setGuards(guardContacts);
+      })
+      .catch(() => setGuards([]));
   }, [selectedSiteId]);
 
   const selectedSite = useMemo(
@@ -206,13 +219,15 @@ const PreregisterScreen = ({ navigation, route }) => {
       try {
         const siteId = selectedSiteId || user?.project_id || user?.site_id;
         if (siteId) {
+          const message = `Pre-registration: ${name.trim()}${companyName.trim() ? ` from ${companyName.trim()}` : ''} is expected at ${formatSummaryDate(arrivalDate, arrivalTime)}.`;
           await api.post('/messages', {
-            // IMPORTANT: pre-registration ≠ arrival. Keep wording explicit so managers
-            // don't interpret this as "visitor is at the door".
-            text: `📝 Pre-registered (not arrived yet): ${name.trim()}`,
             site_id: siteId,
             type: 'notification',
+            text: message,
           });
+          if (selectedGuardId) {
+            await api.post('/messages', { text: message, site_id: siteId, receiver_id: selectedGuardId });
+          }
         }
       } catch (msgErr) {
         console.log('Pre-registration chat message failed:', msgErr.message);
@@ -321,7 +336,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         </View>
 
         <View style={s.inputGroup}>
-          <Text style={s.label}>Email</Text>
+          <Text style={s.label}>Email (optional)</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -403,6 +418,27 @@ const PreregisterScreen = ({ navigation, route }) => {
             <Text style={s.helperText}>Enabled only when an email address is provided.</Text>
           </View>
           <Switch value={sendInvite} onValueChange={setSendInvite} disabled={!email.trim()} trackColor={{ true: '#2b4594', false: '#d1d5db' }} />
+        </View>
+
+        <View style={s.inputGroup}>
+          <Text style={s.label}>Inform a Guard (optional)</Text>
+          <TouchableOpacity onPress={() => setGuardOpen((value) => !value)} style={s.selector}>
+            <Text style={s.selectorText}>{guards.find((guard) => guard.id === selectedGuardId)?.name || 'No individual guard selected'}</Text>
+            <ChevronDown size={16} color="#6b7280" />
+          </TouchableOpacity>
+          {guardOpen ? (
+            <View style={s.dropdown}>
+              <TouchableOpacity onPress={() => { setSelectedGuardId(null); setGuardOpen(false); }} style={s.dropdownItem}>
+                <Text style={s.dropdownItemText}>No individual guard selected</Text>
+              </TouchableOpacity>
+              {guards.map((guard) => (
+                <TouchableOpacity key={guard.id} onPress={() => { setSelectedGuardId(guard.id); setGuardOpen(false); }} style={s.dropdownItem}>
+                  <Text style={[s.dropdownItemText, selectedGuardId === guard.id && s.dropdownItemTextActive]}>{guard.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : null}
+          <Text style={s.helperText}>The team chat is always updated; you can also notify one guard directly.</Text>
         </View>
 
         <TouchableOpacity onPress={handleSubmit} disabled={saving} style={[s.submitBtn, saving && { opacity: 0.7 }]}>

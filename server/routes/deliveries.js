@@ -37,9 +37,19 @@ function matchScore(text, q) {
 // ── GET /api/deliveries?site_id=xxx ─────────────────────────────────
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const { site_id } = req.query;
+    const { site_id, date_from, date_to, search } = req.query;
     const filter = {};
     if (site_id && site_id !== 'all') filter.siteId = site_id;
+    if (date_from || date_to) {
+      filter.receivedAt = {};
+      if (date_from) filter.receivedAt.$gte = new Date(`${date_from}T00:00:00`);
+      if (date_to) filter.receivedAt.$lte = new Date(`${date_to}T23:59:59.999`);
+    }
+    if (search?.trim()) {
+      const escaped = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const match = new RegExp(escaped, 'i');
+      filter.$or = [{ itemName: match }, { recipient: match }, { company: match }, { sender: match }, { carrier: match }];
+    }
     const deliveries = await Delivery.find(filter).sort({ createdAt: -1 }).limit(200).lean();
     res.json(deliveries);
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
@@ -47,7 +57,7 @@ router.get('/', verifyToken, async (req, res) => {
 
 // ── POST /api/deliveries ─────────────────────────────────────────────
 router.post('/', verifyToken, async (req, res) => {
-  const { site_id, recipient, sender, carrier, notes, item_name, description, car_registration, company } = req.body;
+  const { site_id, recipient, sender, carrier, notes, item_name, description, car_registration, company, received_at } = req.body;
   if (!recipient && !item_name) return res.status(400).json({ error: 'item_name is required' });
   try {
     let siteId = site_id;
@@ -56,12 +66,14 @@ router.post('/', verifyToken, async (req, res) => {
       siteId = s?._id;
     }
     if (!siteId) return res.status(400).json({ error: 'No site found' });
+    const receivedAt = received_at ? new Date(received_at) : new Date();
+    if (Number.isNaN(receivedAt.getTime())) return res.status(400).json({ error: 'Invalid delivery date or time' });
     const delivery = await Delivery.create({
       siteId,
       recipient: recipient || item_name,
       sender: sender || '', carrier: carrier || '', notes: notes || description || '',
       itemName: item_name || '', description: description || '',
-      carRegistration: car_registration || '', company: company || '',
+      carRegistration: car_registration || '', company: company || '', receivedAt,
     });
     res.status(201).json({ success: true, delivery });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }

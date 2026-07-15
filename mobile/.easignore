@@ -1,0 +1,16 @@
+# Exclude big / irrelevant files from EAS Build uploads
+node_modules
+.expo
+dist
+
+# Local build artifacts / logs
+*.apk
+*.aab
+build_*.json
+build_latest.json
+build_logs*.txt
+build_status_now.txt
+build_view*.json
+
+# Misc
+*.log

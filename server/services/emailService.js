@@ -29,7 +29,12 @@ const getSmtpTransporter = () => {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    // Do not leave the user waiting on an unavailable SMTP host. A transactional
+    // API fallback is attempted promptly when the SMTP connection is unhealthy.
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000,
   });
 };
 
@@ -51,7 +56,12 @@ const FROM = process.env.EMAIL_FROM
 
 // ── Core send function ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
-  const transporter = getSmtpTransporter();
+  // Resend is a transactional provider and is normally faster/more reliable for
+  // delivery than opening an SMTP connection on every request. Set
+  // EMAIL_PROVIDER=smtp to force SMTP where that is required.
+  const transporter = (process.env.EMAIL_PROVIDER === 'smtp' || !process.env.RESEND_API_KEY)
+    ? getSmtpTransporter()
+    : null;
   if (transporter) {
     try {
       console.log(`[SMTP] Attempting to send email to ${to} via SMTP...`);

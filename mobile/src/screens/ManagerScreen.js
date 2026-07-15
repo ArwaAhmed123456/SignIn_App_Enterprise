@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,9 +10,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Vibration,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut, UserPlus, Search } from 'lucide-react-native';
+import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut, UserPlus, Search, Package } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
@@ -28,7 +29,7 @@ import {
   getVisitStats,
 } from '../services/enterprisePortal';
 
-const TABS = ['Overview', 'On Site', 'Signed Out', 'Approvals', 'Notifications', 'Guards'];
+const TABS = ['Overview', 'On-Site', 'Signed Out', 'Deliveries', 'Pre-register', 'Approvals', 'Guards'];
 
 const fmtTime = (value) => {
   if (!value) return '—';
@@ -95,7 +96,7 @@ const PersonDetailsModal = ({ visible, onClose, person }) => {
             <View>
               <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 0.5 }}>Status</Text>
               <Text style={{ fontSize: 14, fontWeight: '600', color: person.sign_out_time ? '#ef4444' : '#16a34a', marginTop: 2 }}>
-                {person.sign_out_time ? 'Signed Out' : 'On Site (Active)'}
+                {person.sign_out_time ? 'Signed Out' : 'On-Site (Active)'}
               </Text>
             </View>
 
@@ -153,17 +154,23 @@ const ManagerScreen = ({ navigation }) => {
   const [onSite, setOnSite] = useState([]);
   const [signedOut, setSignedOut] = useState([]);
   const [expected, setExpected] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
   const [pendingGuards, setPendingGuards] = useState([]);
   const [presentGuards, setPresentGuards] = useState([]);
   const [counts, setCounts] = useState({ total: 0, visitors: 0, employees: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifOn, setNotifOn] = useState(true);
+  const [notificationCentreOpen, setNotificationCentreOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [updatingApproval, setUpdatingApproval] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const knownArrivalIds = useRef(new Set());
+  const arrivalsInitialised = useRef(false);
 
   const managerName = user?.name || user?.firstName || 'Manager';
 
@@ -182,24 +189,28 @@ const ManagerScreen = ({ navigation }) => {
     const siteId = siteIdOverride || selectedSite?.id;
     if (!siteId) return;
 
-    const [currentVisits, signedOutVisits, preRegistered, stats, pending, present] = await Promise.all([
+    const [currentVisits, signedOutVisits, preRegistered, stats, pending, present, siteDeliveries] = await Promise.all([
       getVisits({ siteId, status: 'In' }).catch(() => []),
       getVisits({ siteId, status: 'Out' }).catch(() => []),
       getPreRegistrations({ siteId, status: 'Pending' }).catch(() => []),
       getVisitStats(siteId).catch(() => ({ totalIn: 0, visitorsIn: 0, employeesIn: 0 })),
       getPendingGuards({ siteId }).catch(() => []),
       getPresentGuards({ siteId }).catch(() => []),
+      api.get('/deliveries', { params: { site_id: siteId } }).then((response) => response.data || []).catch(() => []),
     ]);
 
     setOnSite(currentVisits);
     setSignedOut(signedOutVisits);
     setExpected(preRegistered);
+    setDeliveries(siteDeliveries);
     setPendingGuards(pending);
     setPresentGuards(present);
+    // The list is the source of truth: the legacy stats endpoint does not reliably
+    // distinguish groups and may return stale zero values.
     setCounts({
-      total: stats.totalIn || currentVisits.length,
-      visitors: stats.visitorsIn || currentVisits.filter((visit) => !String(visit.group).toLowerCase().includes('employee')).length,
-      employees: stats.employeesIn || currentVisits.filter((visit) => String(visit.group).toLowerCase().includes('employee')).length,
+      total: currentVisits.length,
+      visitors: currentVisits.filter((visit) => !String(visit.group).toLowerCase().includes('employee')).length,
+      employees: currentVisits.filter((visit) => String(visit.group).toLowerCase().includes('employee')).length,
     });
   }, [selectedSite]);
 
@@ -228,6 +239,16 @@ const ManagerScreen = ({ navigation }) => {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Keep the manager view current while it is open. This also lets the arrival
+  // detector raise its on-screen alert and vibration without requiring a manual refresh.
+  useEffect(() => {
+    if (!selectedSite?.id) return undefined;
+    const timer = setInterval(() => {
+      loadSiteData(selectedSite.id).catch((error) => console.log('Manager refresh error:', error?.message));
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [selectedSite?.id, loadSiteData]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -291,40 +312,57 @@ const ManagerScreen = ({ navigation }) => {
   };
 
   const handleExport = async (format) => {
-    const unfilteredList = activeTab === 'On Site' ? onSite
-      : activeTab === 'Signed Out' ? signedOut
-      : expected;
-    const query = search.replace(/\s+/g, '').toLowerCase();
-    const list = unfilteredList.filter((item) => !query || `${item.name || ''}${item.group || ''}${item.trade || ''}${item.company_name || ''}`.replace(/\s+/g, '').toLowerCase().includes(query));
+    // Routine attendance reports use visit data only, never a pre-registration's
+    // expected-arrival value.
+    const unfilteredList = activeTab === 'Signed Out' ? signedOut : activeTab === 'Deliveries' ? deliveries : onSite;
+    let list = unfilteredList.filter(matchesSearch);
 
-    if (!list.length) {
-      Alert.alert('Nothing to export', 'No records available for this tab.');
-      return;
-    }
     setExporting(true);
     try {
       const siteName = selectedSite?.name || 'Site';
       const dateStr  = new Date().toLocaleDateString('en-GB');
-      const title = `Manager Report — ${siteName} — ${activeTab}`;
-      const filenameBase = `${siteName}-${activeTab}-${dateStr}`;
+      if ((dateFrom || dateTo) && activeTab !== 'Deliveries') {
+        const status = activeTab === 'Signed Out' ? 'Out' : 'In';
+        const records = await getVisits({ siteId: selectedSite?.id, status, search, dateFrom, dateTo });
+        list = records.filter(matchesSearch);
+      }
+      if ((dateFrom || dateTo) && activeTab === 'Deliveries') {
+        const response = await api.get('/deliveries', {
+          params: { site_id: selectedSite?.id, search, date_from: dateFrom || undefined, date_to: dateTo || undefined },
+        });
+        list = (response.data || []).filter(matchesSearch);
+      }
+      if (!list.length) {
+        Alert.alert('Nothing to export', 'No records match the selected filters.');
+        return;
+      }
+      const reportTitle = `Security Report — ${siteName} — ${dateStr}`;
+      const filenameBase = `${siteName}-Report-${dateStr}`;
 
-      const headers = ['Name', 'Role', 'Sign In', 'Sign Out', 'Car Registration', 'Company', 'Description', 'Checked in by'];
+      const isDeliveryReport = activeTab === 'Deliveries';
+      const headers = isDeliveryReport
+        ? ['Item', 'Recipient', 'Sender', 'Carrier', 'Company', 'Recorded', 'Collected']
+        : ['Name', 'Role', 'Sign In', 'Sign Out', 'Car Registration', 'Company', 'Checked in by'];
 
-      const rows = list.map(item => ({
-        Name:           item.name || '',
-        Role:           item.group || '',
-        'Sign In':      fmtExportTime(item.sign_in_time || item.expected_date),
-        'Sign Out':     fmtExportTime(item.sign_out_time),
-        'Car Registration': item.car_reg || '',
-        Company: item.trade || item.company_name || '',
-        Description: item.reason || item.notes || '',
+      const rows = list.map(item => isDeliveryReport ? ({
+        Item: item.itemName || item.recipient || '',
+        Recipient: item.recipient || '',
+        Sender: item.sender || '',
+        Carrier: item.carrier || '',
+        Company: item.company || '',
+        Recorded: fmtExportTime(item.receivedAt || item.createdAt),
+        Collected: item.collected ? fmtExportTime(item.collectedAt) : 'No',
+      }) : ({
+        Name: item.name || '', Role: item.group || '',
+        'Sign In': fmtExportTime(item.sign_in_time), 'Sign Out': fmtExportTime(item.sign_out_time),
+        'Car Registration': item.car_reg || '', Company: item.trade || item.company_name || '',
         'Checked in by': item.checked_in_by || '',
       }));
 
       if (format === 'excel') {
-        await shareExcel({ title, headers, rows, filenameBase });
+        await shareExcel({ title: reportTitle, headers, rows, filenameBase });
       } else {
-        await sharePdf({ title, headers, rows, filenameBase });
+        await sharePdf({ title: reportTitle, headers, rows, filenameBase });
       }
     } catch (err) {
       Alert.alert('Export failed', err?.message || 'Could not export.');
@@ -373,6 +411,39 @@ const ManagerScreen = ({ navigation }) => {
     [onSite, signedOut],
   );
 
+  useEffect(() => {
+    const arrivalIds = onSite
+      .filter((visit) => visit.pre_registered && visit.checked_in_by_guard)
+      .map((visit) => String(visit.id));
+    if (!arrivalsInitialised.current) {
+      arrivalIds.forEach((id) => knownArrivalIds.current.add(id));
+      arrivalsInitialised.current = true;
+      return;
+    }
+    const newArrivalId = arrivalIds.find((id) => !knownArrivalIds.current.has(id));
+    arrivalIds.forEach((id) => knownArrivalIds.current.add(id));
+    if (newArrivalId && notifOn) {
+      const visitor = onSite.find((visit) => String(visit.id) === newArrivalId);
+      Vibration.vibrate([0, 300, 150, 300]);
+      Alert.alert('Visitor Arrived', `${visitor?.name || 'A pre-registered visitor'} has arrived at ${selectedSite?.name || 'the site'}.`);
+    }
+  }, [onSite, notifOn, selectedSite?.name]);
+
+  const matchesSearch = (item) => {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+    return [item.name, item.group, item.role, item.trade, item.company_name, item.companyName,
+      item.itemName, item.recipient, item.sender, item.carrier, item.company]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(query);
+  };
+  const visibleOnSite = onSite.filter(matchesSearch);
+  const visibleSignedOut = signedOut.filter(matchesSearch);
+  const visibleExpected = expected.filter(matchesSearch);
+  const visibleDeliveries = deliveries.filter(matchesSearch);
+
   if (loading) {
     return (
       <SafeAreaView style={s.container} edges={['top']}>
@@ -387,7 +458,7 @@ const ManagerScreen = ({ navigation }) => {
     <SafeAreaView style={s.container} edges={['top']}>
       <View style={s.header}>
         <View>
-          <Text style={s.headerTitle}>Manager portal</Text>
+          <Text style={s.headerTitle}>Manager Portal</Text>
           <Text style={s.headerSub}>{managerName}</Text>
         </View>
         <View style={s.headerActions}>
@@ -412,8 +483,8 @@ const ManagerScreen = ({ navigation }) => {
           >
             {exporting ? <ActivityIndicator size="small" color="#2b4594" /> : <Download size={20} color="#2b4594" />}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setNotifOn((value) => !value)} style={[s.notifBtn, notifOn && s.notifBtnActive]}>
-            <Bell size={20} color={notifOn ? '#fff' : '#6b7280'} />
+          <TouchableOpacity onPress={() => setNotificationCentreOpen(true)} style={[s.notifBtn, notifications.length > 0 && s.notifBtnActive]}>
+            <Bell size={20} color={notifications.length > 0 ? '#fff' : '#6b7280'} />
           </TouchableOpacity>
         </View>
       </View>
@@ -459,18 +530,45 @@ const ManagerScreen = ({ navigation }) => {
         </TouchableOpacity>
       </Modal>
 
-      <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
+      <Modal visible={notificationCentreOpen} transparent animationType="slide" onRequestClose={() => setNotificationCentreOpen(false)}>
+        <View style={s.notificationOverlay}>
+          <View style={s.notificationSheet}>
+            <View style={s.notificationHeader}>
+              <Text style={s.notificationTitle}>Notifications</Text>
+              <TouchableOpacity onPress={() => setNotificationCentreOpen(false)}><X size={21} color="#6b7280" /></TouchableOpacity>
+            </View>
+            <View style={s.notificationSetting}>
+              <Text style={s.notificationSettingText}>Arrival Alerts</Text>
+              <Switch value={notifOn} onValueChange={setNotifOn} trackColor={{ true: '#2b4594', false: '#d1d5db' }} />
+            </View>
+            <ScrollView>
+              {notifications.length ? notifications.map((visit) => (
+                <View key={visit.id} style={s.notificationItem}>
+                  <Bell size={17} color="#2b4594" />
+                  <View style={{ flex: 1 }}><Text style={s.notificationItemTitle}>Pre-registered Visitor Arrived</Text><Text style={s.notificationItemText}>{visit.name} checked in at {fmtTime(visit.sign_in_time)}.</Text></View>
+                </View>
+              )) : <Text style={s.notificationEmpty}>You have no arrival notifications.</Text>}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      <View style={s.tabBar}>
         {TABS.map((tab) => (
-          <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
+          <TouchableOpacity key={tab} onPress={() => tab === 'Pre-register' ? navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name }) : setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
             <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       <View style={s.managerSearchRow}>
         <Search size={16} color="#9ca3af" />
         <TextInput value={search} onChangeText={setSearch} placeholder="Search by name, company or role" placeholderTextColor="#9ca3af" style={s.managerSearchInput} />
         {search ? <TouchableOpacity onPress={() => setSearch('')}><X size={16} color="#9ca3af" /></TouchableOpacity> : null}
+      </View>
+      <View style={s.dateFilterRow}>
+        <TextInput value={dateFrom} onChangeText={setDateFrom} placeholder="From (YYYY-MM-DD)" placeholderTextColor="#9ca3af" style={s.dateFilterInput} />
+        <TextInput value={dateTo} onChangeText={setDateTo} placeholder="To (YYYY-MM-DD)" placeholderTextColor="#9ca3af" style={s.dateFilterInput} />
       </View>
 
       <ScrollView
@@ -481,7 +579,7 @@ const ManagerScreen = ({ navigation }) => {
           <>
             <View style={s.countGrid}>
               {[
-                { label: 'On site now', value: counts.total, color: '#2b4594' },
+                { label: 'On-Site Now', value: counts.total, color: '#2b4594' },
                 { label: 'Visitors', value: counts.visitors, color: '#0891b2' },
                 { label: 'Employees', value: counts.employees, color: '#16a34a' },
               ].map((item) => (
@@ -492,13 +590,13 @@ const ManagerScreen = ({ navigation }) => {
               ))}
             </View>
 
-            <Text style={s.sectionTitle}>Expected visitors</Text>
-            {expected.length === 0 ? (
+            <Text style={s.sectionTitle}>Expected Visitors</Text>
+            {visibleExpected.length === 0 ? (
               <View style={s.emptyCard}>
                 <Text style={s.emptyText}>No pending pre-registrations for this site.</Text>
               </View>
             ) : (
-              expected.slice(0, 4).map((item) => (
+              visibleExpected.slice(0, 4).map((item) => (
                 <TouchableOpacity key={item.id} style={s.visitCard} onPress={() => setSelectedPerson(item)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{item.name[0]?.toUpperCase()}</Text>
@@ -515,13 +613,13 @@ const ManagerScreen = ({ navigation }) => {
               ))
             )}
 
-            <Text style={[s.sectionTitle, s.sectionTopSpacing]}>Recent sign-ins</Text>
-            {onSite.length === 0 ? (
+            <Text style={[s.sectionTitle, s.sectionTopSpacing]}>Currently On-Site</Text>
+            {visibleOnSite.length === 0 ? (
               <View style={s.emptyCard}>
                 <Text style={s.emptyText}>Nobody is currently signed in.</Text>
               </View>
             ) : (
-              onSite.slice(0, 5).map((visit) => (
+              visibleOnSite.slice(0, 5).map((visit) => (
                 <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
@@ -538,20 +636,20 @@ const ManagerScreen = ({ navigation }) => {
           </>
         )}
 
-        {activeTab === 'On Site' && (
+        {activeTab === 'On-Site' && (
           <>
             <View style={s.sectionRow}>
-              <Text style={s.sectionTitle}>{onSite.length} currently signed in</Text>
+              <Text style={s.sectionTitle}>{visibleOnSite.length} Currently Signed In</Text>
               <TouchableOpacity onPress={load}>
                 <RefreshCw size={18} color="#9ca3af" />
               </TouchableOpacity>
             </View>
-            {onSite.length === 0 ? (
+            {visibleOnSite.length === 0 ? (
               <View style={s.emptyCard}>
-                <Text style={s.emptyText}>Nobody is on site right now.</Text>
+                <Text style={s.emptyText}>Nobody is on-site right now.</Text>
               </View>
             ) : (
-              onSite.map((visit) => (
+              visibleOnSite.map((visit) => (
                 <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={[s.visitAvatar, s.visitAvatarActive, { position: 'relative' }]}>
                     <Text style={[s.visitAvatarTxt, s.visitAvatarTxtActive]}>{visit.name[0]?.toUpperCase()}</Text>
@@ -572,13 +670,13 @@ const ManagerScreen = ({ navigation }) => {
 
         {activeTab === 'Signed Out' && (
           <>
-            <Text style={s.sectionTitle}>Signed out today</Text>
-            {signedOut.length === 0 ? (
+            <Text style={s.sectionTitle}>Signed Out Today</Text>
+            {visibleSignedOut.length === 0 ? (
               <View style={s.emptyCard}>
                 <Text style={s.emptyText}>No sign-outs recorded yet.</Text>
               </View>
             ) : (
-              signedOut.map((visit) => (
+              visibleSignedOut.map((visit) => (
                 <TouchableOpacity key={visit.id} style={s.visitCard} onPress={() => setSelectedPerson(visit)} activeOpacity={0.75}>
                   <View style={s.visitAvatar}>
                     <Text style={s.visitAvatarTxt}>{visit.name[0]?.toUpperCase()}</Text>
@@ -592,6 +690,30 @@ const ManagerScreen = ({ navigation }) => {
                 </TouchableOpacity>
               ))
             )}
+          </>
+        )}
+
+        {activeTab === 'Deliveries' && (
+          <>
+            <View style={s.sectionRow}>
+              <Text style={s.sectionTitle}>Deliveries</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('DeliveryForm', { siteId: selectedSite?.id })} style={s.deliveryAddBtn}>
+                <Package size={16} color="#fff" />
+                <Text style={s.deliveryAddText}>Add Delivery</Text>
+              </TouchableOpacity>
+            </View>
+            {visibleDeliveries.length === 0 ? (
+              <View style={s.emptyCard}><Text style={s.emptyText}>No deliveries found for this site.</Text></View>
+            ) : visibleDeliveries.map((delivery) => (
+              <View key={delivery._id || delivery.id} style={s.visitCard}>
+                <View style={[s.visitAvatar, { backgroundColor: '#fff7ed' }]}><Package size={20} color="#c2410c" /></View>
+                <View style={s.visitMeta}>
+                  <Text style={s.visitName}>{delivery.itemName || delivery.recipient || 'Delivery'}</Text>
+                  <Text style={s.visitSub}>For {delivery.recipient || 'site reception'}{delivery.carrier ? ` · ${delivery.carrier}` : ''}</Text>
+                  <Text style={s.visitNote}>{delivery.collected ? 'Collected' : 'Awaiting collection'}</Text>
+                </View>
+              </View>
+            ))}
           </>
         )}
 
@@ -728,7 +850,7 @@ const ManagerScreen = ({ navigation }) => {
             )}
 
             <View style={[s.sectionRow, s.sectionTopSpacing]}>
-              <Text style={s.sectionTitle}>Guards present on site</Text>
+              <Text style={s.sectionTitle}>Guards Present On-Site</Text>
               <TouchableOpacity onPress={load}>
                 <RefreshCw size={18} color="#9ca3af" />
               </TouchableOpacity>
@@ -849,12 +971,14 @@ const s = StyleSheet.create({
   siteOption: { paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   siteOptionTxt: { fontSize: 15, color: '#111827' },
   siteOptionTxtActive: { color: '#2b4594', fontWeight: '700' },
-  tabBar: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6', height: 48, flexGrow: 0 },
-  tabBarContent: { paddingHorizontal: 12, alignItems: 'center' },
+  // A wrapped action grid keeps every option visible without horizontal scrolling.
+  tabBar: { flexDirection: 'row', flexWrap: 'wrap', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6', paddingHorizontal: 8, paddingVertical: 6 },
   managerSearchRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' },
   managerSearchInput: { flex: 1, fontSize: 15, color: '#111827' },
-  tab: { paddingHorizontal: 16, height: '100%', justifyContent: 'center', alignItems: 'center', marginRight: 4 },
-  tabActive: { borderBottomWidth: 2, borderBottomColor: '#2b4594' },
+  dateFilterRow: { flexDirection: 'row', gap: 8, marginHorizontal: 16, marginTop: 8 },
+  dateFilterInput: { flex: 1, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, color: '#111827', fontSize: 13 },
+  tab: { width: '25%', minHeight: 34, justifyContent: 'center', alignItems: 'center', borderRadius: 8, paddingHorizontal: 4 },
+  tabActive: { backgroundColor: '#e8edfb' },
   tabText: { fontSize: 14, fontWeight: '500', color: '#6b7280' },
   tabTextActive: { color: '#2b4594', fontWeight: '700' },
   // Extra bottom padding so lists/buttons aren't hidden behind bottom tabs
@@ -875,6 +999,8 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 10 },
   sectionTopSpacing: { marginTop: 20 },
   sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+  deliveryAddBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#2b4594', borderRadius: 9, paddingHorizontal: 10, paddingVertical: 8 },
+  deliveryAddText: { color: '#fff', fontWeight: '700', fontSize: 12 },
   visitCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -917,6 +1043,16 @@ const s = StyleSheet.create({
     borderColor: '#f3f4f6',
   },
   emptyText: { color: '#9ca3af', fontSize: 14, textAlign: 'center' },
+  notificationOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(15,23,42,0.45)' },
+  notificationSheet: { maxHeight: '70%', backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 18, paddingBottom: 34 },
+  notificationHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+  notificationTitle: { fontSize: 19, fontWeight: '800', color: '#111827' },
+  notificationSetting: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+  notificationSettingText: { fontSize: 15, fontWeight: '700', color: '#111827' },
+  notificationItem: { flexDirection: 'row', gap: 10, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+  notificationItemTitle: { fontSize: 14, fontWeight: '700', color: '#111827' },
+  notificationItemText: { fontSize: 13, color: '#64748b', marginTop: 3 },
+  notificationEmpty: { paddingVertical: 30, textAlign: 'center', color: '#64748b', fontSize: 14 },
   notifSettingsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
   notifDesc: { fontSize: 13, color: '#6b7280', marginBottom: 16, lineHeight: 18 },
   notifCard: {

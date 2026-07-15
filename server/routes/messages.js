@@ -118,6 +118,21 @@ router.post('/', verify, async (req, res) => {
 });
 
 // ── POST /api/messages/:id/read ───────────────────────────────────────
+router.get('/unread', verify, async (req, res) => {
+  try {
+    const siteId = req.query.site_id || req.user.project_id;
+    if (!siteId) return res.status(400).json({ error: 'site_id required' });
+    const userId = String(req.user.id);
+    const unread = await Message.aggregate([
+      { $match: { siteId: String(siteId), receiverId: userId, readBy: { $ne: userId } } },
+      { $group: { _id: '$senderId', count: { $sum: 1 } } },
+    ]);
+    res.json(unread.reduce((result, item) => ({ ...result, [String(item._id)]: item.count }), {}));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post('/:id/read', verify, async (req, res) => {
   try {
     await Message.findByIdAndUpdate(

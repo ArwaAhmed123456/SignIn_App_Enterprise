@@ -10,7 +10,7 @@ import {
   Platform, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Send, RefreshCw, ArrowLeft, MessageSquare, Users } from 'lucide-react-native';
+import { Send, RefreshCw, ArrowLeft, MessageSquare, Users, AtSign } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -62,7 +62,7 @@ const MessageBubble = ({ msg, isOwn }) => {
 };
 
 // ── Contact card (for DM list) ────────────────────────────────────────────────
-const ContactCard = ({ contact, onPress }) => (
+const ContactCard = ({ contact, onPress, unreadCount = 0 }) => (
   <TouchableOpacity style={s.contactCard} onPress={onPress} activeOpacity={0.75}>
     <View style={s.contactAvatar}>
       <Text style={s.contactAvatarTxt}>{(contact.name || '?')[0].toUpperCase()}</Text>
@@ -71,7 +71,7 @@ const ContactCard = ({ contact, onPress }) => (
       <Text style={s.contactName}>{contact.name}</Text>
       <Text style={s.contactRole}>{roleBadge(contact.role)}</Text>
     </View>
-    <MessageSquare size={18} color="#2b4594" />
+    {unreadCount > 0 ? <View style={s.unreadBadge}><Text style={s.unreadBadgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text></View> : <MessageSquare size={18} color="#2b4594" />}
   </TouchableOpacity>
 );
 
@@ -102,6 +102,8 @@ const MessagesScreen = ({ navigation, route }) => {
   );
   const [contacts, setContacts]             = useState([]);
   const [loadingContacts, setLoadingContacts] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({});
+  const [mentionOpen, setMentionOpen] = useState(false);
 
   // ── Chat state ─────────────────────────────────────────────────────────────
   const [messages, setMessages] = useState([]);
@@ -120,13 +122,26 @@ const MessagesScreen = ({ navigation, route }) => {
         url += `&receiver_id=${dmContact.id}`;
       }
       const res = await api.get(url);
-      setMessages(res.data || []);
+      const received = res.data || [];
+      setMessages(received);
+      const unread = received.filter((message) => message.senderId !== String(user?.id) && !(message.readBy || []).includes(String(user?.id)));
+      await Promise.all(unread.map((message) => api.post(`/messages/${message._id || message.id}/read`).catch(() => null)));
     } catch (err) {
       console.log('MessagesScreen fetch error:', err.message);
     } finally {
       setLoading(false);
     }
-  }, [siteId, activeTab, dmContact]);
+  }, [siteId, activeTab, dmContact, user?.id]);
+
+  const fetchUnreadCounts = useCallback(async () => {
+    if (!siteId) return;
+    try {
+      const response = await api.get(`/messages/unread?site_id=${siteId}`);
+      setUnreadCounts(response.data || {});
+    } catch {
+      setUnreadCounts({});
+    }
+  }, [siteId]);
 
   useEffect(() => {
     setLoading(true);
@@ -160,8 +175,13 @@ const MessagesScreen = ({ navigation, route }) => {
   useEffect(() => {
     if (activeTab === 'dm' && !dmContact) {
       fetchContacts();
+      fetchUnreadCounts();
     }
-  }, [activeTab, dmContact, fetchContacts]);
+  }, [activeTab, dmContact, fetchContacts, fetchUnreadCounts]);
+
+  useEffect(() => {
+    if (activeTab === 'team') fetchContacts();
+  }, [activeTab, fetchContacts]);
 
   // ── Send message ───────────────────────────────────────────────────────────
   const handleSend = async () => {
@@ -175,6 +195,7 @@ const MessagesScreen = ({ navigation, route }) => {
       }
       await api.post('/messages', body);
       setText('');
+      setMentionOpen(false);
       await fetchMessages();
     } catch (err) {
       Alert.alert('Could not send', err.response?.data?.error || 'Please try again.');
@@ -182,6 +203,16 @@ const MessagesScreen = ({ navigation, route }) => {
       setSending(false);
     }
   };
+
+  const addMention = (contact) => {
+    setText((current) => `${current.replace(/@[^@\\s]*$/, '').trimEnd()} @${contact.name} `);
+    setMentionOpen(false);
+  };
+
+  const mentionQuery = (text.match(/@([^@\\s]*)$/)?.[1] || '').toLowerCase();
+  const mentionMatches = contacts
+    .filter((contact) => contact.name?.toLowerCase().includes(mentionQuery))
+    .slice(0, 5);
 
   // ── Send alert (guards only, team chat only) ───────────────────────────────
   const handleSendAlert = async () => {
@@ -305,7 +336,7 @@ const MessagesScreen = ({ navigation, route }) => {
               data={contacts}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <ContactCard contact={item} onPress={() => setDmContact(item)} />
+                <ContactCard contact={item} unreadCount={unreadCounts[item.id] || 0} onPress={() => setDmContact(item)} />
               )}
               contentContainerStyle={{ padding: 16 }}
             />
@@ -355,8 +386,8 @@ const MessagesScreen = ({ navigation, route }) => {
             )}
             <TextInput
               value={text}
-              onChangeText={setText}
-              placeholder="Type a message..."
+              onChangeText={(value) => { setText(value); setMentionOpen(activeTab === 'team' && /@[^@\\s]*$/.test(value)); }}
+              placeholder={activeTab === 'team' ? 'Type a message… use @ to tag someone' : 'Type a message…'}
               placeholderTextColor="#9ca3af"
               style={s.input}
               multiline
@@ -375,6 +406,17 @@ const MessagesScreen = ({ navigation, route }) => {
               }
             </TouchableOpacity>
           </View>
+          {activeTab === 'team' && mentionOpen && (
+            <View style={s.mentionMenu}>
+              {mentionMatches.length ? mentionMatches.map((contact) => (
+                <TouchableOpacity key={contact.id} style={s.mentionOption} onPress={() => addMention(contact)}>
+                  <AtSign size={15} color="#2b4594" />
+                  <Text style={s.mentionText}>{contact.name}</Text>
+                  <Text style={s.mentionRole}>{roleBadge(contact.role)}</Text>
+                </TouchableOpacity>
+              )) : <Text style={s.mentionEmpty}>No matching team member</Text>}
+            </View>
+          )}
         </KeyboardAvoidingView>
       )}
     </SafeAreaView>
@@ -409,6 +451,8 @@ const s = StyleSheet.create({
   contactMeta:     { flex: 1 },
   contactName:     { fontSize: 15, fontWeight: '700', color: '#111827' },
   contactRole:     { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  unreadBadge:     { minWidth: 22, height: 22, paddingHorizontal: 6, borderRadius: 11, backgroundColor: '#dc2626', alignItems: 'center', justifyContent: 'center' },
+  unreadBadgeText: { color: '#fff', fontSize: 11, fontWeight: '800' },
 
   // Bubbles
   bubbleRow:       { flexDirection: 'row', marginBottom: 12, alignItems: 'flex-end', gap: 8 },
@@ -434,6 +478,11 @@ const s = StyleSheet.create({
 
   // Input
   inputBar:        { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f3f4f6' },
+  mentionMenu:     { position: 'absolute', left: 12, right: 64, bottom: 68, backgroundColor: '#fff', borderWidth: 1, borderColor: '#dbe3f0', borderRadius: 12, overflow: 'hidden', elevation: 6, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8 },
+  mentionOption:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  mentionText:     { flex: 1, fontSize: 14, fontWeight: '700', color: '#111827' },
+  mentionRole:     { fontSize: 12, color: '#6b7280' },
+  mentionEmpty:    { padding: 12, color: '#6b7280', fontSize: 13 },
   alertBtn:        { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fef2f2', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#fecaca' },
   alertBtnTxt:     { fontSize: 20 },
   input:           { flex: 1, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 24, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: '#111827', backgroundColor: '#f9fafb', maxHeight: 120 },

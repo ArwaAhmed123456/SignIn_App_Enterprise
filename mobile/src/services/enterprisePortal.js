@@ -57,7 +57,7 @@ const normalizeVisit = (visit) => ({
   checked_in_by: visit?.checked_in_by || visit?.checkedInBy || '',
 });
 
-export const getVisits = async ({ siteId, status, limit = 200, search = '' }) => {
+export const getVisits = async ({ siteId, status, limit = 200, search = '', dateFrom = '', dateTo = '' }) => {
   if (!siteId) return [];
   const response = await api.get('/visits', {
     params: {
@@ -65,6 +65,8 @@ export const getVisits = async ({ siteId, status, limit = 200, search = '' }) =>
       status,
       limit,
       search: search || undefined,
+      date_from: dateFrom || undefined,
+      date_to: dateTo || undefined,
     },
   });
   const visits = response?.data?.visits || response?.data || [];

@@ -63,7 +63,7 @@ const PersonDetailsModal = ({ visible, onClose, person }) => {
             <View>
               <Text style={{ fontSize: 12, fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase' }}>Status</Text>
               <Text style={{ fontSize: 14, fontWeight: '600', color: person.sign_out_time ? '#ef4444' : '#16a34a', marginTop: 2 }}>
-                {person.sign_out_time ? 'Signed Out' : person.expected_date ? 'Expected (Pre-registered)' : 'On Site (Active)'}
+                {person.sign_out_time ? 'Signed Out' : person.expected_date ? 'Expected (Pre-Registered)' : 'On-Site (Active)'}
               </Text>
             </View>
             <View>
@@ -546,14 +546,14 @@ const SecurityGuardScreen = ({ navigation }) => {
       </View>
 
       <View style={s.actionCard}>
-        <Text style={s.actionTitle}>Visitor control</Text>
+        <Text style={s.actionTitle}>Visitor Control</Text>
         <Text style={s.actionSub}>Sign people in, sign them out, and record expected arrivals.</Text>
         <View style={s.actionButtons}>
           <TouchableOpacity onPress={() => setCheckInOpen(true)} style={s.primaryBtn}>
             <LogIn size={17} color="#fff" />
             <Text style={s.primaryBtnText}>Sign in</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('DeliveryForm')} style={s.secondaryBtn}>
+          <TouchableOpacity onPress={() => navigation.navigate('Deliveries', { siteId: selectedSite?.id })} style={s.secondaryBtn}>
             <Package size={17} color="#2b4594" />
             <Text style={s.secondaryBtnText}>Delivery</Text>
           </TouchableOpacity>
@@ -691,10 +691,10 @@ const SecurityGuardScreen = ({ navigation }) => {
 
         {activeTab === 'Expected' && (
           <>
-            <Text style={s.sectionTitle}>Expected visitors</Text>
+            <Text style={s.sectionTitle}>Expected Visitors</Text>
             {filteredExpected.length === 0 ? (
               <View style={s.emptyCard}>
-                <Text style={s.emptyText}>No expected visitors right now.</Text>
+                <Text style={s.emptyText}>No Expected Visitors Right Now.</Text>
               </View>
             ) : (
               filteredExpected.map((item) => (

@@ -187,13 +187,14 @@ router.get('/', verifyAdmin, async (req, res) => {
 
     if (group && group !== 'All') filter.userType = group;
     if (search) {
-      const compactSearch = String(search).replace(/\s+/g, '');
-      filter.$expr = {
-        $regexMatch: {
-          input: { $replaceAll: { input: { $toLower: { $ifNull: ['$name', ''] } }, find: ' ', replacement: '' } },
-          regex: compactSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase(),
-        },
-      };
+      const escaped = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Search the same fields visible in the mobile manager lists, including
+      // company/trade names (the previous implementation searched name only).
+      filter.$or = [
+        { name: new RegExp(escaped, 'i') },
+        { trade: new RegExp(escaped, 'i') },
+        { userType: new RegExp(escaped, 'i') },
+      ];
     }
 
     const logs    = await ActivityLog.find(filter).sort({ createdAt: -1 }).limit(500).lean();

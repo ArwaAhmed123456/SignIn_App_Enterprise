@@ -7,6 +7,7 @@ const deliverySchema = new mongoose.Schema({
   description: { type: String, default: '' },
   carRegistration: { type: String, default: '' },
   company: { type: String, default: '' },
+  receivedAt: { type: Date, default: Date.now },
   sender:    { type: String, default: '' },
   carrier:   { type: String, default: '' },
   notes:     { type: String, default: '' },

@@ -79,7 +79,10 @@ router.get('/', verifyAdmin, async (req,res) => {
     const filter = {}; if (sid) filter.siteId = sid;
     if (status && status !== 'All') filter.status = status;
     if (date_from || date_to) { filter.expectedDate={}; if(date_from) filter.expectedDate.$gte=new Date(`${date_from}T00:00:00`); if(date_to) filter.expectedDate.$lte=new Date(`${date_to}T23:59:59`); }
-    if (search) filter.name = new RegExp(search,'i');
+    if (search) {
+      const escaped = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      filter.$or = [{ name: new RegExp(escaped, 'i') }, { companyName: new RegExp(escaped, 'i') }];
+    }
     const items = await PreRegistration.find(filter).sort({expectedDate:1}).lean();
     res.json(items.map(fmt));
   } catch(err){ console.error(err); res.status(500).json({error:'Server error'}); }
