@@ -117,7 +117,8 @@ const sendPasswordResetEmail = async (email, projectName, resetToken) =>
   <div style="background:#f0f4ff;border:2px solid #2b4594;border-radius:10px;padding:24px;text-align:center;margin:24px 0;">
     <div style="font-size:38px;font-weight:900;color:#2b4594;letter-spacing:8px;font-family:'Courier New',monospace;">${resetToken}</div>
   </div>
-  <p style="color:#6b7280;font-size:13px;">Expires in 15 minutes.</p>
+  <p style="color:#374151;font-size:14px;line-height:1.5;">Return to the app, enter this 6-digit code, then choose and confirm a new password.</p>
+  <p style="color:#6b7280;font-size:13px;">This code expires in 15 minutes. Do not share it with anyone.</p>
 </div>`,
   });
 

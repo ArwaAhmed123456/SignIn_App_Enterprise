@@ -1,249 +1,37 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, ActivityIndicator,
-  Alert, KeyboardAvoidingView, ScrollView, Platform, StatusBar,
-} from 'react-native';
+import { Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Mail, ChevronLeft, CheckCircle } from 'lucide-react-native';
+import { CheckCircle, ChevronLeft, KeyRound, Lock, Mail } from 'lucide-react-native';
 import api from '../services/api';
 
-const ForgotPasswordScreen = ({ navigation }) => {
+export default function ForgotPasswordScreen({ navigation }) {
+  const [step, setStep] = useState('email');
   const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [emailFocused, setEmailFocused] = useState(false);
 
-  const handleResetPassword = async () => {
-    if (!email.trim()) {
-      Alert.alert('Email Required', 'Please enter your email address');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address');
-      return;
-    }
-
+  const sendCode = async () => {
+    const address = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) return Alert.alert('Enter a valid email', 'Please enter the email address for your account.');
     setLoading(true);
-    try {
-      await api.post('/auth/forgot-password', { email: email.trim().toLowerCase() });
-      setSuccess(true);
-    } catch (err) {
-      Alert.alert(
-        'Error',
-        err.response?.data?.error || 'Unable to send reset email. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
+    try { await api.post('/auth/forgot-password', { email: address }); setStep('reset'); }
+    catch (err) { Alert.alert('Unable to send code', err.response?.data?.error || 'Please try again.'); }
+    finally { setLoading(false); }
   };
-
-  if (success) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#f0f4ff' }}>
-        <StatusBar barStyle="dark-content" backgroundColor="#f0f4ff" />
-        <View style={{ height: 4, backgroundColor: '#2b4594', width: '100%' }} />
-        
-        <View style={{ flex: 1, paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            backgroundColor: '#dcfce7',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 24,
-          }}>
-            <CheckCircle size={48} color="#16a34a" />
-          </View>
-          
-          <Text style={{ fontSize: 24, fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: 12 }}>
-            Check your email
-          </Text>
-          
-          <Text style={{ fontSize: 15, color: '#64748b', textAlign: 'center', marginBottom: 32, lineHeight: 22 }}>
-            We've sent password reset instructions to{'\n'}
-            <Text style={{ fontWeight: '700', color: '#2b4594' }}>{email}</Text>
-          </Text>
-          
-          <Text style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', marginBottom: 32 }}>
-            If you don't see the email, check your spam folder or contact your site manager for assistance.
-          </Text>
-          
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{
-              backgroundColor: '#2b4594',
-              borderRadius: 16,
-              paddingVertical: 16,
-              paddingHorizontal: 32,
-              shadowColor: '#2b4594',
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.3,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: '800', fontSize: 16 }}>Back to Sign In</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f0f4ff' }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f0f4ff" />
-      <View style={{ height: 4, backgroundColor: '#2b4594', width: '100%' }} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 32 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Back Button */}
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-              marginBottom: 32,
-              alignSelf: 'flex-start',
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              backgroundColor: '#fff',
-              borderRadius: 50,
-              borderWidth: 1,
-              borderColor: '#e2e8f0',
-            }}
-          >
-            <ChevronLeft size={16} color="#64748b" />
-            <Text style={{ color: '#64748b', fontWeight: '600', fontSize: 13 }}>Back</Text>
-          </TouchableOpacity>
-
-          <View style={{ flex: 1 }}>
-            {/* Header */}
-            <View style={{ marginBottom: 36 }}>
-              <Text style={{ fontSize: 26, fontWeight: '900', color: '#0f172a', letterSpacing: -0.5, marginBottom: 8 }}>
-                Forgot Password?
-              </Text>
-              <Text style={{ fontSize: 14, color: '#64748b', fontWeight: '500', lineHeight: 20 }}>
-                Enter your email address and we'll send you instructions to reset your password.
-              </Text>
-            </View>
-
-            {/* Form Card */}
-            <View style={{
-              backgroundColor: '#fff',
-              borderRadius: 28,
-              padding: 28,
-              shadowColor: '#0f172a',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 24,
-              elevation: 6,
-              borderWidth: 1,
-              borderColor: '#e2e8f0',
-              marginBottom: 20,
-            }}>
-              {/* Email Field */}
-              <View style={{ marginBottom: 24 }}>
-                <Text style={{
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: '#64748b',
-                  textTransform: 'uppercase',
-                  letterSpacing: 1.2,
-                  marginBottom: 8,
-                  marginLeft: 2,
-                }}>
-                  Email Address
-                </Text>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  borderWidth: 2,
-                  borderColor: emailFocused ? '#2b4594' : '#e2e8f0',
-                  borderRadius: 14,
-                  backgroundColor: emailFocused ? '#f8fbff' : '#f8fafc',
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                }}>
-                  <Mail size={18} color={emailFocused ? '#2b4594' : '#94a3b8'} />
-                  <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    onFocus={() => setEmailFocused(true)}
-                    onBlur={() => setEmailFocused(false)}
-                    placeholder="guard@tripodsvcs.co.uk"
-                    placeholderTextColor="#c8d0dc"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    returnKeyType="send"
-                    onSubmitEditing={handleResetPassword}
-                    style={{
-                      flex: 1,
-                      marginLeft: 12,
-                      fontSize: 15,
-                      color: '#0f172a',
-                      fontWeight: '500',
-                    }}
-                  />
-                </View>
-              </View>
-
-              {/* Reset Button */}
-              <TouchableOpacity
-                onPress={handleResetPassword}
-                disabled={loading}
-                activeOpacity={0.85}
-                style={{
-                  backgroundColor: loading ? '#7a96cc' : '#2b4594',
-                  borderRadius: 16,
-                  paddingVertical: 18,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  shadowColor: '#2b4594',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.35,
-                  shadowRadius: 12,
-                  elevation: 8,
-                }}
-              >
-                {loading ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={{ color: 'white', fontWeight: '800', fontSize: 17 }}>
-                    Send Reset Instructions
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-
-            {/* Help Text */}
-            <View style={{
-              backgroundColor: '#eff6ff',
-              borderWidth: 1,
-              borderColor: '#bfdbfe',
-              borderRadius: 14,
-              padding: 16,
-            }}>
-              <Text style={{ color: '#1e40af', fontSize: 13, lineHeight: 18, textAlign: 'center' }}>
-                If you don't have access to your email, please contact your site manager for assistance.
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
-
-export default ForgotPasswordScreen;
+  const resetPassword = async () => {
+    if (!/^\d{6}$/.test(code)) return Alert.alert('Enter the 6-digit code', 'Use the code from the email we sent you.');
+    if (password.length < 8) return Alert.alert('Password too short', 'Your new password must be at least 8 characters.');
+    if (password !== confirmPassword) return Alert.alert('Passwords do not match', 'Enter the same new password in both fields.');
+    setLoading(true);
+    try { await api.post('/auth/reset-password', { token: code, newPassword: password }); setStep('complete'); }
+    catch (err) { Alert.alert('Could not reset password', err.response?.data?.error || 'The code may be invalid or expired.'); }
+    finally { setLoading(false); }
+  };
+  const field = (Icon, props) => <View style={s.field}><Icon size={18} color="#2b4594" /><TextInput style={s.input} placeholderTextColor="#94a3b8" {...props} /></View>;
+  if (step === 'complete') return <SafeAreaView style={s.page}><View style={s.complete}><CheckCircle size={56} color="#16a34a" /><Text style={s.title}>Password reset</Text><Text style={s.copy}>Your password has been changed. You can now sign in with the new password.</Text><TouchableOpacity style={s.button} onPress={() => navigation.goBack()}><Text style={s.buttonText}>Back to Sign In</Text></TouchableOpacity></View></SafeAreaView>;
+  const isReset = step === 'reset';
+  return <SafeAreaView style={s.page}><StatusBar barStyle="dark-content" /><KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled"><TouchableOpacity style={s.back} onPress={() => isReset ? setStep('email') : navigation.goBack()}><ChevronLeft size={17} color="#475569" /><Text style={s.backText}>Back</Text></TouchableOpacity><Text style={s.title}>{isReset ? 'Create a New Password' : 'Reset Your Password'}</Text><Text style={s.copy}>{isReset ? `Enter the 6-digit code sent to ${email}, then choose your new password.` : 'Enter your account email. We will send you a 6-digit verification code.'}</Text><View style={s.card}>{isReset ? <><Text style={s.label}>Verification Code</Text>{field(KeyRound, { value: code, onChangeText: (v) => setCode(v.replace(/\D/g, '').slice(0, 6)), placeholder: '6-digit code', keyboardType: 'number-pad', maxLength: 6, style: [s.input, s.code] })}<Text style={s.label}>New Password</Text>{field(Lock, { value: password, onChangeText: setPassword, placeholder: 'At least 8 characters', secureTextEntry: true })}<Text style={s.label}>Confirm New Password</Text>{field(Lock, { value: confirmPassword, onChangeText: setConfirmPassword, placeholder: 'Re-enter new password', secureTextEntry: true })}<TouchableOpacity disabled={loading} style={s.button} onPress={resetPassword}>{loading ? <ActivityIndicator color="#fff" /> : <Text style={s.buttonText}>Reset Password</Text>}</TouchableOpacity><TouchableOpacity disabled={loading} onPress={sendCode} style={s.link}><Text style={s.linkText}>Send a new code</Text></TouchableOpacity></> : <><Text style={s.label}>Email Address</Text>{field(Mail, { value: email, onChangeText: setEmail, placeholder: 'you@example.com', autoCapitalize: 'none', keyboardType: 'email-address', autoComplete: 'email' })}<TouchableOpacity disabled={loading} style={s.button} onPress={sendCode}>{loading ? <ActivityIndicator color="#fff" /> : <Text style={s.buttonText}>Send Verification Code</Text>}</TouchableOpacity></>}</View></ScrollView></KeyboardAvoidingView></SafeAreaView>;
+}
+const s = StyleSheet.create({ page:{flex:1,backgroundColor:'#f0f4ff'},flex:{flex:1},content:{padding:24,flexGrow:1},back:{flexDirection:'row',alignItems:'center',alignSelf:'flex-start',gap:4,paddingVertical:8,marginBottom:30},backText:{color:'#475569',fontWeight:'700'},title:{fontSize:27,fontWeight:'800',color:'#0f172a',marginBottom:10},copy:{fontSize:15,lineHeight:22,color:'#64748b',marginBottom:28},card:{backgroundColor:'#fff',borderRadius:20,padding:22,borderWidth:1,borderColor:'#e2e8f0'},label:{fontSize:13,fontWeight:'700',color:'#334155',marginBottom:7,marginTop:12},field:{height:52,borderWidth:1,borderColor:'#cbd5e1',borderRadius:12,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'#f8fafc'},input:{flex:1,marginLeft:10,fontSize:16,color:'#0f172a'},code:{letterSpacing:8,fontWeight:'800'},button:{backgroundColor:'#2b4594',borderRadius:13,alignItems:'center',paddingVertical:16,marginTop:26},buttonText:{color:'#fff',fontSize:16,fontWeight:'800'},link:{alignItems:'center',paddingTop:18},linkText:{color:'#2b4594',fontWeight:'700'},complete:{flex:1,alignItems:'center',justifyContent:'center',padding:28}, });

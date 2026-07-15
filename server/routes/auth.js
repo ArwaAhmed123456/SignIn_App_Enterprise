@@ -74,6 +74,10 @@ router.post('/login', async (req, res) => {
                 firstName:    admin.first_name    || '',
                 lastName:     admin.last_name     || '',
                 organization: admin.organization  || '',
+                // Mobile manager screens need this to load their assigned site
+                // when the projects list is restricted.
+                site_id:      admin.site_id ? String(admin.site_id) : null,
+                project_id:   admin.site_id ? String(admin.site_id) : null,
             }
         });
     } catch (err) {
@@ -151,7 +155,9 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(404).json({ error: 'No admin/manager account found for that email.' });
         }
 
-        const token   = crypto.randomBytes(20).toString('hex');
+        // A short numeric one-time code is readable and can be entered in the
+        // mobile reset form. The server still enforces the expiry below.
+        const token   = crypto.randomInt(100000, 1000000).toString();
         // Keep expiry aligned with the email template wording (15 minutes).
         const expires = new Date(Date.now() + 15 * 60 * 1000);
 

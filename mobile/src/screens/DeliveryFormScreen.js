@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { ArrowLeft, Package } from 'lucide-react-native';
+import { ArrowLeft, Calendar, Clock, Package } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -45,13 +45,13 @@ const DeliveryFormScreen = ({ navigation, route }) => {
       <Text style={s.label}>Company</Text><TextInput value={company} onChangeText={setCompany} style={s.input} placeholder="Company name" />
       <Text style={s.label}>Delivery Date and Time</Text>
       <View style={s.dateRow}>
-        <TouchableOpacity onPress={() => setPickerMode('date')} style={s.dateBtn}><Text style={s.dateBtnLabel}>Date</Text><Text style={s.dateBtnValue}>{receivedAt.toLocaleDateString('en-GB')}</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setPickerMode('time')} style={s.dateBtn}><Text style={s.dateBtnLabel}>Time</Text><Text style={s.dateBtnValue}>{receivedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => setPickerMode('date')} style={s.dateBtn}><Calendar size={18} color="#2b4594" /><Text style={s.dateBtnLabel}>Date</Text><Text style={s.dateBtnValue}>{receivedAt.toLocaleDateString('en-GB')}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => setPickerMode('time')} style={s.dateBtn}><Clock size={18} color="#2b4594" /><Text style={s.dateBtnLabel}>Time</Text><Text style={s.dateBtnValue}>{receivedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</Text></TouchableOpacity>
       </View>
       {pickerMode ? <DateTimePicker value={receivedAt} mode={pickerMode} is24Hour display="default" onChange={(event, value) => { setPickerMode(null); if (value) setReceivedAt(value); }} /> : null}
       <TouchableOpacity onPress={save} style={s.button} disabled={saving}>{saving ? <ActivityIndicator color="#fff" /> : <Text style={s.buttonText}>Record delivery</Text>}</TouchableOpacity>
     </ScrollView>
   </SafeAreaView>;
 };
-const s = StyleSheet.create({ container:{flex:1,backgroundColor:'#f9fafb'}, header:{flexDirection:'row',alignItems:'center',gap:12,padding:18,backgroundColor:'#fff',borderBottomWidth:1,borderColor:'#e5e7eb'}, title:{fontSize:18,fontWeight:'700',color:'#111827'}, form:{padding:20}, intro:{fontSize:14,color:'#6b7280',marginBottom:22}, label:{fontSize:14,fontWeight:'600',color:'#374151',marginBottom:7}, input:{backgroundColor:'#fff',borderWidth:1,borderColor:'#e5e7eb',borderRadius:12,padding:13,fontSize:15,marginBottom:16}, description:{minHeight:90,textAlignVertical:'top'}, dateRow:{flexDirection:'row',gap:10,marginBottom:16},dateBtn:{flex:1,backgroundColor:'#fff',borderWidth:1,borderColor:'#e5e7eb',borderRadius:12,padding:12},dateBtnLabel:{fontSize:12,color:'#64748b',marginBottom:4},dateBtnValue:{fontSize:15,fontWeight:'700',color:'#111827'}, button:{backgroundColor:'#2b4594',padding:16,borderRadius:14,alignItems:'center',marginTop:8}, buttonText:{color:'#fff',fontSize:16,fontWeight:'700'} });
+const s = StyleSheet.create({ container:{flex:1,backgroundColor:'#f9fafb'}, header:{flexDirection:'row',alignItems:'center',gap:12,padding:18,backgroundColor:'#fff',borderBottomWidth:1,borderColor:'#e5e7eb'}, title:{fontSize:18,fontWeight:'700',color:'#111827'}, form:{padding:20}, intro:{fontSize:14,color:'#6b7280',marginBottom:22}, label:{fontSize:14,fontWeight:'600',color:'#374151',marginBottom:7}, input:{backgroundColor:'#fff',borderWidth:1,borderColor:'#e5e7eb',borderRadius:12,padding:13,fontSize:15,marginBottom:16}, description:{minHeight:90,textAlignVertical:'top'}, dateRow:{flexDirection:'row',gap:10,marginBottom:16},dateBtn:{flex:1,backgroundColor:'#fff',borderWidth:1,borderColor:'#cbd5e1',borderRadius:12,padding:12},dateBtnLabel:{fontSize:12,color:'#2b4594',fontWeight:'700',marginTop:6,marginBottom:4},dateBtnValue:{fontSize:15,fontWeight:'700',color:'#111827'}, button:{backgroundColor:'#2b4594',padding:16,borderRadius:14,alignItems:'center',marginTop:8}, buttonText:{color:'#fff',fontSize:16,fontWeight:'700'} });
 export default DeliveryFormScreen;

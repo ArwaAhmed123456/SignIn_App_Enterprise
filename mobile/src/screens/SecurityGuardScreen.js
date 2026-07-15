@@ -516,7 +516,7 @@ const SecurityGuardScreen = ({ navigation }) => {
             <ShieldCheck size={20} color="#fff" />
           </View>
           <View>
-            <Text style={s.headerTitle}>Security portal</Text>
+            <Text style={s.headerTitle}>Security Portal</Text>
             <Text style={s.headerSub}>{guardName}</Text>
           </View>
         </View>

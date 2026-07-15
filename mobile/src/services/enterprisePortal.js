@@ -21,7 +21,7 @@ export const getStoredUser = async () => {
 
 export const getAccessibleSites = async (preferredSiteId) => {
   const storedUser = await getStoredUser();
-  const resolvedSiteId = preferredSiteId || storedUser?.project_id;
+  const resolvedSiteId = preferredSiteId || storedUser?.project_id || storedUser?.site_id;
 
   // Strategy 1: Try fetching the full projects list first (works for guards/managers with multiple sites)
   try {

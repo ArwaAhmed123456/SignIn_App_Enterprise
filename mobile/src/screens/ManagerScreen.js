@@ -216,7 +216,7 @@ const ManagerScreen = ({ navigation }) => {
 
   const load = useCallback(async () => {
     try {
-      const siteList = await getAccessibleSites(user?.project_id);
+      const siteList = await getAccessibleSites(user?.project_id || user?.site_id);
       setSites(siteList);
 
       let resolvedSite = selectedSite;
@@ -705,14 +705,14 @@ const ManagerScreen = ({ navigation }) => {
             {visibleDeliveries.length === 0 ? (
               <View style={s.emptyCard}><Text style={s.emptyText}>No deliveries found for this site.</Text></View>
             ) : visibleDeliveries.map((delivery) => (
-              <View key={delivery._id || delivery.id} style={s.visitCard}>
+              <TouchableOpacity key={delivery._id || delivery.id} style={s.visitCard} onPress={() => navigation.navigate('Deliveries', { siteId: selectedSite?.id, deliveryId: delivery._id || delivery.id })} activeOpacity={0.75}>
                 <View style={[s.visitAvatar, { backgroundColor: '#fff7ed' }]}><Package size={20} color="#c2410c" /></View>
                 <View style={s.visitMeta}>
                   <Text style={s.visitName}>{delivery.itemName || delivery.recipient || 'Delivery'}</Text>
                   <Text style={s.visitSub}>For {delivery.recipient || 'site reception'}{delivery.carrier ? ` · ${delivery.carrier}` : ''}</Text>
                   <Text style={s.visitNote}>{delivery.collected ? 'Collected' : 'Awaiting collection'}</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </>
         )}
