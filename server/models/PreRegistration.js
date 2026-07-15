@@ -11,6 +11,7 @@ const preRegistrationSchema = new mongoose.Schema({
   email:          { type: String },
   phone:          { type: String },
   notes:          { type: String },
+  companyName:    { type: String, default: '' },
   expectedDate:   { type: Date },
   status:         { type: String, enum: ['Pending','Arrived','Cancelled'], default: 'Pending' },
 }, { timestamps: true });

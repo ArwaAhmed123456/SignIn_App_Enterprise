@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const deliverySchema = new mongoose.Schema({
   siteId:    { type: mongoose.Schema.Types.ObjectId, ref: 'Site', required: true },
   recipient: { type: String, required: true },
+  itemName: { type: String, default: '' },
+  description: { type: String, default: '' },
+  carRegistration: { type: String, default: '' },
+  company: { type: String, default: '' },
   sender:    { type: String, default: '' },
   carrier:   { type: String, default: '' },
   notes:     { type: String, default: '' },

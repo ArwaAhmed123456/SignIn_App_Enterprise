@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, UserPlus, X, Bell } from 'lucide-react-native';
+import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, X, Bell, Package } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
@@ -29,7 +29,7 @@ import {
   signOutVisit,
 } from '../services/enterprisePortal';
 
-const TABS = ['On Site', 'Signed Out', 'Pre-register'];
+const TABS = ['On Site', 'Signed Out', 'Expected'];
 
 const fmtDetailDate = (val) => {
   if (!val) return '—';
@@ -121,12 +121,16 @@ const CheckInModal = ({
   const [name, setName] = useState('');
   const [group, setGroup] = useState(defaultGroup || visitorGroups?.[0]?.name || 'Visitor');
   const [notes, setNotes] = useState('');
+  const [carRegistration, setCarRegistration] = useState('');
+  const [companyName, setCompanyName] = useState('');
 
   useEffect(() => {
     if (visible) {
       setName('');
       setNotes('');
-      setGroup(defaultGroup || visitorGroups?.[0]?.name || 'Visitor');
+      setCarRegistration('');
+      setCompanyName('');
+      setGroup(defaultGroup || 'Visitor');
     }
   }, [visible, defaultGroup, visitorGroups]);
 
@@ -134,7 +138,7 @@ const CheckInModal = ({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={s.modalOverlay}>
         <View style={s.modalCard}>
-          <Text style={s.modalTitle}>Sign in visitor or staff</Text>
+          <Text style={s.modalTitle}>Sign in person</Text>
           <Text style={s.modalBody}>Enter the person’s name, choose their group, then sign them in.</Text>
 
           <TextInput
@@ -146,12 +150,11 @@ const CheckInModal = ({
           />
 
           <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} style={s.groupPicker}>
-            {visitorGroups.map((item) => {
-              const groupName = item?.name || 'Visitor';
+            {['Visitor', 'Worker', 'Contractor'].map((groupName) => {
               const active = group === groupName;
               return (
                 <TouchableOpacity
-                  key={item.id || groupName}
+                  key={groupName}
                   onPress={() => setGroup(groupName)}
                   style={[s.groupChip, active && s.groupChipActive]}
                 >
@@ -160,6 +163,9 @@ const CheckInModal = ({
               );
             })}
           </ScrollView>
+
+          <TextInput value={carRegistration} onChangeText={setCarRegistration} placeholder="Car registration number" placeholderTextColor="#9ca3af" style={s.input} autoCapitalize="characters" />
+          <TextInput value={companyName} onChangeText={setCompanyName} placeholder="Company name" placeholderTextColor="#9ca3af" style={s.input} />
 
           <TextInput
             value={notes}
@@ -180,7 +186,7 @@ const CheckInModal = ({
                   Alert.alert('Name required', 'Please enter the visitor or staff name.');
                   return;
                 }
-                onSubmit({ name: name.trim(), group, notes: notes.trim() });
+                onSubmit({ name: name.trim(), group, notes: notes.trim(), carRegistration: carRegistration.trim(), companyName: companyName.trim() });
               }}
               disabled={loading}
               style={s.modalConfirmBtn}
@@ -212,6 +218,9 @@ const SecurityGuardScreen = ({ navigation }) => {
   const [signOutTarget, setSignOutTarget] = useState(null);
   const [signingOutVisitor, setSigningOutVisitor] = useState(false);
   const [arrivingId, setArrivingId] = useState(null);
+  const [arrivalTarget, setArrivalTarget] = useState(null);
+  const [arrivalCarRegistration, setArrivalCarRegistration] = useState('');
+  const [arrivalCompanyName, setArrivalCompanyName] = useState('');
   const [exporting, setExporting] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
 
@@ -349,17 +358,17 @@ const SecurityGuardScreen = ({ navigation }) => {
       const title = `Security Report — ${siteName} — ${tabName}`;
       const filenameBase = `${siteName}-${tabName}-${dateStr}`;
 
-      const headers = activeTab === 'Pre-register'
-        ? ['Name', 'Expected', 'Notes']
-        : ['Name', 'Group', 'Sign In', 'Sign Out'];
+      const headers = ['Name', 'Role', 'Sign In', 'Sign Out', 'Car Registration', 'Company', 'Expected Arrival', 'Description'];
 
       const rows = list.map(item => ({
         Name:      item.name || '',
-        Group:     item.group || '',
+        Role:      item.group || item.visitor_group_name || '',
         'Sign In': fmtExportTime(item.sign_in_time),
         'Sign Out':fmtExportTime(item.sign_out_time),
-        Expected:  fmtExportTime(item.expected_date),
-        Notes:     item.notes || '',
+        'Car Registration': item.car_reg || '',
+        Company: item.trade || item.company_name || '',
+        'Expected Arrival': fmtExportTime(item.expected_date),
+        Description: item.notes || '',
       }));
 
       if (format === 'excel') {
@@ -374,7 +383,7 @@ const SecurityGuardScreen = ({ navigation }) => {
     }
   };
 
-  const handleCheckIn = async ({ name, group, notes }) => {
+  const handleCheckIn = async ({ name, group, notes, carRegistration, companyName }) => {
     if (!selectedSite?.id) {
       Alert.alert('Site required', 'Please select a site before signing someone in.');
       return;
@@ -387,6 +396,8 @@ const SecurityGuardScreen = ({ navigation }) => {
         name,
         group,
         notes,
+        carRegistration,
+        companyName,
       });
       setCheckInOpen(false);
       await loadSiteData(selectedSite.id);
@@ -413,10 +424,17 @@ const SecurityGuardScreen = ({ navigation }) => {
   };
 
   const handleArrive = async (item) => {
+    setArrivalTarget(item);
+    setArrivalCarRegistration('');
+    setArrivalCompanyName(item?.company_name || '');
+  };
+
+  const completeArrival = async () => {
+    const item = arrivalTarget;
     if (!item?.id) return;
     setArrivingId(item.id);
     try {
-      await markPreRegisteredArrival(item.id);
+      await markPreRegisteredArrival(item.id, { carRegistration: arrivalCarRegistration, companyName: arrivalCompanyName });
 
       // Auto-notify manager about arrival in chat without high-priority red alert icons
       try {
@@ -431,6 +449,7 @@ const SecurityGuardScreen = ({ navigation }) => {
 
       await loadSiteData(selectedSite?.id);
       setActiveTab('On Site');
+      setArrivalTarget(null);
     } catch (error) {
       Alert.alert('Arrival failed', error?.response?.data?.error || 'Could not mark this visitor as arrived.');
     } finally {
@@ -468,8 +487,9 @@ const SecurityGuardScreen = ({ navigation }) => {
     (items) =>
       items.filter((item) => {
         if (!search.trim()) return true;
-        const value = `${item?.name || ''} ${item?.group || ''}`.toLowerCase();
-        return value.includes(search.trim().toLowerCase());
+        const query = search.replace(/\s+/g, '').toLowerCase();
+        const value = `${item?.name || ''}${item?.group || ''}${item?.trade || ''}${item?.company_name || ''}`.replace(/\s+/g, '').toLowerCase();
+        return value.includes(query);
       }),
     [search],
   );
@@ -527,18 +547,15 @@ const SecurityGuardScreen = ({ navigation }) => {
 
       <View style={s.actionCard}>
         <Text style={s.actionTitle}>Visitor control</Text>
-        <Text style={s.actionSub}>Sign in visitors or staff, sign them out later, and pre-register arrivals.</Text>
+        <Text style={s.actionSub}>Sign people in, sign them out, and record expected arrivals.</Text>
         <View style={s.actionButtons}>
           <TouchableOpacity onPress={() => setCheckInOpen(true)} style={s.primaryBtn}>
             <LogIn size={17} color="#fff" />
             <Text style={s.primaryBtnText}>Sign in</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name })}
-            style={s.secondaryBtn}
-          >
-            <UserPlus size={17} color="#2b4594" />
-            <Text style={s.secondaryBtnText}>Pre-register</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('DeliveryForm')} style={s.secondaryBtn}>
+            <Package size={17} color="#2b4594" />
+            <Text style={s.secondaryBtnText}>Delivery</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -603,7 +620,7 @@ const SecurityGuardScreen = ({ navigation }) => {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Search by name or group"
+          placeholder="Search by name, company or role"
           placeholderTextColor="#9ca3af"
           style={s.searchInput}
         />
@@ -672,17 +689,9 @@ const SecurityGuardScreen = ({ navigation }) => {
           </>
         )}
 
-        {activeTab === 'Pre-register' && (
+        {activeTab === 'Expected' && (
           <>
             <Text style={s.sectionTitle}>Expected visitors</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name })}
-              style={s.addPreregBtn}
-            >
-              <UserPlus size={18} color="#fff" />
-              <Text style={s.addPreregTxt}>Create pre-registration</Text>
-            </TouchableOpacity>
-
             {filteredExpected.length === 0 ? (
               <View style={s.emptyCard}>
                 <Text style={s.emptyText}>No expected visitors right now.</Text>
@@ -727,6 +736,21 @@ const SecurityGuardScreen = ({ navigation }) => {
         loading={submittingCheckIn}
         visitorGroups={visitorGroups.length ? visitorGroups : [{ id: 'visitor', name: 'Visitor' }]}
       />
+
+      <Modal visible={Boolean(arrivalTarget)} transparent animationType="fade" onRequestClose={() => setArrivalTarget(null)}>
+        <View style={s.modalOverlay}>
+          <View style={s.modalCard}>
+            <Text style={s.modalTitle}>Record arrival</Text>
+            <Text style={s.modalBody}>Add the car registration and company details, then notify the manager.</Text>
+            <TextInput value={arrivalCarRegistration} onChangeText={setArrivalCarRegistration} placeholder="Car registration number" placeholderTextColor="#9ca3af" style={s.input} autoCapitalize="characters" />
+            <TextInput value={arrivalCompanyName} onChangeText={setArrivalCompanyName} placeholder="Company name" placeholderTextColor="#9ca3af" style={s.input} />
+            <View style={s.modalBtns}>
+              <TouchableOpacity onPress={() => setArrivalTarget(null)} style={s.modalCancelBtn}><Text style={s.modalCancelTxt}>Cancel</Text></TouchableOpacity>
+              <TouchableOpacity onPress={completeArrival} disabled={arrivingId === arrivalTarget?.id} style={s.modalConfirmBtn}>{arrivingId === arrivalTarget?.id ? <ActivityIndicator size="small" color="#fff" /> : <Text style={s.modalConfirmTxt}>Arrived</Text>}</TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={Boolean(signOutTarget)} transparent animationType="fade" onRequestClose={() => setSignOutTarget(null)}>
         <View style={s.modalOverlay}>

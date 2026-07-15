@@ -47,8 +47,8 @@ router.get('/', verifyToken, async (req, res) => {
 
 // ── POST /api/deliveries ─────────────────────────────────────────────
 router.post('/', verifyToken, async (req, res) => {
-  const { site_id, recipient, sender, carrier, notes } = req.body;
-  if (!recipient) return res.status(400).json({ error: 'recipient is required' });
+  const { site_id, recipient, sender, carrier, notes, item_name, description, car_registration, company } = req.body;
+  if (!recipient && !item_name) return res.status(400).json({ error: 'item_name is required' });
   try {
     let siteId = site_id;
     if (!siteId) {
@@ -56,7 +56,13 @@ router.post('/', verifyToken, async (req, res) => {
       siteId = s?._id;
     }
     if (!siteId) return res.status(400).json({ error: 'No site found' });
-    const delivery = await Delivery.create({ siteId, recipient, sender: sender || '', carrier: carrier || '', notes: notes || '' });
+    const delivery = await Delivery.create({
+      siteId,
+      recipient: recipient || item_name,
+      sender: sender || '', carrier: carrier || '', notes: notes || description || '',
+      itemName: item_name || '', description: description || '',
+      carRegistration: car_registration || '', company: company || '',
+    });
     res.status(201).json({ success: true, delivery });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });

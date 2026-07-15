@@ -3,8 +3,7 @@ import api from './api';
 
 const defaultGroups = [
   { id: 'visitor', name: 'Visitor' },
-  { id: 'employee', name: 'Employee' },
-  { id: 'delivery', name: 'Delivery' },
+  { id: 'worker', name: 'Worker' },
   { id: 'contractor', name: 'Contractor' },
 ];
 
@@ -126,12 +125,14 @@ export const getVisitorGroups = async (siteId) => {
   }
 };
 
-export const signInVisitor = async ({ siteId, name, group, notes }) => {
+export const signInVisitor = async ({ siteId, name, group, notes, carRegistration, companyName }) => {
   const response = await api.post('/visits', {
     site_id: siteId,
     name,
     group,
     notes,
+    car_reg: carRegistration || undefined,
+    company_name: companyName || undefined,
   });
   return response?.data;
 };
@@ -141,8 +142,11 @@ export const signOutVisit = async (visitId) => {
   return response?.data;
 };
 
-export const markPreRegisteredArrival = async (preRegistrationId) => {
-  const response = await api.post(`/pre-registrations/${preRegistrationId}/arrive`);
+export const markPreRegisteredArrival = async (preRegistrationId, { carRegistration, companyName } = {}) => {
+  const response = await api.post(`/pre-registrations/${preRegistrationId}/arrive`, {
+    car_registration: carRegistration || undefined,
+    company_name: companyName || undefined,
+  });
   return response?.data;
 };
 
@@ -152,6 +156,7 @@ export const createPreRegistration = async ({
   email,
   phone,
   notes,
+  companyName,
   expectedDate,
   visitorGroupId,
   visitorGroupName,
@@ -163,6 +168,7 @@ export const createPreRegistration = async ({
     email: email || undefined,
     phone: phone || undefined,
     notes: notes || undefined,
+    company_name: companyName || undefined,
     expected_date: expectedDate,
     // Send both: API will accept either a real VisitorGroup ObjectId or a label.
     visitor_group_id: visitorGroupId || undefined,

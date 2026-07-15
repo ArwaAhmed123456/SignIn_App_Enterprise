@@ -186,7 +186,15 @@ router.get('/', verifyAdmin, async (req, res) => {
     if (status === 'Out') filter.timeOut = { $exists: true, $nin: [null, ''] };
 
     if (group && group !== 'All') filter.userType = group;
-    if (search) filter.name = new RegExp(search, 'i');
+    if (search) {
+      const compactSearch = String(search).replace(/\s+/g, '');
+      filter.$expr = {
+        $regexMatch: {
+          input: { $replaceAll: { input: { $toLower: { $ifNull: ['$name', ''] } }, find: ' ', replacement: '' } },
+          regex: compactSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase(),
+        },
+      };
+    }
 
     const logs    = await ActivityLog.find(filter).sort({ createdAt: -1 }).limit(500).lean();
     const siteMap = await buildSiteMap(logs);
@@ -199,7 +207,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 
 // ─── POST /api/visits ─────────────────────────────────────────────────────────
 router.post('/', async (req, res) => {
-  const { site_id, member_id, name, group, trade, car_reg, reason, notes } = req.body;
+  const { site_id, member_id, name, group, trade, car_reg, company_name, reason, notes } = req.body;
   if (!name && !member_id) return res.status(400).json({ error: 'name or member_id is required' });
   try {
     const sid = await resolveFirst(site_id);
@@ -214,7 +222,7 @@ router.post('/', async (req, res) => {
     }
     const log = await ActivityLog.create({
       siteId: sid, memberId: member_id || null, name: displayName,
-      userType: group || 'Visitor', trade: trade || '', carReg: car_reg || '',
+      userType: group || 'Visitor', trade: company_name || trade || '', carReg: car_reg || '',
       reason: reason || notes || '', date: dateStr, timeIn: nowStr(), checkIn: now,
     });
 

@@ -43,6 +43,7 @@ const verifyStrictAdmin = (req, res, next) => {
 
 const fmt = (p) => ({
   id: p._id, name: p.name, email: p.email, phone: p.phone, notes: p.notes,
+  company_name: p.companyName || '',
   expected_date: p.expectedDate,
   site_id: p.siteId,
   visitor_group_id: p.visitorGroupId,
@@ -85,7 +86,8 @@ router.get('/', verifyAdmin, async (req,res) => {
 });
 
 router.post('/', verifyAdmin, async (req,res) => {
-  const { site_id, name, email, phone, notes, expected_date, visitor_group_id, visitor_group_name, member_id, send_invitation } = req.body;
+  if (req.user.role === 'guard') return res.status(403).json({ error: 'Only managers can create pre-registrations' });
+  const { site_id, name, email, phone, notes, company_name, expected_date, visitor_group_id, visitor_group_name, member_id, send_invitation } = req.body;
   if (!name) return res.status(400).json({error:'name is required'});
   try {
     const sid = await resolveFirst(site_id);
@@ -103,6 +105,7 @@ router.post('/', verifyAdmin, async (req,res) => {
       email: email || null,
       phone: phone || null,
       notes: notes || null,
+      companyName: company_name || '',
       expectedDate: expected,
       visitorGroupId: group.visitorGroupId || null,
       visitorGroupName: group.visitorGroupName || undefined,
@@ -131,12 +134,14 @@ router.post('/', verifyAdmin, async (req,res) => {
 });
 
 router.put('/:id', verifyAdmin, async (req,res) => {
-  const { name, email, phone, notes, expected_date, visitor_group_id, visitor_group_name, status } = req.body;
+  if (req.user.role === 'guard') return res.status(403).json({ error: 'Guards cannot edit pre-registrations' });
+  const { name, email, phone, notes, company_name, expected_date, visitor_group_id, visitor_group_name, status } = req.body;
   const u={};
   if(name!==undefined)            u.name=name;
   if(email!==undefined)           u.email=email;
   if(phone!==undefined)           u.phone=phone;
   if(notes!==undefined)           u.notes=notes;
+  if(company_name!==undefined)    u.companyName=company_name;
   if(expected_date!==undefined)   u.expectedDate=expected_date?new Date(expected_date):null;
   if (expected_date !== undefined && expected_date && Number.isNaN(u.expectedDate?.getTime?.())) {
     return res.status(400).json({ error: 'Invalid expected_date' });
@@ -177,6 +182,7 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
     const isGuard = req.user && ['guard', 'security'].includes(req.user.role);
     const guardName = req.user ? (req.user.name || req.user.firstName || 'Guard') : 'Guard';
     
+    const { car_registration, company_name } = req.body;
     const log = await ActivityLog.create({
       siteId: prereg.siteId,
       memberId: prereg.memberId||null,
@@ -186,6 +192,8 @@ router.post('/:id/arrive', verifyAdmin, async (req,res) => {
       timeIn: timeStr,
       checkIn: now,
       reason: prereg.notes||'',
+      trade: company_name || prereg.companyName || '',
+      carReg: car_registration || '',
       preRegistered: true,
       checkedInByGuard: isGuard,
       checkedInBy: isGuard ? guardName : undefined

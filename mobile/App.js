@@ -19,6 +19,7 @@ import InviteCodeScreen   from './src/screens/InviteCodeScreen';
 import SignInFlowScreen   from './src/screens/SignInFlowScreen';
 import PreregisterScreen  from './src/screens/PreregisterScreen';
 import MessagesScreen     from './src/screens/MessagesScreen';
+import DeliveryFormScreen from './src/screens/DeliveryFormScreen';
 
 // Role-specific screens
 import ManagerScreen       from './src/screens/ManagerScreen';
@@ -128,6 +129,7 @@ const Navigation = () => {
             <Stack.Screen name="QRCode"      component={QRCodeScreen}      options={{ presentation: 'modal' }} />
             <Stack.Screen name="SignInFlow"  component={SignInFlowScreen}  options={{ presentation: 'modal' }} />
             <Stack.Screen name="Preregister" component={PreregisterScreen} options={{ presentation: 'modal' }} />
+            <Stack.Screen name="DeliveryForm" component={DeliveryFormScreen} options={{ presentation: 'modal' }} />
             <Stack.Screen name="Messages"    component={MessagesScreen}    options={{ presentation: 'modal' }} />
           </>
         ) : (

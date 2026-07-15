@@ -7,11 +7,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut } from 'lucide-react-native';
+import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut, UserPlus, Search } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import * as FileSystem from 'expo-file-system';
@@ -162,6 +163,7 @@ const ManagerScreen = ({ navigation }) => {
   const [updatingApproval, setUpdatingApproval] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [search, setSearch] = useState('');
 
   const managerName = user?.name || user?.firstName || 'Manager';
 
@@ -289,9 +291,11 @@ const ManagerScreen = ({ navigation }) => {
   };
 
   const handleExport = async (format) => {
-    const list = activeTab === 'On Site' ? onSite
+    const unfilteredList = activeTab === 'On Site' ? onSite
       : activeTab === 'Signed Out' ? signedOut
       : expected;
+    const query = search.replace(/\s+/g, '').toLowerCase();
+    const list = unfilteredList.filter((item) => !query || `${item.name || ''}${item.group || ''}${item.trade || ''}${item.company_name || ''}`.replace(/\s+/g, '').toLowerCase().includes(query));
 
     if (!list.length) {
       Alert.alert('Nothing to export', 'No records available for this tab.');
@@ -304,15 +308,16 @@ const ManagerScreen = ({ navigation }) => {
       const title = `Manager Report — ${siteName} — ${activeTab}`;
       const filenameBase = `${siteName}-${activeTab}-${dateStr}`;
 
-      const headers = activeTab === 'Notifications'
-        ? ['Name', 'Group', 'Sign In', 'Checked in by']
-        : ['Name', 'Group', 'Sign In', 'Sign Out'];
+      const headers = ['Name', 'Role', 'Sign In', 'Sign Out', 'Car Registration', 'Company', 'Description', 'Checked in by'];
 
       const rows = list.map(item => ({
         Name:           item.name || '',
-        Group:          item.group || '',
+        Role:           item.group || '',
         'Sign In':      fmtExportTime(item.sign_in_time || item.expected_date),
         'Sign Out':     fmtExportTime(item.sign_out_time),
+        'Car Registration': item.car_reg || '',
+        Company: item.trade || item.company_name || '',
+        Description: item.reason || item.notes || '',
         'Checked in by': item.checked_in_by || '',
       }));
 
@@ -389,6 +394,9 @@ const ManagerScreen = ({ navigation }) => {
           <TouchableOpacity onPress={handleLogout} style={[s.notifBtn, { marginRight: 8 }]}>
             <LogOut size={20} color="#ef4444" />
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name })} style={[s.notifBtn, { marginRight: 8 }]}>
+            <UserPlus size={20} color="#2b4594" />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => Alert.alert(
               'Export',
@@ -458,6 +466,12 @@ const ManagerScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      <View style={s.managerSearchRow}>
+        <Search size={16} color="#9ca3af" />
+        <TextInput value={search} onChangeText={setSearch} placeholder="Search by name, company or role" placeholderTextColor="#9ca3af" style={s.managerSearchInput} />
+        {search ? <TouchableOpacity onPress={() => setSearch('')}><X size={16} color="#9ca3af" /></TouchableOpacity> : null}
+      </View>
 
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
@@ -837,6 +851,8 @@ const s = StyleSheet.create({
   siteOptionTxtActive: { color: '#2b4594', fontWeight: '700' },
   tabBar: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6', height: 48, flexGrow: 0 },
   tabBarContent: { paddingHorizontal: 12, alignItems: 'center' },
+  managerSearchRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' },
+  managerSearchInput: { flex: 1, fontSize: 15, color: '#111827' },
   tab: { paddingHorizontal: 16, height: '100%', justifyContent: 'center', alignItems: 'center', marginRight: 4 },
   tabActive: { borderBottomWidth: 2, borderBottomColor: '#2b4594' },
   tabText: { fontSize: 14, fontWeight: '500', color: '#6b7280' },

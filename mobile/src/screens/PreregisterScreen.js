@@ -95,6 +95,7 @@ const PreregisterScreen = ({ navigation, route }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [companyName, setCompanyName] = useState('');
   // Date/time stored as JS Date objects for the picker
   const [arrivalDateObj, setArrivalDateObj] = useState(() => {
     const d = new Date();
@@ -165,6 +166,12 @@ const PreregisterScreen = ({ navigation, route }) => {
   );
 
   const handleSubmit = async () => {
+    const role = String(user?.mobileRole || user?.role || '').toLowerCase();
+    if (role.includes('guard') || role.includes('security')) {
+      Alert.alert('Manager access required', 'Only managers can create pre-registrations.');
+      navigation.goBack();
+      return;
+    }
     if (!selectedSiteId) {
       Alert.alert('Site required', 'Please select a site.');
       return;
@@ -188,6 +195,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         email: email.trim(),
         phone: phone.trim(),
         notes: notes.trim(),
+        companyName: companyName.trim(),
         expectedDate: `${arrivalDate}T${arrivalTime}`,
         visitorGroupId: selectedGroupId,
         visitorGroupName: selectedGroup?.name || undefined,
@@ -203,7 +211,7 @@ const PreregisterScreen = ({ navigation, route }) => {
             // don't interpret this as "visitor is at the door".
             text: `📝 Pre-registered (not arrived yet): ${name.trim()}`,
             site_id: siteId,
-            type: 'message',
+            type: 'notification',
           });
         }
       } catch (msgErr) {
@@ -247,7 +255,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
           <ArrowLeft size={22} color="#111827" />
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Pre-register visitor</Text>
+        <Text style={s.headerTitle}>Pre-register person</Text>
         <View style={s.backBtn} />
       </View>
 
@@ -279,7 +287,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         </View>
 
         <View style={s.inputGroup}>
-          <Text style={s.label}>Group</Text>
+          <Text style={s.label}>Role</Text>
           <TouchableOpacity onPress={() => setGroupOpen((value) => !value)} style={s.selector}>
             <Text style={s.selectorText}>{selectedGroup?.name || 'Select group'}</Text>
             <ChevronDown size={16} color="#6b7280" />
@@ -304,7 +312,12 @@ const PreregisterScreen = ({ navigation, route }) => {
 
         <View style={s.inputGroup}>
           <Text style={s.label}>Full name</Text>
-          <TextInput value={name} onChangeText={setName} style={s.input} placeholder="Visitor name" placeholderTextColor="#9ca3af" />
+          <TextInput value={name} onChangeText={setName} style={s.input} placeholder="Full name" placeholderTextColor="#9ca3af" />
+        </View>
+
+        <View style={s.inputGroup}>
+          <Text style={s.label}>Company name</Text>
+          <TextInput value={companyName} onChangeText={setCompanyName} style={s.input} placeholder="Company name" placeholderTextColor="#9ca3af" />
         </View>
 
         <View style={s.inputGroup}>
@@ -373,13 +386,13 @@ const PreregisterScreen = ({ navigation, route }) => {
         </View>
 
         <View style={s.inputGroup}>
-          <Text style={s.label}>Notes</Text>
+          <Text style={s.label}>Description</Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
             style={[s.input, s.notesInput]}
             multiline
-            placeholder="Reason for visit, host, or any instructions"
+            placeholder="Reason for visit or any instructions"
             placeholderTextColor="#9ca3af"
           />
         </View>
