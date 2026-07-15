@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.haalim.tripodservices",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.1",
       "infoPlist": {
         "NSCameraUsageDescription": "Camera is used to take your visitor photo for identity verification on site.",
         "NSMicrophoneUsageDescription": "Microphone access for voice features.",
