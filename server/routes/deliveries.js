@@ -46,9 +46,12 @@ router.get('/', verifyToken, async (req, res) => {
       if (date_to) filter.receivedAt.$lte = new Date(`${date_to}T23:59:59.999`);
     }
     if (search?.trim()) {
-      const escaped = String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const match = new RegExp(escaped, 'i');
-      filter.$or = [{ itemName: match }, { recipient: match }, { company: match }, { sender: match }, { carrier: match }];
+      const clean = String(search).trim().replace(/\s+/g, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (clean.length > 0) {
+        const regexStr = clean.split('').map(char => `${char}[\\s\\-_.]*`).join('');
+        const match = new RegExp(regexStr, 'i');
+        filter.$or = [{ itemName: match }, { recipient: match }, { company: match }, { sender: match }, { carrier: match }];
+      }
     }
     const deliveries = await Delivery.find(filter).sort({ createdAt: -1 }).limit(200).lean();
     res.json(deliveries);

@@ -18656,13 +18656,13 @@ const AdminLogin = () => {
     setMessage("");
     try {
       const res = await api.post("/auth/forgot-password", { email });
-      setMessage(res.data.message);
+      setMessage(res.data.message || "Reset code sent. Please check your email.");
       if (res.data.mockToken) {
         console.log("Mock Token:", res.data.mockToken);
         setToken(res.data.mockToken);
       }
     } catch (err) {
-      setError("Error sending request");
+      setError(err.response?.data?.error || "Error sending request");
     }
   };
   const handleReset = async (e2) => {
@@ -33218,7 +33218,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-Cw6sAlZc.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-jp7pNdQu.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -75119,6 +75119,7 @@ const InviteModal = ({ onClose, onInvited }) => {
   const [siteId, setSiteId] = reactExports.useState("");
   const [sites, setSites] = reactExports.useState([]);
   const [sendWelcome, setSendWelcome] = reactExports.useState(true);
+  const [sendAppCode, setSendAppCode] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
   const [error, setError] = reactExports.useState("");
   const [createdCreds, setCreatedCreds] = reactExports.useState(null);
@@ -75170,7 +75171,8 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id: siteId || void 0,
           send_email: sendWelcome
         });
-        setCreatedCreds({ email: email.trim(), password: password.trim(), role, type: "Portal account" });
+        const returnedPassword = res?.data?.password || password.trim();
+        setCreatedCreds({ email: email.trim(), password: returnedPassword, role, type: "Portal account" });
         onInvited({ email: email.trim(), role });
       } else {
         const res = await api.post("/guards/members", {
@@ -75184,14 +75186,14 @@ const InviteModal = ({ onClose, onInvited }) => {
           site_id: siteId || void 0,
           status: "Current",
           send_welcome: sendWelcome,
-          include_companion: sendWelcome
+          include_companion: sendAppCode
         });
         setCreatedCreds({
           email: email.trim(),
           password: password.trim(),
           role: mobileRole,
           type: "Mobile app account",
-          note: sendWelcome ? "Welcome email with companion app code sent to their inbox." : "User created. Share credentials with them."
+          note: sendWelcome || sendAppCode ? "Email queued. If “Send app code” is enabled, the invite code will be included in the email." : "User created. Share credentials with them."
         });
         onInvited({ email: email.trim(), role: mobileRole, status: "invited" });
       }
@@ -75341,12 +75343,12 @@ const InviteModal = ({ onClose, onInvited }) => {
           ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${inp} bg-slate-50 text-slate-600 cursor-not-allowed`, children: sites.find((s2) => s2.id === currentSiteId)?.name || "Your site" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
+      accountType === "portal" ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg bg-[#2b4594]/10 flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 15, className: "text-[#2b4594]" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: accountType === "mobile" ? "Includes credentials and Tripod Hub Connect app invite code" : "Includes credentials and portal access link" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Includes credentials and portal access link" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -75357,7 +75359,40 @@ const InviteModal = ({ onClose, onInvited }) => {
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${sendWelcome ? "translate-x-6" : "translate-x-1"}` })
           }
         )
-      ] }) }),
+      ] }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-500 uppercase tracking-wide", children: "Email options" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 cursor-pointer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: sendWelcome,
+              onChange: (e2) => setSendWelcome(e2.target.checked),
+              className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send welcome email" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Includes login credentials and getting started instructions" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 cursor-pointer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: sendAppCode,
+              onChange: (e2) => setSendAppCode(e2.target.checked),
+              className: "mt-0.5 w-4 h-4 accent-[#2b4594] rounded flex-shrink-0"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-800", children: "Send app code" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5", children: "Includes the Tripod Hub Connect invite code in the email" })
+          ] })
+        ] }),
+        !email.trim() && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Enter an email address to enable email sending." })
+      ] }),
       error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2", children: error })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 px-6 py-4 border-t border-slate-100", children: [
@@ -76401,7 +76436,7 @@ const ProfilePage = () => {
     ] })
   ] }) });
 };
-const SUPPORT_EMAIL = "support@signinapp.com";
+const SUPPORT_EMAIL = "Abid.fiaz@tripodsvcs.co.uk";
 const SUPPORT_COLLECTIONS = [
   {
     slug: "getting-started",
@@ -76739,7 +76774,7 @@ const SupportPage = () => {
           Link,
           {
             to: "/admin/support/collections/getting-started",
-            className: "mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#4f8f2f]",
+            className: "mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#2b4594]",
             children: [
               "View guide",
               /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { size: 16 })
@@ -76756,7 +76791,7 @@ const SupportPage = () => {
           {
             type: "button",
             onClick: () => setShowChat(true),
-            className: "mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#4f8f2f]",
+            className: "mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#2b4594]",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(MessageCircle, { size: 16 }),
               "New chat"
@@ -76768,7 +76803,7 @@ const SupportPage = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#2b4594] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 32, strokeWidth: 1.6 }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "mt-6 text-2xl font-semibold text-slate-900", children: "Email us" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 flex-1 text-slate-500", children: "For non urgent queries, send a tracked support request." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `mailto:${SUPPORT_EMAIL}`, className: "mt-3 text-base font-semibold text-slate-700 underline hover:text-[#4f8f2f]", children: SUPPORT_EMAIL })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `mailto:${SUPPORT_EMAIL}`, className: "mt-3 text-base font-semibold text-slate-700 underline hover:text-[#2b4594]", children: SUPPORT_EMAIL })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 gap-6 xl:grid-cols-[1.7fr_1fr]", children: [
@@ -76861,7 +76896,7 @@ const SupportPage = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold text-slate-900", children: "What's new" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/admin/support/whats-new", className: "text-sm font-semibold text-[#4f8f2f] hover:underline", children: "View all" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/admin/support/whats-new", className: "text-sm font-semibold text-[#2b4594] hover:underline", children: "View all" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 space-y-3", children: searchResults.updates.slice(0, query.trim() ? 4 : 2).map((update) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Link,
@@ -77485,7 +77520,7 @@ const SupportArticlePage = () => {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-8 shadow-sm", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 text-sm text-slate-500", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded-full bg-[#eef8e7] px-3 py-1 font-medium text-[#4f8f2f]", children: article.collectionTitle }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded-full bg-[#eef3fb] px-3 py-1 font-medium text-[#2b4594]", children: article.collectionTitle }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Clock3, { size: 14 }),
             article.readTime
@@ -77508,13 +77543,13 @@ const SupportArticlePage = () => {
 const SupportWhatsNewPage = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full overflow-auto bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-5xl flex-col gap-8 px-8 py-8", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-8 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(BellDot, { size: 24 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#eef3fb] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(BellDot, { size: 24 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-5 text-4xl font-semibold tracking-tight text-slate-900", children: "What's new" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 max-w-3xl text-lg text-slate-500", children: "Recent product and workflow updates for the admin experience." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-5", children: WHATS_NEW_ITEMS.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded-full bg-[#eef8e7] px-3 py-1 text-sm font-medium text-[#4f8f2f]", children: "Release note" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded-full bg-[#eef3fb] px-3 py-1 text-sm font-medium text-[#2b4594]", children: "Release note" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-slate-400", children: item.date })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "mt-4 text-2xl font-semibold text-slate-900", children: item.title }),
@@ -77527,7 +77562,7 @@ const SupportWhatsNewPage = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm", children: [
       "Looking for setup guidance? Visit",
       " ",
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/admin/support/collections/getting-started", className: "font-semibold text-[#4f8f2f] hover:underline", children: "Getting Started" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/admin/support/collections/getting-started", className: "font-semibold text-[#2b4594] hover:underline", children: "Getting Started" }),
       "."
     ] })
   ] }) });
@@ -78007,12 +78042,145 @@ const PublicVisitorCheckIn = () => {
     )
   ] });
 };
+const PublicSupportPage = () => {
+  const [showChat, setShowChat] = reactExports.useState(false);
+  const [chatMsg, setChatMsg] = reactExports.useState("");
+  const [messages2, setMessages] = reactExports.useState([{ from: "bot", text: "Hi! How can we help you today?" }]);
+  const bottomRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages2, showChat]);
+  const sendMessage = (e2) => {
+    e2?.preventDefault();
+    const text = chatMsg.trim();
+    if (!text) return;
+    setMessages((m2) => [...m2, { from: "user", text }]);
+    setChatMsg("");
+    const q2 = text.toLowerCase();
+    let reply = "Thanks — our team will respond via email or WhatsApp shortly.";
+    if (q2.includes("register") || q2.includes("new member") || q2.includes("add member")) {
+      reply = "To register a new member: 1) Open Admin → People (https://tripod-signin-app.onrender.com/admin/people). 2) Click 'New person' or 'Add person'. 3) Fill name, email and any required fields. 4) Save. If you want, tell me the site name and I can guide further.";
+    } else if (q2.includes("printer")) {
+      reply = "Printer help: ensure the printer is powered and on the same network as your kiosk. Test a print from Activity > Export or the sign-in screen. Contact support with printer model if issues persist.";
+    } else if (q2.includes("evacuation") || q2.includes("evacu")) {
+      reply = "Evacuation guide: Open Admin → Evacuation, start an evacuation for the active site, mark people safe as they are accounted for, and close the report when finished.";
+    } else if (q2.includes("pricing") || q2.includes("trial")) {
+      reply = "Pricing and trials: Please contact sales@tripodsvcs.co.uk or request a callback and we will put you in touch with our sales team.";
+    }
+    setTimeout(() => {
+      setMessages((m2) => [...m2, { from: "bot", text: reply }]);
+    }, 700);
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10 sm:px-8 lg:px-10", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-8 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 24 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-5 text-4xl font-semibold tracking-tight text-slate-900", children: "Support" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 max-w-3xl text-lg text-slate-600", children: "Need help with the Sign In App experience? Use the information below for support requests, product questions, or assistance with account access." })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 md:grid-cols-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-7 shadow-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-11 w-11 items-center justify-center rounded-full border border-[#cfeab8] bg-[#f8fcf4] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 20 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold text-slate-900", children: "Email support" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: "Best for non-urgent questions and account help" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-4 text-slate-600", children: "Send an email to our support team and we will follow up with the next steps." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-slate-500", children: "For non urgent queries email our support team or contact via WhatsApp." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 space-y-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `mailto:Abid.fiaz@tripodsvcs.co.uk`, className: "inline-block text-base font-semibold text-slate-800 underline", children: "Abid.fiaz@tripodsvcs.co.uk" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              href: `https://wa.me/447446084868`,
+              target: "_blank",
+              rel: "noreferrer",
+              className: "inline-block text-base font-semibold text-[#2b4594]",
+              children: "WhatsApp: +447446084868"
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-7 shadow-sm text-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-[#cfeab8] bg-[#f8fcf4] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(MessageCircle, { size: 20 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold text-slate-900 mt-4", children: "Online chat" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 mt-1", children: "Start a live-style support chat for quick guidance." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => setShowChat(true),
+            className: "inline-flex items-center gap-2 rounded-md bg-[#2b4594] px-4 py-2 text-sm font-semibold text-white",
+            children: "New chat"
+          }
+        ) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-7 shadow-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-11 w-11 items-center justify-center rounded-full border border-[#cfeab8] bg-[#f8fcf4] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { size: 20 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold text-slate-900", children: "Open the app" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: "Visit the Sign In App admin website" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-4 text-slate-600", children: "This page is ready to use as your App Store support URL for verification purposes." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "a",
+          {
+            href: "https://tripod-signin-app.onrender.com/admin/people",
+            target: "_blank",
+            rel: "noreferrer",
+            className: "mt-4 inline-flex items-center gap-2 text-base font-semibold text-[#2b4594] hover:underline",
+            children: [
+              "Open the Sign In App website",
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { size: 16 })
+            ]
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-7 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold text-slate-900", children: "Need a different contact method?" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-slate-600", children: "If you want a different email address, phone number, or support hours, send me those details and I will update this page for you." })
+    ] }),
+    showChat && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed bottom-20 right-6 z-50 flex w-80 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between bg-[#2b4594] px-4 py-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-semibold text-slate-50", children: "Support Chat" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setShowChat(false), className: "text-white opacity-80 hover:opacity-100", children: "✕" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-h-64 flex-1 space-y-2 overflow-y-auto p-3", children: [
+        messages2.map((message, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `flex ${message.from === "user" ? "justify-end" : "justify-start"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            style: { maxWidth: "85%" },
+            className: `rounded-lg px-3 py-2 text-sm ${message.from === "user" ? "bg-[#2b4594] text-white" : "bg-slate-100 text-slate-700"}`,
+            children: message.text
+          }
+        ) }, `${message.from}-${index2}`)),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: sendMessage, className: "flex gap-2 border-t border-slate-200 p-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            value: chatMsg,
+            onChange: (event) => setChatMsg(event.target.value),
+            placeholder: "Type a message...",
+            className: "flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594]"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-white hover:bg-[#4f6fc5]", children: "Send" })
+      ] })
+    ] })
+  ] }) });
+};
 const App = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/login", replace: true }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/mobile-landing", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MobileLanding, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/form", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MobileForm, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/checkin/:siteId", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicVisitorCheckIn, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/support", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicSupportPage, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/admin/login", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLogin, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/admin/register", element: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSignup, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(

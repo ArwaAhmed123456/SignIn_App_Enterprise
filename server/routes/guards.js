@@ -123,6 +123,7 @@ router.post('/login', async (req, res) => {
       },
       JWT_SECRET, { expiresIn: '24h' }
     );
+    const site = guard.siteId ? await Site.findById(guard.siteId).select('name').lean() : null;
     res.json({
       success: true,
       token,
@@ -135,6 +136,8 @@ router.post('/login', async (req, res) => {
         mobileRole,
         memberRole: guard.role || null,
         project_id: guard.siteId,
+        siteName: site?.name || null,
+        organization: site?.name || null,
         approvalStatus: guard.approvalStatus || 'approved',
       }
     });

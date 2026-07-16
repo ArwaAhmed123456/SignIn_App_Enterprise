@@ -6,19 +6,22 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
   Vibration,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut, UserPlus, Search, Package } from 'lucide-react-native';
+import { Bell, CalendarDays, CheckCircle, ChevronDown, Download, MessageSquare, RefreshCw, X, LogOut, UserPlus, Search, Package } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   getAccessibleSites,
   getPendingGuards,
@@ -29,7 +32,17 @@ import {
   getVisitStats,
 } from '../services/enterprisePortal';
 
-const TABS = ['Overview', 'On-Site', 'Signed Out', 'Deliveries', 'Pre-register', 'Approvals', 'Guards'];
+const TABS = ['Overview', 'On-Site', 'Signed Out', 'Deliveries', 'Pre-Registration', 'Approvals', 'Guards'];
+
+const toApiDate = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
+const formatFilterDate = (value) => value
+  ? new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  : '';
 
 const fmtTime = (value) => {
   if (!value) return '—';
@@ -167,8 +180,9 @@ const ManagerScreen = ({ navigation }) => {
   const [approvingId, setApprovingId] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [search, setSearch] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(null);
   const knownArrivalIds = useRef(new Set());
   const arrivalsInitialised = useRef(false);
 
@@ -286,9 +300,9 @@ const ManagerScreen = ({ navigation }) => {
   const shareExcel = async ({ title, headers, rows, filenameBase }) => {
     const table = buildHtmlTable(rows, headers);
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><h2 style="font-family:Arial,sans-serif">${escapeHtml(title)}</h2>${table}</body></html>`;
-    const uri = `${FileSystem.cacheDirectory}${safeFilename(filenameBase)}.xls`;
-    await FileSystem.writeAsStringAsync(uri, html, { encoding: FileSystem.EncodingType.UTF8 });
-    await Sharing.shareAsync(uri, {
+    const file = new File(Paths.cache, `${safeFilename(filenameBase)}.xls`);
+    file.write(html);
+    await Sharing.shareAsync(file.uri, {
       mimeType: 'application/vnd.ms-excel',
       dialogTitle: 'Export (Excel)',
     });
@@ -323,12 +337,12 @@ const ManagerScreen = ({ navigation }) => {
       const dateStr  = new Date().toLocaleDateString('en-GB');
       if ((dateFrom || dateTo) && activeTab !== 'Deliveries') {
         const status = activeTab === 'Signed Out' ? 'Out' : 'In';
-        const records = await getVisits({ siteId: selectedSite?.id, status, search, dateFrom, dateTo });
+        const records = await getVisits({ siteId: selectedSite?.id, status, search, dateFrom: toApiDate(dateFrom), dateTo: toApiDate(dateTo) });
         list = records.filter(matchesSearch);
       }
       if ((dateFrom || dateTo) && activeTab === 'Deliveries') {
         const response = await api.get('/deliveries', {
-          params: { site_id: selectedSite?.id, search, date_from: dateFrom || undefined, date_to: dateTo || undefined },
+          params: { site_id: selectedSite?.id, search, date_from: toApiDate(dateFrom) || undefined, date_to: toApiDate(dateTo) || undefined },
         });
         list = (response.data || []).filter(matchesSearch);
       }
@@ -555,7 +569,7 @@ const ManagerScreen = ({ navigation }) => {
 
       <View style={s.tabBar}>
         {TABS.map((tab) => (
-          <TouchableOpacity key={tab} onPress={() => tab === 'Pre-register' ? navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name }) : setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
+          <TouchableOpacity key={tab} onPress={() => tab === 'Pre-Registration' ? navigation.navigate('Preregister', { siteId: selectedSite?.id, siteName: selectedSite?.name }) : setActiveTab(tab)} style={[s.tab, activeTab === tab && s.tabActive]}>
             <Text style={[s.tabText, activeTab === tab && s.tabTextActive]}>{tab}</Text>
           </TouchableOpacity>
         ))}
@@ -567,9 +581,27 @@ const ManagerScreen = ({ navigation }) => {
         {search ? <TouchableOpacity onPress={() => setSearch('')}><X size={16} color="#9ca3af" /></TouchableOpacity> : null}
       </View>
       <View style={s.dateFilterRow}>
-        <TextInput value={dateFrom} onChangeText={setDateFrom} placeholder="From (YYYY-MM-DD)" placeholderTextColor="#9ca3af" style={s.dateFilterInput} />
-        <TextInput value={dateTo} onChangeText={setDateTo} placeholder="To (YYYY-MM-DD)" placeholderTextColor="#9ca3af" style={s.dateFilterInput} />
+        <TouchableOpacity style={s.dateFilterInput} onPress={() => setShowDatePicker('from')}>
+          <CalendarDays size={15} color="#2b4594" />
+          <Text style={[s.dateFilterText, !dateFrom && s.dateFilterPlaceholder]}>{dateFrom ? formatFilterDate(dateFrom) : 'From date'}</Text>
+          {dateFrom ? <TouchableOpacity onPress={() => setDateFrom(null)}><X size={14} color="#9ca3af" /></TouchableOpacity> : null}
+        </TouchableOpacity>
+        <TouchableOpacity style={s.dateFilterInput} onPress={() => setShowDatePicker('to')}>
+          <CalendarDays size={15} color="#2b4594" />
+          <Text style={[s.dateFilterText, !dateTo && s.dateFilterPlaceholder]}>{dateTo ? formatFilterDate(dateTo) : 'To date'}</Text>
+          {dateTo ? <TouchableOpacity onPress={() => setDateTo(null)}><X size={14} color="#9ca3af" /></TouchableOpacity> : null}
+        </TouchableOpacity>
       </View>
+      {showDatePicker ? <DateTimePicker
+        value={showDatePicker === 'from' ? (dateFrom || new Date()) : (dateTo || new Date())}
+        mode="date"
+        display={Platform.OS === 'ios' ? 'inline' : 'default'}
+        onChange={(_, value) => {
+          if (Platform.OS === 'android') setShowDatePicker(null);
+          if (value) (showDatePicker === 'from' ? setDateFrom : setDateTo)(value);
+          if (Platform.OS === 'ios') setShowDatePicker(null);
+        }}
+      /> : null}
 
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
@@ -976,7 +1008,9 @@ const s = StyleSheet.create({
   managerSearchRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' },
   managerSearchInput: { flex: 1, fontSize: 15, color: '#111827' },
   dateFilterRow: { flexDirection: 'row', gap: 8, marginHorizontal: 16, marginTop: 8 },
-  dateFilterInput: { flex: 1, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, color: '#111827', fontSize: 13 },
+  dateFilterInput: { flex: 1, minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9 },
+  dateFilterText: { flex: 1, color: '#111827', fontSize: 13 },
+  dateFilterPlaceholder: { color: '#9ca3af' },
   tab: { width: '25%', minHeight: 34, justifyContent: 'center', alignItems: 'center', borderRadius: 8, paddingHorizontal: 4 },
   tabActive: { backgroundColor: '#e8edfb' },
   tabText: { fontSize: 14, fontWeight: '500', color: '#6b7280' },

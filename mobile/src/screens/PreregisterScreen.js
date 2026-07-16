@@ -270,7 +270,7 @@ const PreregisterScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
           <ArrowLeft size={22} color="#111827" />
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Pre-register person</Text>
+        <Text style={s.headerTitle}>Pre-Registration</Text>
         <View style={s.backBtn} />
       </View>
 

@@ -1,4 +1,4 @@
-export const SUPPORT_EMAIL = 'support@signinapp.com';
+export const SUPPORT_EMAIL = 'Abid.fiaz@tripodsvcs.co.uk';
 
 export const SUPPORT_COLLECTIONS = [
   {

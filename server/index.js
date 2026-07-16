@@ -59,6 +59,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
+app.get('/support', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'support.html'));
+});
+
 const authRoutes = require('./routes/auth');
 const projectRoutes = require('./routes/projects');
 const logRoutes = require('./routes/logs');

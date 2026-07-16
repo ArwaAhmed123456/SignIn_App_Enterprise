@@ -29,7 +29,7 @@ const SupportArticlePage = () => {
 
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="flex items-center gap-3 text-sm text-slate-500">
-              <span className="rounded-full bg-[#eef8e7] px-3 py-1 font-medium text-[#4f8f2f]">
+              <span className="rounded-full bg-[#eef3fb] px-3 py-1 font-medium text-[#2b4594]">
                 {article.collectionTitle}
               </span>
               <span className="inline-flex items-center gap-1">

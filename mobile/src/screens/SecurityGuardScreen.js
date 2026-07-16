@@ -13,10 +13,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, X, Bell, Package } from 'lucide-react-native';
+import { CalendarDays, ChevronDown, Download, LogIn, LogOut, RefreshCw, Search, ShieldCheck, X, Bell, Package } from 'lucide-react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
 import {
@@ -28,6 +29,18 @@ import {
   signInVisitor,
   signOutVisit,
 } from '../services/enterprisePortal';
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+const toApiDate = (d) => {
+  if (!d) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
+const formatDateShort = (d) =>
+  d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
 const TABS = ['On Site', 'Signed Out', 'Expected'];
 
@@ -223,6 +236,9 @@ const SecurityGuardScreen = ({ navigation }) => {
   const [arrivalCompanyName, setArrivalCompanyName] = useState('');
   const [exporting, setExporting] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [dateFrom, setDateFrom] = useState(null);    // Date | null — for export date filter
+  const [dateTo, setDateTo]     = useState(null);    // Date | null
+  const [showDatePicker, setShowDatePicker] = useState(null); // 'from' | 'to' | null
 
   const guardName = user?.name || user?.firstName || 'Security Guard';
 
@@ -316,9 +332,9 @@ const SecurityGuardScreen = ({ navigation }) => {
   const shareExcel = async ({ title, headers, rows, filenameBase }) => {
     const table = buildHtmlTable(rows, headers);
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body><h2 style="font-family:Arial,sans-serif">${escapeHtml(title)}</h2>${table}</body></html>`;
-    const uri = `${FileSystem.cacheDirectory}${safeFilename(filenameBase)}.xls`;
-    await FileSystem.writeAsStringAsync(uri, html, { encoding: FileSystem.EncodingType.UTF8 });
-    await Sharing.shareAsync(uri, {
+    const file = new File(Paths.cache, `${safeFilename(filenameBase)}.xls`);
+    file.write(html);
+    await Sharing.shareAsync(file.uri, {
       mimeType: 'application/vnd.ms-excel',
       dialogTitle: 'Export (Excel)',
     });
@@ -342,14 +358,6 @@ const SecurityGuardScreen = ({ navigation }) => {
   };
 
   const handleExport = async (format) => {
-    const list = activeTab === 'On Site' ? filteredOnSite
-      : activeTab === 'Signed Out' ? filteredSignedOut
-      : filteredExpected;
-
-    if (!list.length) {
-      Alert.alert('Nothing to export', 'There are no records to export in this tab.');
-      return;
-    }
     setExporting(true);
     try {
       const siteName = selectedSite?.name || 'Site';
@@ -360,15 +368,37 @@ const SecurityGuardScreen = ({ navigation }) => {
 
       const headers = ['Name', 'Role', 'Sign In', 'Sign Out', 'Car Registration', 'Company', 'Expected Arrival', 'Description'];
 
-      const rows = list.map(item => ({
-        Name:      item.name || '',
-        Role:      item.group || item.visitor_group_name || '',
-        'Sign In': fmtExportTime(item.sign_in_time),
-        'Sign Out':fmtExportTime(item.sign_out_time),
+      // If date filters are set, fetch a date-filtered list from the API
+      let exportList;
+      if ((dateFrom || dateTo) && selectedSite?.id) {
+        const status = activeTab === 'Signed Out' ? 'Out' : 'In';
+        const records = await getVisits({
+          siteId: selectedSite.id,
+          status,
+          dateFrom: toApiDate(dateFrom),
+          dateTo:   toApiDate(dateTo),
+        }).catch(() => []);
+        exportList = filterItems(records);
+      } else {
+        exportList = activeTab === 'On Site' ? filteredOnSite
+          : activeTab === 'Signed Out' ? filteredSignedOut
+          : filteredExpected;
+      }
+
+      if (!exportList.length) {
+        Alert.alert('Nothing to export', 'There are no records for the selected date range.');
+        return;
+      }
+
+      const rows = exportList.map(item => ({
+        Name:               item.name || '',
+        Role:               item.group || item.visitor_group_name || '',
+        'Sign In':          fmtExportTime(item.sign_in_time),
+        'Sign Out':         fmtExportTime(item.sign_out_time),
         'Car Registration': item.car_reg || '',
-        Company: item.trade || item.company_name || '',
+        Company:            item.trade || item.company_name || '',
         'Expected Arrival': fmtExportTime(item.expected_date),
-        Description: item.notes || '',
+        Description:        item.notes || '',
       }));
 
       if (format === 'excel') {
@@ -631,6 +661,48 @@ const SecurityGuardScreen = ({ navigation }) => {
         ) : null}
       </View>
 
+      {/* Date range row — used to filter the export */}
+      <View style={s.dateFilterRow}>
+        <TouchableOpacity style={s.dateFilterBtn} onPress={() => setShowDatePicker('from')}>
+          <CalendarDays size={14} color="#2b4594" />
+          <Text style={[s.dateFilterText, !dateFrom && s.dateFilterPlaceholder]}>
+            {dateFrom ? formatDateShort(dateFrom) : 'From date'}
+          </Text>
+          {dateFrom ? (
+            <TouchableOpacity onPress={() => setDateFrom(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
+              <X size={12} color="#94a3b8" />
+            </TouchableOpacity>
+          ) : null}
+        </TouchableOpacity>
+        <TouchableOpacity style={s.dateFilterBtn} onPress={() => setShowDatePicker('to')}>
+          <CalendarDays size={14} color="#2b4594" />
+          <Text style={[s.dateFilterText, !dateTo && s.dateFilterPlaceholder]}>
+            {dateTo ? formatDateShort(dateTo) : 'To date'}
+          </Text>
+          {dateTo ? (
+            <TouchableOpacity onPress={() => setDateTo(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
+              <X size={12} color="#94a3b8" />
+            </TouchableOpacity>
+          ) : null}
+        </TouchableOpacity>
+      </View>
+
+      {showDatePicker ? (
+        <DateTimePicker
+          value={showDatePicker === 'from' ? (dateFrom || new Date()) : (dateTo || new Date())}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'inline' : 'default'}
+          onChange={(event, selectedDate) => {
+            if (Platform.OS === 'android') setShowDatePicker(null);
+            if (selectedDate) {
+              if (showDatePicker === 'from') setDateFrom(selectedDate);
+              else setDateTo(selectedDate);
+            }
+            if (Platform.OS === 'ios') setShowDatePicker(null);
+          }}
+        />
+      ) : null}
+
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2b4594" />}
         contentContainerStyle={s.scrollContent}
@@ -741,9 +813,9 @@ const SecurityGuardScreen = ({ navigation }) => {
         <View style={s.modalOverlay}>
           <View style={s.modalCard}>
             <Text style={s.modalTitle}>Record arrival</Text>
-            <Text style={s.modalBody}>Add the car registration and company details, then notify the manager.</Text>
-            <TextInput value={arrivalCarRegistration} onChangeText={setArrivalCarRegistration} placeholder="Car registration number" placeholderTextColor="#9ca3af" style={s.input} autoCapitalize="characters" />
-            <TextInput value={arrivalCompanyName} onChangeText={setArrivalCompanyName} placeholder="Company name" placeholderTextColor="#9ca3af" style={s.input} />
+            <Text style={s.modalBody}>Both fields below are optional — fill in what's available.</Text>
+            <TextInput value={arrivalCarRegistration} onChangeText={setArrivalCarRegistration} placeholder="Car registration (optional)" placeholderTextColor="#9ca3af" style={s.input} autoCapitalize="characters" />
+            <TextInput value={arrivalCompanyName} onChangeText={setArrivalCompanyName} placeholder="Company name (optional)" placeholderTextColor="#9ca3af" style={s.input} />
             <View style={s.modalBtns}>
               <TouchableOpacity onPress={() => setArrivalTarget(null)} style={s.modalCancelBtn}><Text style={s.modalCancelTxt}>Cancel</Text></TouchableOpacity>
               <TouchableOpacity onPress={completeArrival} disabled={arrivingId === arrivalTarget?.id} style={s.modalConfirmBtn}>{arrivingId === arrivalTarget?.id ? <ActivityIndicator size="small" color="#fff" /> : <Text style={s.modalConfirmTxt}>Arrived</Text>}</TouchableOpacity>
@@ -899,6 +971,10 @@ const s = StyleSheet.create({
     borderBottomColor: '#f3f4f6',
   },
   searchInput: { flex: 1, fontSize: 15, color: '#111827' },
+  dateFilterRow: { flexDirection: 'row', gap: 8, backgroundColor: '#fff', paddingHorizontal: 14, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  dateFilterBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#f9fafb' },
+  dateFilterText: { flex: 1, fontSize: 12, color: '#111827', fontWeight: '500' },
+  dateFilterPlaceholder: { color: '#94a3b8', fontWeight: '400' },
   // Extra bottom padding so actions aren't hidden behind bottom tabs
   scrollContent: { padding: 16, paddingBottom: 120 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10 },

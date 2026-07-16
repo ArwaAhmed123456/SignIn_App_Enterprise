@@ -22,6 +22,7 @@ import SupportWhatsNewPage from './pages/SupportWhatsNewPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import PublicVisitorCheckIn from './pages/PublicVisitorCheckIn';
+import PublicSupportPage from './pages/PublicSupportPage';
 
 const App = () => {
   return (
@@ -36,6 +37,9 @@ const App = () => {
 
         {/* Public Visitor Check-in Route */}
         <Route path="/checkin/:siteId" element={<PublicVisitorCheckIn />} />
+
+        {/* Public Support Route for App Store verification */}
+        <Route path="/support" element={<PublicSupportPage />} />
 
         {/* Admin Login & Signup */}
         <Route path="/admin/login" element={<AdminLogin />} />

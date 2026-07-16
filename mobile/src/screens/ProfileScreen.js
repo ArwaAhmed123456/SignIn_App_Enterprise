@@ -15,11 +15,7 @@ const ProfileScreen = ({ navigation }) => {
   const [autoSignIn, setAutoSignIn]     = useState(false);
   const [autoReminder, setAutoReminder] = useState(false);
   const [hostNotifs, setHostNotifs]     = useState(true);
-  const [showMap, setShowMap]           = useState(true);
   const [language, setLanguage]         = useState('English (UK)');
-  const [distanceUnit, setDistanceUnit] = useState('Metric (km)');
-  const [startOfWeek, setStartOfWeek]   = useState('Monday');
-  const [weeklyHours, setWeeklyHours]   = useState('40');
   const [reminders, setReminders]       = useState([]);
 
   const memberName = user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) || user?.email?.split('@')[0] || 'Member';
@@ -100,7 +96,7 @@ const ProfileScreen = ({ navigation }) => {
               </View>
               <View style={{ marginBottom: 12 }}>
                 <Text style={{ fontSize: 12, color: T2, fontWeight: '600', marginBottom: 4 }}>SITE</Text>
-                <Text style={{ fontSize: 15, color: T1 }}>{user?.siteName || 'Not assigned'}</Text>
+                <Text style={{ fontSize: 15, color: T1 }}>{user?.siteName || user?.organization || 'No site assigned'}</Text>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('QRCode')} style={{ backgroundColor: '#2b4594', borderRadius: 10, paddingVertical: 12, alignItems: 'center', marginTop: 4 }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>View My QR Code</Text>
@@ -201,53 +197,6 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         </Card>
 
-        {/* Hours */}
-        <Card>
-          <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: BD }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: T1 }}>Hours</Text>
-            <Text style={{ fontSize: 13, color: T2, marginTop: 2 }}>Set your working hours.</Text>
-          </View>
-          <View style={{ padding: 16 }}>
-            <Text style={{ fontSize: 14, color: T2, marginBottom: 6 }}>Start of week</Text>
-            <TouchableOpacity
-              onPress={() => Alert.alert('Start of week', 'Choose start of week', [
-                { text: 'Monday', onPress: () => setStartOfWeek('Monday') },
-                { text: 'Sunday', onPress: () => setStartOfWeek('Sunday') },
-                { text: 'Cancel', style: 'cancel' },
-              ])}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: BD, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 14, backgroundColor: BG }}
-            >
-              <Text style={{ fontSize: 15, color: T1 }}>{startOfWeek}</Text>
-              <ChevronDown size={16} color={T2} />
-            </TouchableOpacity>
-            <Text style={{ fontSize: 14, color: T2, marginBottom: 6 }}>Weekly hours</Text>
-            <TouchableOpacity
-              onPress={() => Alert.alert('Weekly hours', 'Choose your working hours per week', [
-                { text: '35 hours', onPress: () => setWeeklyHours('35') },
-                { text: '37.5 hours', onPress: () => setWeeklyHours('37.5') },
-                { text: '40 hours', onPress: () => setWeeklyHours('40') },
-                { text: '45 hours', onPress: () => setWeeklyHours('45') },
-                { text: 'Cancel', style: 'cancel' },
-              ])}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: BD, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: BG }}
-            >
-              <Text style={{ fontSize: 15, color: T1 }}>{weeklyHours} hours</Text>
-              <ChevronDown size={16} color={T2} />
-            </TouchableOpacity>
-          </View>
-        </Card>
-
-        {/* Map */}
-        <Card>
-          <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: BD }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: T1 }}>Map</Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
-            <Text style={{ fontSize: 15, color: T1 }}>Show map on today tab</Text>
-            <Switch value={showMap} onValueChange={setShowMap} trackColor={{ true: '#2b4594', false: '#cbd5e1' }} thumbColor="#fff" />
-          </View>
-        </Card>
-
         {/* Language */}
         <Card style={{ padding: 16 }}>
           <Text style={{ fontSize: 16, fontWeight: '700', color: T1, marginBottom: 4 }}>Language</Text>
@@ -261,23 +210,6 @@ const ProfileScreen = ({ navigation }) => {
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: BD, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: BG }}
           >
             <Text style={{ fontSize: 15, color: T1 }}>{language}</Text>
-            <ChevronDown size={16} color={T2} />
-          </TouchableOpacity>
-        </Card>
-
-        {/* Distance Units */}
-        <Card style={{ padding: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: T1, marginBottom: 4 }}>Distance Units</Text>
-          <Text style={{ fontSize: 13, color: T2, marginBottom: 12 }}>Set your default distance type</Text>
-          <TouchableOpacity
-            onPress={() => Alert.alert('Distance Units', 'Choose your preferred distance unit', [
-              { text: 'Metric (km)', onPress: () => setDistanceUnit('Metric (km)') },
-              { text: 'Imperial (mi)', onPress: () => setDistanceUnit('Imperial (mi)') },
-              { text: 'Cancel', style: 'cancel' },
-            ])}
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: BD, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: BG }}
-          >
-            <Text style={{ fontSize: 15, color: T1 }}>{distanceUnit}</Text>
             <ChevronDown size={16} color={T2} />
           </TouchableOpacity>
         </Card>

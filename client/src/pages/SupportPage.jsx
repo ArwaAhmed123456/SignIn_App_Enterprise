@@ -127,7 +127,7 @@ const SupportPage = () => {
             <p className="mt-3 flex-1 text-slate-500">Browse onboarding, workflow, and emergency-readiness articles.</p>
             <Link
               to="/admin/support/collections/getting-started"
-              className="mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#4f8f2f]"
+              className="mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#2b4594]"
             >
               View guide
               <ExternalLink size={16} />
@@ -143,7 +143,7 @@ const SupportPage = () => {
             <button
               type="button"
               onClick={() => setShowChat(true)}
-              className="mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#4f8f2f]"
+              className="mt-8 inline-flex items-center justify-center gap-2 text-base font-semibold text-slate-700 hover:text-[#2b4594]"
             >
               <MessageCircle size={16} />
               New chat
@@ -156,7 +156,7 @@ const SupportPage = () => {
             </div>
             <h2 className="mt-6 text-2xl font-semibold text-slate-900">Email us</h2>
             <p className="mt-3 flex-1 text-slate-500">For non urgent queries, send a tracked support request.</p>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-3 text-base font-semibold text-slate-700 underline hover:text-[#4f8f2f]">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-3 text-base font-semibold text-slate-700 underline hover:text-[#2b4594]">
               {SUPPORT_EMAIL}
             </a>
           </div>
@@ -257,7 +257,7 @@ const SupportPage = () => {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-slate-900">What&apos;s new</h3>
-                <Link to="/admin/support/whats-new" className="text-sm font-semibold text-[#4f8f2f] hover:underline">
+                <Link to="/admin/support/whats-new" className="text-sm font-semibold text-[#2b4594] hover:underline">
                   View all
                 </Link>
               </div>
