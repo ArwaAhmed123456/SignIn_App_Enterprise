@@ -158,17 +158,7 @@ const LandingScreen = ({ navigation }) => {
                 >
                     {/* Header / Brand Section */}
                     <View style={{ alignItems: 'center', marginBottom: 36 }}>
-                        <View style={{
-                            backgroundColor: '#fff',
-                            borderRadius: 28,
-                            padding: 16,
-                            marginBottom: 20,
-                            shadowColor: '#2b4594',
-                            shadowOffset: { width: 0, height: 8 },
-                            shadowOpacity: 0.15,
-                            shadowRadius: 20,
-                            elevation: 10,
-                        }}>
+                        <View style={{ marginBottom: 20 }}>
                             <Image
                                 source={require('../../assets/Tipod_Final_Logo_high_pixel.png')}
                                 style={{ width: 96, height: 96 }}

@@ -10,13 +10,11 @@ const OnboardingScreen = ({ navigation }) => {
 
       {/* Logo centred — visual only */}
       <View style={styles.logoSection}>
-        <View style={styles.logoCard}>
-          <Image
-            source={require('../../assets/tipod-logo.png')}
-            style={styles.logoImg}
-            resizeMode="contain"
-          />
-        </View>
+        <Image
+          source={require('../../assets/tipod-logo.png')}
+          style={styles.logoImg}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Sign In Enterprise</Text>
         <Text style={styles.subtitle}>Secure workforce management for Tripod Services</Text>
       </View>
@@ -64,15 +62,7 @@ const styles = StyleSheet.create({
 
   // Logo section — takes remaining space, centred
   logoSection: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  logoCard: {
-    backgroundColor: '#f0f4ff',
-    borderRadius: 32,
-    padding: 28,
-    marginBottom: 28,
-    shadowColor: 'transparent',
-    elevation: 0,
-  },
-  logoImg:  { width: 130, height: 72 },
+  logoImg:  { width: 150, height: 84, marginBottom: 28 },
   title:    { fontSize: 26, fontWeight: '800', color: '#111827', marginBottom: 10, letterSpacing: -0.3, textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 20, fontWeight: '500' },
 

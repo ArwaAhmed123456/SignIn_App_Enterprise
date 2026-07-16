@@ -48,7 +48,10 @@ export const getAccessibleSites = async (preferredSiteId) => {
   // manager portal.
   try {
     const response = await api.get('/projects/all-public');
-    return sortByName(response.data || []);
+    // The hosted API returns { value: [...], Count } while local versions may
+    // return the array directly. Normalise both shapes before sorting.
+    const sites = Array.isArray(response.data) ? response.data : response.data?.value || [];
+    return sortByName(sites);
   } catch {
     return [];
   }

@@ -103,17 +103,7 @@ const GuardLogin = ({ navigation }) => {
                 <Animated.View style={{ flex: 1, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
                     {/* Header */}
                     <View style={{ alignItems: 'center', marginBottom: 36 }}>
-                        <View style={{
-                            backgroundColor: '#fff',
-                            borderRadius: 28,
-                            padding: 16,
-                            marginBottom: 20,
-                            shadowColor: '#2b4594',
-                            shadowOffset: { width: 0, height: 8 },
-                            shadowOpacity: 0.15,
-                            shadowRadius: 20,
-                            elevation: 10,
-                        }}>
+                        <View style={{ marginBottom: 20 }}>
                             <Image
                                 source={require('../../assets/Tipod_Final_Logo_high_pixel.png')}
                                 style={{ width: 80, height: 80 }}
@@ -141,7 +131,7 @@ const GuardLogin = ({ navigation }) => {
                             Sign In
                         </Text>
                         <Text style={{ fontSize: 14, color: '#64748b', marginTop: 6, fontWeight: '500' }}>
-                            Security guard and manager access
+                            Security Guard and Manager Access
                         </Text>
                     </View>
 
@@ -269,7 +259,7 @@ const GuardLogin = ({ navigation }) => {
                                 <Text style={{ color: error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval') ? '#92400e' : '#dc2626', fontWeight: '700', fontSize: 13, textAlign: 'center', marginBottom: 6 }}>{error}</Text>
                                 {(error.toLowerCase().includes('pending') || error.toLowerCase().includes('approval')) ? (
                                     <Text style={{ color: '#92400e', fontSize: 12, textAlign: 'center' }}>
-                                        Your account is awaiting manager approval. Contact your site manager to get activated.
+                                        Your account is awaiting Manager approval. Contact your Site Manager to get activated.
                                     </Text>
                                 ) : (error.toLowerCase().includes('invalid') || error.toLowerCase().includes('credentials')) ? (
                                     <Text style={{ color: '#dc2626', fontSize: 12, textAlign: 'center' }}>

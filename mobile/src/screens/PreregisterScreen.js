@@ -423,13 +423,13 @@ const PreregisterScreen = ({ navigation, route }) => {
         <View style={s.inputGroup}>
           <Text style={s.label}>Inform a Guard (optional)</Text>
           <TouchableOpacity onPress={() => setGuardOpen((value) => !value)} style={s.selector}>
-            <Text style={s.selectorText}>{guards.find((guard) => guard.id === selectedGuardId)?.name || 'No individual guard selected'}</Text>
+            <Text style={s.selectorText}>{guards.find((guard) => guard.id === selectedGuardId)?.name || 'No Individual Guard Selected'}</Text>
             <ChevronDown size={16} color="#6b7280" />
           </TouchableOpacity>
           {guardOpen ? (
             <View style={s.dropdown}>
               <TouchableOpacity onPress={() => { setSelectedGuardId(null); setGuardOpen(false); }} style={s.dropdownItem}>
-                <Text style={s.dropdownItemText}>No individual guard selected</Text>
+                <Text style={s.dropdownItemText}>No Individual Guard Selected</Text>
               </TouchableOpacity>
               {guards.map((guard) => (
                 <TouchableOpacity key={guard.id} onPress={() => { setSelectedGuardId(guard.id); setGuardOpen(false); }} style={s.dropdownItem}>
@@ -438,7 +438,7 @@ const PreregisterScreen = ({ navigation, route }) => {
               ))}
             </View>
           ) : null}
-          <Text style={s.helperText}>The team chat is always updated; you can also notify one guard directly.</Text>
+          <Text style={s.helperText}>The Team Chat is always updated; you can also notify one Guard directly.</Text>
         </View>
 
         <TouchableOpacity onPress={handleSubmit} disabled={saving} style={[s.submitBtn, saving && { opacity: 0.7 }]}>

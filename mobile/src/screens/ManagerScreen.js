@@ -721,7 +721,7 @@ const ManagerScreen = ({ navigation }) => {
           <>
             <Text style={s.sectionTitle}>Pending registrations ({pendingGuards.length})</Text>
             <Text style={{ fontSize: 13, color: '#6b7280', marginBottom: 12 }}>
-              These guards registered via the app and are waiting for your approval.
+              These Guards registered via the app and are waiting for your approval.
             </Text>
             {pendingGuards.length === 0 ? (
               <View style={s.emptyCard}>
@@ -768,7 +768,7 @@ const ManagerScreen = ({ navigation }) => {
         {activeTab === 'Notifications' && (
           <>
             <View style={s.notifSettingsRow}>
-              <Text style={s.sectionTitle}>Guard arrival notifications</Text>
+              <Text style={s.sectionTitle}>Guard Arrival Notifications</Text>
               <TouchableOpacity onPress={() => setNotifOn((value) => !value)} style={[s.togglePill, notifOn && s.togglePillOn]}>
                 <Text style={notifOn ? s.toggleTextOn : s.toggleTextOff}>{notifOn ? 'On' : 'Off'}</Text>
               </TouchableOpacity>
@@ -777,7 +777,7 @@ const ManagerScreen = ({ navigation }) => {
 
             {notifications.length === 0 ? (
               <View style={s.emptyCard}>
-                <Text style={s.emptyText}>No pre-registered guard arrivals yet.</Text>
+                <Text style={s.emptyText}>No Pre-registered Guard Arrivals Yet.</Text>
               </View>
             ) : (
               notifications.map((item) => (
@@ -790,7 +790,7 @@ const ManagerScreen = ({ navigation }) => {
                     <Text style={s.visitSub}>
                       {item.group} · {fmtDate(item.sign_in_time)} · {fmtTime(item.sign_in_time)}
                     </Text>
-                    <Text style={s.visitNote}>Checked in by {item.checked_in_by || 'security guard'}</Text>
+                    <Text style={s.visitNote}>Checked In by {item.checked_in_by || 'Security Guard'}</Text>
                   </View>
                   <Bell size={16} color="#2b4594" />
                 </View>
@@ -802,7 +802,7 @@ const ManagerScreen = ({ navigation }) => {
         {activeTab === 'Guards' && (
           <>
             <View style={s.sectionRow}>
-              <Text style={s.sectionTitle}>Pending guard approvals</Text>
+              <Text style={s.sectionTitle}>Pending Guard Approvals</Text>
               <TouchableOpacity onPress={load}>
                 <RefreshCw size={18} color="#9ca3af" />
               </TouchableOpacity>
@@ -810,7 +810,7 @@ const ManagerScreen = ({ navigation }) => {
 
             {pendingGuards.length === 0 ? (
               <View style={s.emptyCard}>
-                <Text style={s.emptyText}>No guards waiting for approval.</Text>
+                <Text style={s.emptyText}>No Guards waiting for approval.</Text>
               </View>
             ) : (
               pendingGuards.map((g) => (
@@ -858,7 +858,7 @@ const ManagerScreen = ({ navigation }) => {
 
             {presentGuards.length === 0 ? (
               <View style={s.emptyCard}>
-                <Text style={s.emptyText}>No guards currently signed in.</Text>
+                <Text style={s.emptyText}>No Guards currently signed in.</Text>
               </View>
             ) : (
               presentGuards.map((g) => (

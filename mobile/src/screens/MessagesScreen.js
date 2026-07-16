@@ -217,8 +217,8 @@ const MessagesScreen = ({ navigation, route }) => {
   // ── Send alert (guards only, team chat only) ───────────────────────────────
   const handleSendAlert = async () => {
     Alert.alert(
-      'Send alert to manager',
-      'This will send a highlighted alert message to the manager.',
+      'Send Alert to Manager',
+      'This will send a highlighted alert message to the Manager.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -305,7 +305,7 @@ const MessagesScreen = ({ navigation, route }) => {
       {activeTab === 'team' && (
         <View style={s.infoBar}>
           <Text style={s.infoTxt}>
-            Messages are visible to all guards and managers at <Text style={{ fontWeight: '700' }}>{siteName}</Text>.
+            Messages are visible to all Guards and Managers at <Text style={{ fontWeight: '700' }}>{siteName}</Text>.
           </Text>
         </View>
       )}

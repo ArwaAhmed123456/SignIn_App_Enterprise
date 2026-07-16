@@ -224,7 +224,7 @@ const SecurityGuardScreen = ({ navigation }) => {
   const [exporting, setExporting] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
 
-  const guardName = user?.name || user?.firstName || 'Security guard';
+  const guardName = user?.name || user?.firstName || 'Security Guard';
 
   const handleLogout = () => {
     Alert.alert(

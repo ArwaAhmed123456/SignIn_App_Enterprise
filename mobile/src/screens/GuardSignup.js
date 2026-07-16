@@ -20,7 +20,9 @@ const GuardSignup = ({ navigation }) => {
 
     useEffect(() => {
         // Load available sites/companies for registration (public endpoint — no auth required)
-        api.get('/projects/all-public').then(r => setSites(r.data || [])).catch(() => setSites([]));
+        api.get('/projects/all-public')
+            .then((r) => setSites(Array.isArray(r.data) ? r.data : r.data?.value || []))
+            .catch(() => setSites([]));
     }, []);
 
     const handleSignup = async () => {
@@ -40,7 +42,7 @@ const GuardSignup = ({ navigation }) => {
             });
             Alert.alert(
                 'Account Created!',
-                'Your account is pending manager approval. You will be able to log in once approved.',
+                'Your account is pending Manager approval. You will be able to log in once approved.',
                 [{ text: 'OK', onPress: () => navigation.navigate('GuardLogin') }]
             );
         } catch (err) {
@@ -95,17 +97,7 @@ const GuardSignup = ({ navigation }) => {
 
                 {/* Header */}
                 <View style={{ alignItems: 'center', marginBottom: 32 }}>
-                    <View style={{
-                        backgroundColor: '#fff',
-                        borderRadius: 24,
-                        padding: 14,
-                        marginBottom: 18,
-                        shadowColor: '#2b4594',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: 0.12,
-                        shadowRadius: 16,
-                        elevation: 8,
-                    }}>
+                    <View style={{ marginBottom: 18 }}>
                         <Image
                             source={require('../../assets/Tipod_Final_Logo_high_pixel.png')}
                             style={{ width: 72, height: 72 }}
