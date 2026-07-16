@@ -172,7 +172,7 @@ const EditAllPanel = ({ onClose }) => (
 const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [drawerTab, setDrawerTab] = useState('Details');
   const [form, setForm] = useState({
-    group: '', name: '', email: '', phone: '', role: '', mobileRole: 'employee',
+    group: '', name: '', email: '', phone: '', role: '', mobileRole: 'employee', password: '',
     language: 'English (UK)', show_on_sites: '',
     start_date: '', end_date: '',
     send_welcome: true, include_companion: false,
@@ -218,6 +218,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         first_name: fn,
         last_name: ln,
         email: form.email.trim() || undefined,
+        password: form.password?.trim() || undefined,
         phone: form.phone.trim() || undefined,
         role: form.role.trim() || 'Employee',
         mobileRole: form.mobileRole || 'employee',
@@ -286,6 +287,13 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Email address</label>
                   <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Password (optional)</label>
+                  <input type="password" value={form.password} onChange={e => set('password', e.target.value)}
+                    placeholder="Set a password for this member (optional)"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]" />
+                  <p className="text-xs text-slate-400 mt-1">If set, this password will be included in the welcome email so the member can login directly.</p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Phone number</label>

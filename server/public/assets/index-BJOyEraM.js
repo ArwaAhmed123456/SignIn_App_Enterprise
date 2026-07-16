@@ -33218,7 +33218,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DSmfV0nl.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-BzOjuz5P.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -71305,6 +71305,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
     phone: "",
     role: "",
     mobileRole: "employee",
+    password: "",
     language: "English (UK)",
     show_on_sites: "",
     start_date: "",
@@ -71351,6 +71352,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
         first_name: fn,
         last_name: ln2,
         email: form.email.trim() || void 0,
+        password: form.password?.trim() || void 0,
         phone: form.phone.trim() || void 0,
         role: form.role.trim() || "Employee",
         mobileRole: form.mobileRole || "employee",
@@ -71441,6 +71443,20 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
                 className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
               }
             )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Password (optional)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "password",
+                value: form.password,
+                onChange: (e2) => set("password", e2.target.value),
+                placeholder: "Set a password for this member (optional)",
+                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "If set, this password will be included in the welcome email so the member can login directly." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Phone number" }),
@@ -76887,7 +76903,7 @@ const SupportPage = () => {
               {
                 type: "submit",
                 disabled: sendingEmail,
-                className: "w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#20356f] disabled:cursor-not-allowed disabled:opacity-60",
+                className: "w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#20356f] hover:text-white disabled:cursor-not-allowed disabled:opacity-60",
                 children: sendingEmail ? "Sending..." : "Send support request"
               }
             )
@@ -76938,7 +76954,7 @@ const SupportPage = () => {
             className: "flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594]"
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#20356f]", children: "Send" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#20356f] hover:text-white", children: "Send" })
       ] })
     ] })
   ] }) });

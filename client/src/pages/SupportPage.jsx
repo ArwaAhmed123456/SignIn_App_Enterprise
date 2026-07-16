@@ -247,7 +247,7 @@ const SupportPage = () => {
                 <button
                   type="submit"
                   disabled={sendingEmail}
-                  className="w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#20356f] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#20356f] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {sendingEmail ? 'Sending...' : 'Send support request'}
                 </button>
@@ -306,7 +306,7 @@ const SupportPage = () => {
                 placeholder="Type a message..."
                 className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594]"
               />
-              <button type="submit" className="rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#20356f]">
+              <button type="submit" className="rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#20356f] hover:text-white">
                 Send
               </button>
             </form>

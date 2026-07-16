@@ -171,7 +171,7 @@ const sendMobileInviteEmail = async (guard, plainToken) => {
 };
 
 // ── Welcome email (matches Sign In App reference) ─────────────────────────────
-const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, companionCode }) => {
+const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, companionCode, tempPassword }) => {
   const qrValue  = `MEMBER:${email}`;
   const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrValue)}&color=0f172a&bgcolor=ffffff&qzone=2`;
   const fmtCode  = companionCode
@@ -209,6 +209,19 @@ const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, com
       </div>
     </td></tr>` : '';
 
+  const credentialsSection = tempPassword ? `
+  <tr><td style="padding:0 40px 32px;">
+    <div style="background:#f0f4ff;border:1.5px solid #c7d7fe;border-radius:12px;padding:20px;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Login credentials</p>
+      <table cellpadding="0" cellspacing="0" style="width:100%;margin-top:8px;">
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Login URL:</strong></td><td style="padding:6px 0;font-size:14px;"><a href="${process.env.APP_URL || 'https://tripod-signin-app.onrender.com'}/admin/login" style="color:#2b4594;text-decoration:none;">${(process.env.APP_URL || 'https://tripod-signin-app.onrender.com').replace('https://','')}</a></td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Email:</strong></td><td style="padding:6px 0;font-size:14px;color:#111827;">${email.toLowerCase()}</td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#374151;"><strong>Password:</strong></td><td style="padding:6px 0;"><span style="font-family:'Courier New',monospace;font-size:18px;font-weight:900;color:#2b4594;background:#e8eeff;padding:4px 10px;border-radius:6px;">${tempPassword}</span></td></tr>
+      </table>
+      <p style="margin:12px 0 0;font-size:13px;color:#92400e;"><strong>Note:</strong> Please change your password after first login for security.</p>
+    </div>
+  </td></tr>` : '';
+
   return sendMail({
     to: email,
     subject: `Welcome${groupName ? ` to ${groupName}` : ''} — ${orgName || siteName || 'Sign In App'}`,
@@ -234,6 +247,7 @@ const sendWelcomeEmail = async ({ email, name, groupName, siteName, orgName, com
       <img src="${qrImgUrl}" width="160" height="160" alt="Your QR Code" style="border-radius:10px;border:1px solid #e2e8f0;display:block;margin:0 auto;"/>
     </div>
   </td></tr>
+  ${credentialsSection}
   ${companionSection}
   <tr><td style="padding:0 40px 32px;">
     <div style="background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;padding:18px 20px;">

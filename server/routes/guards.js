@@ -339,6 +339,7 @@ router.post('/members', verifyAdmin, async (req, res) => {
             siteName:      site?.name  || 'our site',
             orgName:       process.env.ORG_NAME || site?.name || 'Sign In App',
             companionCode,
+            tempPassword:  tempPassword,
           });
 
           if (result.success) {
