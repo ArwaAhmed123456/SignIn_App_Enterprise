@@ -33218,7 +33218,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-jp7pNdQu.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DSmfV0nl.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -76887,7 +76887,7 @@ const SupportPage = () => {
               {
                 type: "submit",
                 disabled: sendingEmail,
-                className: "w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#69b235] disabled:cursor-not-allowed disabled:opacity-60",
+                className: "w-full rounded-xl bg-[#2b4594] px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#20356f] disabled:cursor-not-allowed disabled:opacity-60",
                 children: sendingEmail ? "Sending..." : "Send support request"
               }
             )
@@ -76938,7 +76938,7 @@ const SupportPage = () => {
             className: "flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594]"
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#69b235]", children: "Send" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "rounded-lg bg-[#2b4594] px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-[#20356f]", children: "Send" })
       ] })
     ] })
   ] }) });
