@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView,
-  StyleSheet, Switch, Alert,
+  StyleSheet, Switch, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, User, ChevronDown } from 'lucide-react-native';
+import { Plus, User, ChevronDown, Trash2 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
 
   // Settings state
   const [profileExpanded, setProfileExpanded] = useState(false);
@@ -17,6 +17,7 @@ const ProfileScreen = ({ navigation }) => {
   const [hostNotifs, setHostNotifs]     = useState(true);
   const [language, setLanguage]         = useState('English (UK)');
   const [reminders, setReminders]       = useState([]);
+  const [deleting, setDeleting]         = useState(false);
 
   const memberName = user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) || user?.email?.split('@')[0] || 'Member';
   const group      = user?.group || user?.role || 'Employees';
@@ -29,6 +30,32 @@ const ProfileScreen = ({ navigation }) => {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Log Out', style: 'destructive', onPress: logout },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to permanently delete your account? This action cannot be undone and will remove all your personal data.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              await deleteAccount();
+              Alert.alert('Account Deleted', 'Your account and personal data have been permanently deleted.');
+            } catch (err) {
+              const msg = err.response?.data?.error || 'Failed to delete account. Please try again or contact support.';
+              Alert.alert('Error', msg);
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
       ]
     );
   };
@@ -212,6 +239,42 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={{ fontSize: 15, color: T1 }}>{language}</Text>
             <ChevronDown size={16} color={T2} />
           </TouchableOpacity>
+        </Card>
+
+        {/* Delete Account */}
+        <Card style={{ borderColor: '#fecaca', backgroundColor: '#fff5f5' }}>
+          <View style={{ padding: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Trash2 size={20} color="#dc2626" />
+              <Text style={{ fontSize: 16, fontWeight: '700', color: '#991b1b' }}>Delete Account</Text>
+            </View>
+            <Text style={{ fontSize: 13, color: '#7f1d1d', marginBottom: 14, lineHeight: 18 }}>
+              Permanently delete your account and remove all personal data. This action cannot be undone.
+            </Text>
+            <TouchableOpacity
+              onPress={handleDeleteAccount}
+              disabled={deleting}
+              style={{
+                backgroundColor: '#dc2626',
+                borderRadius: 10,
+                paddingVertical: 12,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 8,
+                opacity: deleting ? 0.7 : 1,
+              }}
+            >
+              {deleting ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <>
+                  <Trash2 size={16} color="#ffffff" />
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#ffffff' }}>Delete My Account</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </Card>
 
         {/* Log Out */}

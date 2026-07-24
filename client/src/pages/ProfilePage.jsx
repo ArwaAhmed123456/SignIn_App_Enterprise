@@ -130,6 +130,32 @@ const ProfilePage = () => {
             </div>
           </form>
         </div>
+
+        {/* Delete Account / Danger Zone */}
+        <div className="bg-red-50/50 rounded-lg border border-red-200 shadow-sm p-6 max-w-md space-y-3">
+          <h2 className="text-base font-bold text-red-800">Delete account</h2>
+          <p className="text-sm text-red-700">
+            Permanently delete your account and remove all personal data. This action cannot be undone.
+          </p>
+          <button
+            type="button"
+            onClick={async () => {
+              if (window.confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
+                try {
+                  await api.delete('/auth/delete-account');
+                  alert('Your account has been deleted.');
+                  localStorage.clear();
+                  window.location.href = '/login';
+                } catch (err) {
+                  alert(err.response?.data?.error || 'Failed to delete account.');
+                }
+              }
+            }}
+            className="px-4 py-2 bg-red-600 text-white font-semibold text-sm rounded-md hover:bg-red-700 transition-colors"
+          >
+            Delete My Account
+          </button>
+        </div>
       </div>
     </div>
   );

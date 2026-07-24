@@ -348,75 +348,51 @@ const Guard  = require('../models/Guard');
 // ─── Delete Account (User Self-Service for Apple 5.1.1 Compliance) ────────────
 const handleDeleteAccount = async (req, res) => {
     try {
-        const userId    = req.user?.id;
-        const userEmail = req.user?.email ? req.user.email.toLowerCase().trim() : null;
+        const userId = req.user?.id;
+        const rawEmail = req.user?.email ? String(req.user.email).trim() : null;
 
-        console.log(`[DeleteAccount] Attempting deletion — userId: ${userId}, email: ${userEmail}`);
+        console.log(`[DeleteAccount] Request received — userId: ${userId}, email: ${rawEmail}`);
 
-        if (!userId && !userEmail) {
+        if (!userId && !rawEmail) {
             return res.status(400).json({ error: 'User identification missing' });
         }
 
-        let deleted = false;
+        const emailRegex = rawEmail ? new RegExp(`^${rawEmail.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}$`, 'i') : null;
 
-        // 1. Try deleting from Member collection (guards, employees, managers)
+        // Build list of queries (by ID and/or by case-insensitive email)
+        const queries = [];
         if (userId) {
-            const member = await Member.findByIdAndDelete(userId);
-            if (member) {
-                console.log(`[DeleteAccount] Deleted Member by ID: ${userId}`);
-                deleted = true;
-            }
+            queries.push({ _id: userId });
         }
-        if (!deleted && userEmail) {
-            const member = await Member.findOneAndDelete({ email: userEmail });
-            if (member) {
-                console.log(`[DeleteAccount] Deleted Member by email: ${userEmail}`);
-                deleted = true;
-            }
+        if (emailRegex) {
+            queries.push({ email: emailRegex });
         }
 
-        // 2. Try deleting from legacy Guard collection
-        if (!deleted && userId) {
-            const guard = await Guard.findByIdAndDelete(userId);
-            if (guard) {
-                console.log(`[DeleteAccount] Deleted Guard by ID: ${userId}`);
-                deleted = true;
-            }
-        }
-        if (!deleted && userEmail) {
-            const guard = await Guard.findOneAndDelete({ email: userEmail });
-            if (guard) {
-                console.log(`[DeleteAccount] Deleted Guard by email: ${userEmail}`);
-                deleted = true;
-            }
+        const combinedQuery = queries.length > 1 ? { $or: queries } : queries[0];
+
+        // 1. Check if user is a superadmin in Admin collection
+        const existingAdmin = await Admin.findOne(combinedQuery);
+        if (existingAdmin && existingAdmin.role === 'superadmin') {
+            return res.status(400).json({ error: 'Superadmin account cannot be deleted via app self-service' });
         }
 
-        // 3. Try deleting from Admin collection (non-superadmin only)
-        if (!deleted && userId) {
-            const admin = await Admin.findById(userId);
-            if (admin) {
-                if (admin.role === 'superadmin') {
-                    return res.status(400).json({ error: 'Superadmin account cannot be deleted via app self-service' });
-                }
-                await Admin.findByIdAndDelete(userId);
-                console.log(`[DeleteAccount] Deleted Admin by ID: ${userId}`);
-                deleted = true;
-            }
-        }
-        if (!deleted && userEmail) {
-            const admin = await Admin.findOne({ email: userEmail });
-            if (admin) {
-                if (admin.role === 'superadmin') {
-                    return res.status(400).json({ error: 'Superadmin account cannot be deleted via app self-service' });
-                }
-                await Admin.findOneAndDelete({ email: userEmail });
-                console.log(`[DeleteAccount] Deleted Admin by email: ${userEmail}`);
-                deleted = true;
-            }
-        }
+        let deletedCount = 0;
 
-        if (!deleted) {
-            console.warn(`[DeleteAccount] Account not found — userId: ${userId}, email: ${userEmail}`);
+        // 2. Delete from Member collection
+        const memberDel = await Member.deleteMany(combinedQuery);
+        deletedCount += memberDel.deletedCount || 0;
+
+        // 3. Delete from Guard collection
+        const guardDel = await Guard.deleteMany(combinedQuery);
+        deletedCount += guardDel.deletedCount || 0;
+
+        // 4. Delete from Admin collection (non-superadmin)
+        const adminDel = await Admin.deleteMany(combinedQuery);
+        deletedCount += adminDel.deletedCount || 0;
+
+        console.log(`[DeleteAccount] Deleted ${deletedCount} total record(s) across Member, Guard, Admin for email: ${rawEmail}`);
+
+        if (deletedCount === 0) {
             return res.status(404).json({ error: 'Account not found or already deleted' });
         }
 
