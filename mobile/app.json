@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Tripod Services",
-    "slug": "tripodhubauth",
+    "slug": "signinapp-enterprise-mobile",
     "scheme": "tripodservices",
     "version": "1.1.0",
     "orientation": "portrait",
@@ -51,10 +51,10 @@
       "apiUrl": "https://tripod-signin-app.onrender.com/api",
       "webAppUrl": "https://tripod-signin-app.onrender.com",
       "eas": {
-        "projectId": "d198d300-5db6-4012-aad7-d97993f314f4"
+        "projectId": "995ac383-70e8-4f81-b6e1-8ff63b77a8a9"
       }
     },
-    "owner": "haalim",
+    "owner": "hayat123a",
     "runtimeVersion": {
       "policy": "appVersion"
     }
