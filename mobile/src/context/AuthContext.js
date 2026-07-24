@@ -101,8 +101,41 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const deleteAccount = async () => {
+        // Step 1: Call the server to permanently delete the account.
+        // Only clear local credentials AFTER a confirmed server-side deletion.
+        // Do NOT use a finally block — if the server call fails, we must NOT log
+        // the user out locally, because the account still exists on the server
+        // and they could log back in with the same credentials.
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            // No local token means nothing to delete; clear state and bail.
+            setUser(null);
+            return;
+        }
+
+        try {
+            await api.delete('/auth/delete-account');
+        } catch (err) {
+            if (err.response?.status === 404 || err.response?.status === 405) {
+                // Route may only support POST — fallback
+                await api.post('/auth/delete-account');
+            } else {
+                // Any other error (network failure, 500, etc.) → propagate.
+                // Do NOT clear local storage; the account was NOT deleted.
+                console.error('[AUTH] Delete account error:', err);
+                throw err;
+            }
+        }
+
+        // Step 2: Server confirmed deletion — now clear local credentials.
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('user');
+        setUser(null);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, activateMobile }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, activateMobile, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

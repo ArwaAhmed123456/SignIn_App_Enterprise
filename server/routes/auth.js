@@ -263,9 +263,8 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
             site_id:      site_id || null,
         });
 
-        // Send credentials email using the proper email service
         let emailSent = false;
-        const shouldSendEmail = send_email !== false; // default true
+        const shouldSendEmail = send_email !== false;
         if (shouldSendEmail) {
             try {
                 const { sendAdminCredentialsEmail } = require('../services/emailService');
@@ -276,9 +275,6 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
                     role:         role || 'admin',
                 });
                 emailSent = result?.success || false;
-                if (!emailSent) {
-                    console.warn('Credentials email not sent:', result?.error);
-                }
             } catch (emailErr) {
                 console.warn('Could not send credentials email:', emailErr.message);
             }
@@ -286,7 +282,7 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
 
         res.status(201).json({
             message:    shouldSendEmail
-                ? (emailSent ? 'Account created and credentials sent by email' : 'Account created (email delivery pending — check RESEND_API_KEY in .env)')
+                ? (emailSent ? 'Account created and credentials sent by email' : 'Account created (email delivery pending)')
                 : 'Account created (email not sent)',
             password:   tempPassword,
             email_sent: emailSent,
@@ -347,4 +343,92 @@ router.delete('/admins/:id', verifySuperAdmin, async (req, res) => {
     }
 });
 
+const Guard  = require('../models/Guard');
+
+// ─── Delete Account (User Self-Service for Apple 5.1.1 Compliance) ────────────
+const handleDeleteAccount = async (req, res) => {
+    try {
+        const userId    = req.user?.id;
+        const userEmail = req.user?.email ? req.user.email.toLowerCase().trim() : null;
+
+        console.log(`[DeleteAccount] Attempting deletion — userId: ${userId}, email: ${userEmail}`);
+
+        if (!userId && !userEmail) {
+            return res.status(400).json({ error: 'User identification missing' });
+        }
+
+        let deleted = false;
+
+        // 1. Try deleting from Member collection (guards, employees, managers)
+        if (userId) {
+            const member = await Member.findByIdAndDelete(userId);
+            if (member) {
+                console.log(`[DeleteAccount] Deleted Member by ID: ${userId}`);
+                deleted = true;
+            }
+        }
+        if (!deleted && userEmail) {
+            const member = await Member.findOneAndDelete({ email: userEmail });
+            if (member) {
+                console.log(`[DeleteAccount] Deleted Member by email: ${userEmail}`);
+                deleted = true;
+            }
+        }
+
+        // 2. Try deleting from legacy Guard collection
+        if (!deleted && userId) {
+            const guard = await Guard.findByIdAndDelete(userId);
+            if (guard) {
+                console.log(`[DeleteAccount] Deleted Guard by ID: ${userId}`);
+                deleted = true;
+            }
+        }
+        if (!deleted && userEmail) {
+            const guard = await Guard.findOneAndDelete({ email: userEmail });
+            if (guard) {
+                console.log(`[DeleteAccount] Deleted Guard by email: ${userEmail}`);
+                deleted = true;
+            }
+        }
+
+        // 3. Try deleting from Admin collection (non-superadmin only)
+        if (!deleted && userId) {
+            const admin = await Admin.findById(userId);
+            if (admin) {
+                if (admin.role === 'superadmin') {
+                    return res.status(400).json({ error: 'Superadmin account cannot be deleted via app self-service' });
+                }
+                await Admin.findByIdAndDelete(userId);
+                console.log(`[DeleteAccount] Deleted Admin by ID: ${userId}`);
+                deleted = true;
+            }
+        }
+        if (!deleted && userEmail) {
+            const admin = await Admin.findOne({ email: userEmail });
+            if (admin) {
+                if (admin.role === 'superadmin') {
+                    return res.status(400).json({ error: 'Superadmin account cannot be deleted via app self-service' });
+                }
+                await Admin.findOneAndDelete({ email: userEmail });
+                console.log(`[DeleteAccount] Deleted Admin by email: ${userEmail}`);
+                deleted = true;
+            }
+        }
+
+        if (!deleted) {
+            console.warn(`[DeleteAccount] Account not found — userId: ${userId}, email: ${userEmail}`);
+            return res.status(404).json({ error: 'Account not found or already deleted' });
+        }
+
+        res.json({ success: true, message: 'Account deleted successfully' });
+    } catch (err) {
+        console.error('[DeleteAccount] Server error:', err);
+        res.status(500).json({ error: 'Server error while deleting account' });
+    }
+};
+
+router.delete('/delete-account', verifyToken, handleDeleteAccount);
+router.post('/delete-account', verifyToken, handleDeleteAccount);
+
 module.exports = router;
+
