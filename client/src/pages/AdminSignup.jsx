@@ -18,6 +18,7 @@ const AdminSignup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(false);
     const navigate = useNavigate();
 
     const handleSignup = async (e) => {
@@ -28,8 +29,9 @@ const AdminSignup = () => {
         }
 
         setLoading(true);
+        setSuccessMessage(false);
         try {
-            await api.post('/auth/signup', {
+            const res = await api.post('/auth/signup', {
                 first_name: formData.first_name,
                 last_name: formData.last_name,
                 email: formData.email,
@@ -37,11 +39,12 @@ const AdminSignup = () => {
                 organization: formData.organization,
                 password: formData.password
             });
-            toast.success("Account created successfully!");
-            setTimeout(() => navigate('/admin/login'), 2000);
+            // Handle pending organization response
+            setSuccessMessage(true);
+            toast.success("Organization request submitted!");
+            setLoading(false);
         } catch (err) {
-            toast.error(err.response?.data?.error || "Signup failed");
-        } finally {
+            toast.error(err.response?.data?.error || "Request failed");
             setLoading(false);
         }
     };
@@ -183,14 +186,29 @@ const AdminSignup = () => {
                             disabled={loading}
                             className={`w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-200 hover:bg-secondary transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            {loading ? "Initializing..." : (
+                            {loading ? "Submitting..." : (
                                 <>
                                     <UserPlus size={20} />
-                                    <span>Register Admin Account</span>
+                                    <span>Request Organization Access</span>
                                 </>
                             )}
                         </button>
                     </form>
+
+                    {successMessage && (
+                      <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-5 text-center">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 mb-3">
+                          <ShieldCheck size={24} />
+                        </div>
+                        <h3 className="text-lg font-semibold text-green-800 mb-2">Request Submitted!</h3>
+                        <p className="text-sm text-green-700">
+                          Your organization registration request has been submitted. You will receive an email notification once your account is approved by the administrator.
+                        </p>
+                        <p className="text-xs text-green-600 mt-3">
+                          Please wait for approval before attempting to log in.
+                        </p>
+                      </div>
+                    )}
 
                     <div className="mt-8 pt-8 border-t border-slate-100 text-center">
                         <p className="text-slate-500">

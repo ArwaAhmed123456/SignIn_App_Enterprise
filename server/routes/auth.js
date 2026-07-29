@@ -5,6 +5,7 @@ const crypto   = require('crypto');
 const bcrypt   = require('bcryptjs');
 const Admin    = require('../models/Admin');
 const Member   = require('../models/Member');
+const PendingOrganization = require('../models/PendingOrganization');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
@@ -86,40 +87,40 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// ─── Signup (open for first superadmin, superadmin-only thereafter) ───────────
+// ─── Signup (creates pending organization for approval) ──────────────────────
 router.post('/signup', async (req, res) => {
     const { email, password, first_name, last_name, phone, organization } = req.body;
     if (!email || !password || !first_name || !last_name)
         return res.status(400).json({ error: 'Email, password, first name, and last name are required' });
     try {
-        // Check if any superadmin exists
-        const existingSuperAdmin = await Admin.findOne({ role: 'superadmin' });
-        if (existingSuperAdmin) {
-            // Not first-time setup — require superadmin token
-            const authHeader = req.headers['authorization'];
-            if (!authHeader) return res.status(401).json({ error: 'Superadmin token required' });
-            try {
-                const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
-                const admin = await Admin.findById(decoded.id);
-                if (!admin || admin.role !== 'superadmin')
-                    return res.status(403).json({ error: 'Access denied. Super Admin only.' });
-            } catch {
-                return res.status(401).json({ error: 'Invalid token' });
-            }
-        }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email))
             return res.status(400).json({ error: 'Invalid email format' });
-        const existing = await Admin.findOne({ email: email.toLowerCase() });
-        if (existing) return res.status(400).json({ error: 'Email already exists' });
+        
+        // Check if pending organization already exists
+        const existingPending = await PendingOrganization.findOne({ email: email.toLowerCase() });
+        if (existingPending) {
+            return res.status(400).json({ error: 'Your organization request is already pending approval' });
+        }
+        
+        // Check if active admin exists
+        const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
+        if (existingAdmin) return res.status(400).json({ error: 'Email already exists' });
+        
         const hashed = await bcrypt.hash(password, 10);
-        await Admin.create({
+        
+        // Create pending organization instead of active admin
+        const pendingOrg = await PendingOrganization.create({
             email: email.toLowerCase(),
-            password: hashed,
+            passwordHash: hashed,
             first_name, last_name, phone, organization,
-            role: existingSuperAdmin ? 'admin' : 'superadmin',
+            status: 'pending'
         });
-        res.status(201).json({ message: existingSuperAdmin ? 'Admin account created successfully' : 'Super admin account created successfully' });
+        
+        res.status(201).json({ 
+            message: 'Organization registration request submitted. You will receive an email once your account is approved by the administrator.',
+            pendingId: pendingOrg._id
+        });
     } catch (err) {
         console.error('Signup error:', err);
         res.status(500).json({ error: 'Server error' });
@@ -405,6 +406,65 @@ const handleDeleteAccount = async (req, res) => {
 
 router.delete('/delete-account', verifyToken, handleDeleteAccount);
 router.post('/delete-account', verifyToken, handleDeleteAccount);
+
+// ─── Pending Organization Admin Routes (Superadmin Only) ─────────────────────
+
+// List pending organizations
+router.get('/pending-organizations', verifySuperAdmin, async (req, res) => {
+    try {
+        const pendingOrgs = await PendingOrganization.find({ status: 'pending' }).sort({ createdAt: -1 });
+        res.json(pendingOrgs);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Approve pending organization
+router.post('/pending-organizations/:id/approve', verifySuperAdmin, async (req, res) => {
+    try {
+        const pendingOrg = await PendingOrganization.findById(req.params.id);
+        if (!pendingOrg) return res.status(404).json({ error: 'Pending organization not found' });
+        
+        // Create the actual admin account
+        const newAdmin = await Admin.create({
+            email: pendingOrg.email,
+            password: pendingOrg.passwordHash,
+            first_name: pendingOrg.first_name,
+            last_name: pendingOrg.last_name,
+            phone: pendingOrg.phone || '',
+            organization: pendingOrg.organization,
+            role: 'admin',
+        });
+        
+        // Update pending org status
+        pendingOrg.status = 'approved';
+        pendingOrg.reviewedBy = req.user.id;
+        pendingOrg.reviewedAt = new Date();
+        await pendingOrg.save();
+        
+        res.json({ message: 'Organization approved successfully', adminId: newAdmin._id });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Reject pending organization
+router.post('/pending-organizations/:id/reject', verifySuperAdmin, async (req, res) => {
+    try {
+        const pendingOrg = await PendingOrganization.findById(req.params.id);
+        if (!pendingOrg) return res.status(404).json({ error: 'Pending organization not found' });
+        
+        pendingOrg.status = 'rejected';
+        pendingOrg.reviewedBy = req.user.id;
+        pendingOrg.reviewedAt = new Date();
+        pendingOrg.adminNotes = req.body.notes || '';
+        await pendingOrg.save();
+        
+        res.json({ message: 'Organization request rejected' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 module.exports = router;
 

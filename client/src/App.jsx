@@ -24,6 +24,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicVisitorCheckIn from './pages/PublicVisitorCheckIn';
 import PublicSupportPage from './pages/PublicSupportPage';
 import PublicLanding from './pages/PublicLanding';
+import PendingOrganizations from './pages/manage/PendingOrganizations';
 
 const App = () => {
   return (
@@ -74,6 +75,8 @@ const App = () => {
           <Route path="support/collections/:collectionSlug" element={<SupportCollectionPage />} />
           <Route path="support/articles/:articleSlug" element={<SupportArticlePage />} />
           <Route path="profile"     element={<ProfilePage />} />
+          {/* Pending Organizations (superadmin only) */}
+          <Route path="pending-organizations" element={<PendingOrganizations />} />
           {/* Legacy */}
           <Route path="project/:id" element={<ProjectDetails />} />
         </Route>
