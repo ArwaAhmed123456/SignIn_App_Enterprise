@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Users, Globe, ArrowRight, Smartphone, Mail, Phone, Shield, Zap, Building2 } from 'lucide-react';
+import { CheckCircle, Users, Globe, ArrowRight, Smartphone, Mail, Phone, Shield, Zap, Building2, ShieldCheck } from 'lucide-react';
 
 const PublicLanding = () => {
   const navigate = useNavigate();
