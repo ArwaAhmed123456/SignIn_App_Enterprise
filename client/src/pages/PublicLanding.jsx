@@ -11,7 +11,9 @@ const PublicLanding = () => {
       <section className="relative bg-[#2b4594] text-white py-16">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-6">
-            <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod Services" className="h-20 w-auto mx-auto" />
+            <div className="inline-flex items-center justify-center bg-white rounded-2xl px-6 py-4 shadow-lg">
+              <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod Services" className="h-20 w-auto" />
+            </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Tripod Hub

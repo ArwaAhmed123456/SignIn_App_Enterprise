@@ -17842,7 +17842,7 @@ const __iconNode$a = [
   ],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ShieldCheck$1 = createLucideIcon("shield-check", __iconNode$a);
+const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
 const __iconNode$9 = [
   [
     "path",
@@ -33238,7 +33238,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-76rv8GBK.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-4ghzXZMn.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66134,7 +66134,8 @@ const AdminSignup = () => {
   const [showPassword, setShowPassword] = reactExports.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = reactExports.useState(false);
   const [loading, setLoading] = reactExports.useState(false);
-  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = reactExports.useState(false);
+  useNavigate();
   const handleSignup = async (e2) => {
     e2.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -66142,8 +66143,9 @@ const AdminSignup = () => {
       return;
     }
     setLoading(true);
+    setSuccessMessage(false);
     try {
-      await api.post("/auth/signup", {
+      const res = await api.post("/auth/signup", {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
@@ -66151,11 +66153,11 @@ const AdminSignup = () => {
         organization: formData.organization,
         password: formData.password
       });
-      zt$1.success("Account created successfully!");
-      setTimeout(() => navigate("/admin/login"), 2e3);
+      setSuccessMessage(true);
+      zt$1.success("Organization request submitted!");
+      setLoading(false);
     } catch (err) {
-      zt$1.error(err.response?.data?.error || "Signup failed");
-    } finally {
+      zt$1.error(err.response?.data?.error || "Request failed");
       setLoading(false);
     }
   };
@@ -66315,12 +66317,18 @@ const AdminSignup = () => {
               type: "submit",
               disabled: loading,
               className: `w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-200 hover:bg-secondary transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""}`,
-              children: loading ? "Initializing..." : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              children: loading ? "Submitting..." : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 20 }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Register Admin Account" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Request Organization Access" })
               ] })
             }
           )
+        ] }),
+        successMessage && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 bg-green-50 border border-green-200 rounded-xl p-5 text-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 mb-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 24 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold text-green-800 mb-2", children: "Request Submitted!" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-green-700", children: "Your organization registration request has been submitted. You will receive an email notification once your account is approved by the administrator." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-green-600 mt-3", children: "Please wait for approval before attempting to log in." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-8 pt-8 border-t border-slate-100 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-slate-500", children: [
           "Already have an account?",
@@ -66393,7 +66401,7 @@ const AdminLayout = () => {
     { to: "/admin/manage/sites", icon: MapPin, label: "Sites", desc: "Site setup, branding, sign in flows and devices" },
     { to: "/admin/manage/visitor-groups", icon: Users, label: "Visitor groups", desc: "Manage visitor types, data privacy and configurations" },
     { to: "/admin/manage/notifications", icon: Bell, label: "Advanced notifications", desc: "Send custom notifications to specific recipients" },
-    { to: "/admin/manage/safety", icon: ShieldCheck$1, label: "Safety check", desc: "Manage people to be identified at sign in" },
+    { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" },
     { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
     { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
   ].filter((item) => ["superadmin", "admin"].includes(adminRole) || item.to !== "/admin/manage/account");
@@ -66507,7 +66515,7 @@ const AdminLayout = () => {
               to: "/admin/evacuation",
               className: ({ isActive }) => `flex flex-col items-center justify-center gap-0.5 transition-colors ${isActive ? "text-red-600" : "text-slate-500 hover:text-slate-800"}`,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 18, strokeWidth: 1.75 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18, strokeWidth: 1.75 }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Evacuation" })
               ]
             }
@@ -66670,7 +66678,7 @@ const AdminLayout = () => {
             to: "/admin/evacuation",
             className: ({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-red-50 text-red-600" : "text-slate-600 hover:bg-slate-50"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 18 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18 }),
               " Evacuation"
             ]
           }
@@ -73937,7 +73945,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setShowEvacModal(true), className: "px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white", children: "Add evacuation point" })
       ] }),
       evacPoints.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 py-12 flex flex-col items-center gap-2 text-slate-400", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 36, strokeWidth: 1.2 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 36, strokeWidth: 1.2 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-slate-600 text-sm", children: "No evacuation points have been added to this site yet" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs", children: "Assign groups to an evacuation point for more efficient roll calls" })
       ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
@@ -74933,7 +74941,7 @@ const SafetyCheck = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { size: 15, className: "absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" })
     ] }),
     filtered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 py-16 flex flex-col items-center gap-4 text-slate-400", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 40, strokeWidth: 1.2 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 40, strokeWidth: 1.2 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-base font-semibold text-slate-600", children: "No people on the watch list" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-center max-w-sm", children: "Add people who should be identified when they sign in — banned visitors, VIPs, or anyone requiring special attention." })
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: filtered.map((p2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center gap-4 group hover:shadow-sm transition-shadow", children: [
@@ -76273,7 +76281,7 @@ const navItems = [
   { id: "sites", label: "Sites", icon: MapPin, path: "/admin/manage/sites" },
   { id: "visitor-groups", label: "Visitor groups", icon: Users, path: "/admin/manage/visitor-groups" },
   { id: "notifications", label: "Advanced notifications", icon: Bell, path: "/admin/manage/notifications" },
-  { id: "safety", label: "Safety check", icon: ShieldCheck$1, path: "/admin/manage/safety" },
+  { id: "safety", label: "Safety check", icon: ShieldCheck, path: "/admin/manage/safety" },
   { id: "api", label: "Client API", icon: Code, path: "/admin/manage/api" },
   { id: "account", label: "Account management", icon: Settings, path: "/admin/manage/account" }
 ];
@@ -76731,7 +76739,7 @@ const searchSupportContent = (query) => {
 const iconMap$1 = {
   play: CirclePlay,
   activity: UserRoundCheck,
-  shield: ShieldCheck$1
+  shield: ShieldCheck
 };
 const SupportPage = () => {
   const navigate = useNavigate();
@@ -77511,7 +77519,7 @@ const EvacuationPage = () => {
 const iconMap = {
   play: CirclePlay,
   activity: UserRoundCheck,
-  shield: ShieldCheck$1
+  shield: ShieldCheck
 };
 const SupportCollectionPage = () => {
   const { collectionSlug } = useParams();
@@ -78133,7 +78141,7 @@ const PublicSupportPage = () => {
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10 sm:px-8 lg:px-10", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-8 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 24 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 24 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-5 text-4xl font-semibold tracking-tight text-slate-900", children: "Support" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 max-w-3xl text-lg text-slate-600", children: "Need help with the Sign In App experience? Use the information below for support requests, product questions, or assistance with account access." })
     ] }),
@@ -78238,7 +78246,7 @@ const PublicLanding = () => {
   const navigate = useNavigate();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-slate-50", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "relative bg-[#2b4594] text-white py-16", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Services", className: "h-20 w-auto mx-auto" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex items-center justify-center bg-white rounded-2xl px-6 py-4 shadow-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Services", className: "h-20 w-auto" }) }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-bold tracking-tight mb-6", children: "Tripod Hub" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-10", children: [
         "The public visitor management companion app.",
@@ -78514,6 +78522,152 @@ const PublicLanding = () => {
     ] }) })
   ] });
 };
+const PendingOrganizations = () => {
+  const [pendingOrgs, setPendingOrgs] = reactExports.useState([]);
+  const [loading, setLoading] = reactExports.useState(true);
+  const [approvingId, setApprovingId] = reactExports.useState(null);
+  const [rejectingId, setRejectingId] = reactExports.useState(null);
+  const [rejectNotes, setRejectNotes] = reactExports.useState("");
+  const navigate = useNavigate();
+  reactExports.useEffect(() => {
+    fetchPendingOrgs();
+  }, []);
+  const fetchPendingOrgs = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/auth/pending-organizations");
+      setPendingOrgs(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch pending orgs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleApprove = async (id) => {
+    setApprovingId(id);
+    try {
+      await api.post(`/auth/pending-organizations/${id}/approve`);
+      await fetchPendingOrgs();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to approve organization");
+    } finally {
+      setApprovingId(null);
+    }
+  };
+  const handleReject = async (id) => {
+    setRejectingId(id);
+    try {
+      await api.post(`/auth/pending-organizations/${id}/reject`, { notes: rejectNotes });
+      setRejectNotes("");
+      await fetchPendingOrgs();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to reject organization");
+    } finally {
+      setRejectingId(null);
+    }
+  };
+  const fmtDate2 = (dateStr) => {
+    try {
+      return new Date(dateStr).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "—";
+    }
+  };
+  if (loading && pendingOrgs.length === 0) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-b-2 border-[#2b4594]" }) });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-5xl mx-auto p-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => navigate("/admin/manage"), className: "text-sm text-[#2b4594] hover:underline", children: "← Manage" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-bold text-slate-900", children: "Pending Organization Requests" })
+    ] }),
+    pendingOrgs.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-12 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 32, className: "text-green-600" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-semibold text-slate-900 mb-2", children: "No pending requests" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: "All organization registration requests have been reviewed." })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-200", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left", children: "Organization" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left", children: "Admin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left", children: "Contact" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left", children: "Requested" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-right", children: "Actions" })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: pendingOrgs.map((org) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Building2, { size: 20, className: "text-[#2b4594]" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-slate-900", children: org.organization }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700", children: "Pending" })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "px-6 py-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-slate-800", children: [
+            org.first_name,
+            " ",
+            org.last_name
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Admin" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "px-6 py-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `mailto:${org.email}`, className: "text-[#2b4594] hover:underline", children: org.email }),
+          org.phone && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-1", children: org.phone })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-xs text-slate-500", children: fmtDate2(org.createdAt) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => handleApprove(org._id),
+              disabled: approvingId === org._id,
+              className: "flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-lg text-sm font-semibold",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 16 }),
+                " Approve"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => handleReject(org._id),
+              disabled: rejectingId === org._id,
+              className: "flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-sm font-semibold",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { size: 16 }),
+                " Reject"
+              ]
+            }
+          )
+        ] }) })
+      ] }, org._id)) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-8 bg-[#2b4594]/5 border border-[#2b4594]/20 rounded-xl p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-semibold text-[#2b4594] mb-2 flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { size: 18 }),
+        "How to review requests"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "text-sm text-slate-600 space-y-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#2b4594] font-bold", children: "1." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Review each organization request carefully" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#2b4594] font-bold", children: "2." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: 'Click "Approve" to create their admin account' })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#2b4594] font-bold", children: "3." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: 'Or click "Reject" and add notes explaining why' })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#2b4594] font-bold", children: "4." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Approved organizations can log in with their credentials" })
+        ] })
+      ] })
+    ] })
+  ] });
+};
 const App = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicLanding, {}) }),
@@ -78547,6 +78701,7 @@ const App = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "support/collections/:collectionSlug", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SupportCollectionPage, {}) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "support/articles/:articleSlug", element: /* @__PURE__ */ jsxRuntimeExports.jsx(SupportArticlePage, {}) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "profile", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ProfilePage, {}) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "pending-organizations", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PendingOrganizations, {}) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "project/:id", element: /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectDetails, {}) })
         ]
       }
