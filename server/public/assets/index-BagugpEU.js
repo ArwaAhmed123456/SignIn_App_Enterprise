@@ -17884,7 +17884,7 @@ const __iconNode$5 = [
   ["line", { x1: "19", x2: "19", y1: "8", y2: "14", key: "1bvyxn" }],
   ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
 ];
-const UserPlus$1 = createLucideIcon("user-plus", __iconNode$5);
+const UserPlus = createLucideIcon("user-plus", __iconNode$5);
 const __iconNode$4 = [
   ["path", { d: "M2 21a8 8 0 0 1 13.292-6", key: "bjp14o" }],
   ["circle", { cx: "10", cy: "8", r: "5", key: "o932ke" }],
@@ -33238,7 +33238,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CcRWEQqI.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DEbCzxow.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66316,7 +66316,7 @@ const AdminSignup = () => {
               disabled: loading,
               className: `w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-200 hover:bg-secondary transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""}`,
               children: loading ? "Initializing..." : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 20 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 20 }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Register Admin Account" })
               ] })
             }
@@ -71684,7 +71684,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
       drawerTab === "Safety" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-semibold text-slate-800 mb-4", children: "Emergency contacts" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-[#2b4594] transition-colors", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 16 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 16 }),
           " Add contact"
         ] })
       ] })
@@ -72235,7 +72235,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-dashed border-slate-300 px-5 py-8 text-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 mb-3", children: "No emergency contacts added yet" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 15 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 15 }),
                 " Add contact"
               ] })
             ] })
