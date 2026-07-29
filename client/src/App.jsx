@@ -23,13 +23,14 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import PublicVisitorCheckIn from './pages/PublicVisitorCheckIn';
 import PublicSupportPage from './pages/PublicSupportPage';
+import PublicLanding from './pages/PublicLanding';
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect Root to Admin Login */}
-        <Route path="/" element={<Navigate to="/admin/login" replace />} />
+        {/* Redirect Root to Public Landing Page */}
+        <Route path="/" element={<PublicLanding />} />
 
         {/* Mobile Routes */}
         <Route path="/mobile-landing" element={<MobileLanding />} />

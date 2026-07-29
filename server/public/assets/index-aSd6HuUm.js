@@ -17387,33 +17387,33 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$10 = [
+const __iconNode$12 = [
   ["rect", { width: "20", height: "5", x: "2", y: "3", rx: "1", key: "1wp1u1" }],
   ["path", { d: "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8", key: "1s80jp" }],
   ["path", { d: "M10 12h4", key: "a56b0p" }]
 ];
-const Archive = createLucideIcon("archive", __iconNode$10);
-const __iconNode$$ = [
+const Archive = createLucideIcon("archive", __iconNode$12);
+const __iconNode$11 = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$$);
-const __iconNode$_ = [
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$11);
+const __iconNode$10 = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$_);
-const __iconNode$Z = [
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$10);
+const __iconNode$$ = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$Z);
-const __iconNode$Y = [
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$$);
+const __iconNode$_ = [
   ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
   ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$Y);
-const __iconNode$X = [
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$_);
+const __iconNode$Z = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17424,8 +17424,8 @@ const __iconNode$X = [
   ],
   ["circle", { cx: "18", cy: "8", r: "3", key: "1g0gzu" }]
 ];
-const BellDot = createLucideIcon("bell-dot", __iconNode$X);
-const __iconNode$W = [
+const BellDot = createLucideIcon("bell-dot", __iconNode$Z);
+const __iconNode$Y = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   ["path", { d: "M22 8c0-2.3-.8-4.3-2-6", key: "5bb3ad" }],
   [
@@ -17437,8 +17437,8 @@ const __iconNode$W = [
   ],
   ["path", { d: "M4 2C2.8 3.7 2 5.7 2 8", key: "tap9e0" }]
 ];
-const BellRing = createLucideIcon("bell-ring", __iconNode$W);
-const __iconNode$V = [
+const BellRing = createLucideIcon("bell-ring", __iconNode$Y);
+const __iconNode$X = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -17448,8 +17448,8 @@ const __iconNode$V = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$V);
-const __iconNode$U = [
+const Bell = createLucideIcon("bell", __iconNode$X);
+const __iconNode$W = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
     "path",
@@ -17459,8 +17459,8 @@ const __iconNode$U = [
     }
   ]
 ];
-const BookOpen = createLucideIcon("book-open", __iconNode$U);
-const __iconNode$T = [
+const BookOpen = createLucideIcon("book-open", __iconNode$W);
+const __iconNode$V = [
   ["path", { d: "M10 12h4", key: "a56b0p" }],
   ["path", { d: "M10 8h4", key: "1sr2af" }],
   ["path", { d: "M14 21v-3a2 2 0 0 0-4 0v3", key: "1rgiei" }],
@@ -17473,8 +17473,8 @@ const __iconNode$T = [
   ],
   ["path", { d: "M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16", key: "16ra0t" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$T);
-const __iconNode$S = [
+const Building2 = createLucideIcon("building-2", __iconNode$V);
+const __iconNode$U = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
@@ -17486,15 +17486,15 @@ const __iconNode$S = [
   ["path", { d: "M12 18h.01", key: "mhygvu" }],
   ["path", { d: "M16 18h.01", key: "kzsmim" }]
 ];
-const CalendarDays = createLucideIcon("calendar-days", __iconNode$S);
-const __iconNode$R = [
+const CalendarDays = createLucideIcon("calendar-days", __iconNode$U);
+const __iconNode$T = [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
   ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
   ["path", { d: "M3 10h18", key: "8toen8" }]
 ];
-const Calendar = createLucideIcon("calendar", __iconNode$R);
-const __iconNode$Q = [
+const Calendar = createLucideIcon("calendar", __iconNode$T);
+const __iconNode$S = [
   [
     "path",
     {
@@ -17504,30 +17504,30 @@ const __iconNode$Q = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$Q);
-const __iconNode$P = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$P);
-const __iconNode$O = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$O);
-const __iconNode$N = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$N);
-const __iconNode$M = [
+const Camera = createLucideIcon("camera", __iconNode$S);
+const __iconNode$R = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$R);
+const __iconNode$Q = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$Q);
+const __iconNode$P = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$P);
+const __iconNode$O = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$M);
-const __iconNode$L = [
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$O);
+const __iconNode$N = [
   ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
   ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
 ];
-const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$L);
-const __iconNode$K = [
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$N);
+const __iconNode$M = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$K);
-const __iconNode$J = [
+const CircleCheck = createLucideIcon("circle-check", __iconNode$M);
+const __iconNode$L = [
   [
     "path",
     {
@@ -17537,69 +17537,69 @@ const __iconNode$J = [
   ],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$J);
-const __iconNode$I = [
+const CirclePlay = createLucideIcon("circle-play", __iconNode$L);
+const __iconNode$K = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$I);
-const __iconNode$H = [
+const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$K);
+const __iconNode$J = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }],
   ["path", { d: "M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662", key: "154egf" }]
 ];
-const CircleUser = createLucideIcon("circle-user", __iconNode$H);
-const __iconNode$G = [
+const CircleUser = createLucideIcon("circle-user", __iconNode$J);
+const __iconNode$I = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
   ["path", { d: "m9 9 6 6", key: "z0biqf" }]
 ];
-const CircleX = createLucideIcon("circle-x", __iconNode$G);
-const __iconNode$F = [
+const CircleX = createLucideIcon("circle-x", __iconNode$I);
+const __iconNode$H = [
   ["path", { d: "M12 6v6h4", key: "135r8i" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock3 = createLucideIcon("clock-3", __iconNode$F);
-const __iconNode$E = [
+const Clock3 = createLucideIcon("clock-3", __iconNode$H);
+const __iconNode$G = [
   ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ];
-const Clock = createLucideIcon("clock", __iconNode$E);
-const __iconNode$D = [
+const Clock = createLucideIcon("clock", __iconNode$G);
+const __iconNode$F = [
   ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
   ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
 ];
-const Code = createLucideIcon("code", __iconNode$D);
-const __iconNode$C = [
+const Code = createLucideIcon("code", __iconNode$F);
+const __iconNode$E = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ];
-const Copy = createLucideIcon("copy", __iconNode$C);
-const __iconNode$B = [
+const Copy = createLucideIcon("copy", __iconNode$E);
+const __iconNode$D = [
   ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
   ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
 ];
-const CreditCard = createLucideIcon("credit-card", __iconNode$B);
-const __iconNode$A = [
+const CreditCard = createLucideIcon("credit-card", __iconNode$D);
+const __iconNode$C = [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const Download = createLucideIcon("download", __iconNode$A);
-const __iconNode$z = [
+const Download = createLucideIcon("download", __iconNode$C);
+const __iconNode$B = [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "19", cy: "12", r: "1", key: "1wjl8i" }],
   ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }]
 ];
-const Ellipsis = createLucideIcon("ellipsis", __iconNode$z);
-const __iconNode$y = [
+const Ellipsis = createLucideIcon("ellipsis", __iconNode$B);
+const __iconNode$A = [
   ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
   ["path", { d: "M10 14 21 3", key: "gplh6r" }],
   ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
 ];
-const ExternalLink = createLucideIcon("external-link", __iconNode$y);
-const __iconNode$x = [
+const ExternalLink = createLucideIcon("external-link", __iconNode$A);
+const __iconNode$z = [
   [
     "path",
     {
@@ -17617,8 +17617,8 @@ const __iconNode$x = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$x);
-const __iconNode$w = [
+const EyeOff = createLucideIcon("eye-off", __iconNode$z);
+const __iconNode$y = [
   [
     "path",
     {
@@ -17628,8 +17628,8 @@ const __iconNode$w = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$w);
-const __iconNode$v = [
+const Eye = createLucideIcon("eye", __iconNode$y);
+const __iconNode$x = [
   [
     "path",
     {
@@ -17642,8 +17642,8 @@ const __iconNode$v = [
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ];
-const FileText = createLucideIcon("file-text", __iconNode$v);
-const __iconNode$u = [
+const FileText = createLucideIcon("file-text", __iconNode$x);
+const __iconNode$w = [
   [
     "path",
     {
@@ -17652,14 +17652,14 @@ const __iconNode$u = [
     }
   ]
 ];
-const Funnel = createLucideIcon("funnel", __iconNode$u);
-const __iconNode$t = [
+const Funnel = createLucideIcon("funnel", __iconNode$w);
+const __iconNode$v = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$t);
-const __iconNode$s = [
+const Globe = createLucideIcon("globe", __iconNode$v);
+const __iconNode$u = [
   ["circle", { cx: "9", cy: "12", r: "1", key: "1vctgf" }],
   ["circle", { cx: "9", cy: "5", r: "1", key: "hp0tcf" }],
   ["circle", { cx: "9", cy: "19", r: "1", key: "fkjjf6" }],
@@ -17667,25 +17667,25 @@ const __iconNode$s = [
   ["circle", { cx: "15", cy: "5", r: "1", key: "19l28e" }],
   ["circle", { cx: "15", cy: "19", r: "1", key: "f4zoj3" }]
 ];
-const GripVertical = createLucideIcon("grip-vertical", __iconNode$s);
-const __iconNode$r = [
+const GripVertical = createLucideIcon("grip-vertical", __iconNode$u);
+const __iconNode$t = [
   ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
   ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
 ];
-const History = createLucideIcon("history", __iconNode$r);
-const __iconNode$q = [
+const History = createLucideIcon("history", __iconNode$t);
+const __iconNode$s = [
   ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
   ["path", { d: "M21 12H9", key: "dn1m92" }],
   ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
 ];
-const LogOut = createLucideIcon("log-out", __iconNode$q);
-const __iconNode$p = [
+const LogOut = createLucideIcon("log-out", __iconNode$s);
+const __iconNode$r = [
   ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
   ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
 ];
-const Mail = createLucideIcon("mail", __iconNode$p);
-const __iconNode$o = [
+const Mail = createLucideIcon("mail", __iconNode$r);
+const __iconNode$q = [
   [
     "path",
     {
@@ -17695,14 +17695,14 @@ const __iconNode$o = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$o);
-const __iconNode$n = [
+const MapPin = createLucideIcon("map-pin", __iconNode$q);
+const __iconNode$p = [
   ["path", { d: "M4 5h16", key: "1tepv9" }],
   ["path", { d: "M4 12h16", key: "1lakjw" }],
   ["path", { d: "M4 19h16", key: "1djgab" }]
 ];
-const Menu = createLucideIcon("menu", __iconNode$n);
-const __iconNode$m = [
+const Menu = createLucideIcon("menu", __iconNode$p);
+const __iconNode$o = [
   [
     "path",
     {
@@ -17711,8 +17711,8 @@ const __iconNode$m = [
     }
   ]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$m);
-const __iconNode$l = [
+const MessageCircle = createLucideIcon("message-circle", __iconNode$o);
+const __iconNode$n = [
   [
     "path",
     {
@@ -17721,14 +17721,14 @@ const __iconNode$l = [
     }
   ]
 ];
-const MessageSquare = createLucideIcon("message-square", __iconNode$l);
-const __iconNode$k = [
+const MessageSquare = createLucideIcon("message-square", __iconNode$n);
+const __iconNode$m = [
   ["rect", { width: "20", height: "14", x: "2", y: "3", rx: "2", key: "48i651" }],
   ["line", { x1: "8", x2: "16", y1: "21", y2: "21", key: "1svkeh" }],
   ["line", { x1: "12", x2: "12", y1: "17", y2: "21", key: "vw1qmm" }]
 ];
-const Monitor = createLucideIcon("monitor", __iconNode$k);
-const __iconNode$j = [
+const Monitor = createLucideIcon("monitor", __iconNode$m);
+const __iconNode$l = [
   [
     "path",
     {
@@ -17740,8 +17740,8 @@ const __iconNode$j = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$j);
-const __iconNode$i = [
+const Package = createLucideIcon("package", __iconNode$l);
+const __iconNode$k = [
   [
     "path",
     {
@@ -17750,8 +17750,8 @@ const __iconNode$i = [
     }
   ]
 ];
-const Pen = createLucideIcon("pen", __iconNode$i);
-const __iconNode$h = [
+const Pen = createLucideIcon("pen", __iconNode$k);
+const __iconNode$j = [
   [
     "path",
     {
@@ -17761,13 +17761,23 @@ const __iconNode$h = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$h);
-const __iconNode$g = [
+const Pencil = createLucideIcon("pencil", __iconNode$j);
+const __iconNode$i = [
+  [
+    "path",
+    {
+      d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+      key: "9njp5v"
+    }
+  ]
+];
+const Phone = createLucideIcon("phone", __iconNode$i);
+const __iconNode$h = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$g);
-const __iconNode$f = [
+const Plus = createLucideIcon("plus", __iconNode$h);
+const __iconNode$g = [
   ["rect", { width: "5", height: "5", x: "3", y: "3", rx: "1", key: "1tu5fj" }],
   ["rect", { width: "5", height: "5", x: "16", y: "3", rx: "1", key: "1v8r4q" }],
   ["rect", { width: "5", height: "5", x: "3", y: "16", rx: "1", key: "1x03jg" }],
@@ -17781,20 +17791,20 @@ const __iconNode$f = [
   ["path", { d: "M21 12v.01", key: "1lwtk9" }],
   ["path", { d: "M12 21v-1", key: "1880an" }]
 ];
-const QrCode = createLucideIcon("qr-code", __iconNode$f);
-const __iconNode$e = [
+const QrCode = createLucideIcon("qr-code", __iconNode$g);
+const __iconNode$f = [
   ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
   ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
   ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
   ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ];
-const RefreshCw = createLucideIcon("refresh-cw", __iconNode$e);
-const __iconNode$d = [
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$f);
+const __iconNode$e = [
   ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
 ];
-const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$d);
-const __iconNode$c = [
+const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$e);
+const __iconNode$d = [
   [
     "path",
     {
@@ -17805,13 +17815,13 @@ const __iconNode$c = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$c);
-const __iconNode$b = [
+const Save = createLucideIcon("save", __iconNode$d);
+const __iconNode$c = [
   ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
   ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
 ];
-const Search = createLucideIcon("search", __iconNode$b);
-const __iconNode$a = [
+const Search = createLucideIcon("search", __iconNode$c);
+const __iconNode$b = [
   [
     "path",
     {
@@ -17821,8 +17831,8 @@ const __iconNode$a = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Settings = createLucideIcon("settings", __iconNode$a);
-const __iconNode$9 = [
+const Settings = createLucideIcon("settings", __iconNode$b);
+const __iconNode$a = [
   [
     "path",
     {
@@ -17832,8 +17842,8 @@ const __iconNode$9 = [
   ],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ShieldCheck = createLucideIcon("shield-check", __iconNode$9);
-const __iconNode$8 = [
+const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
+const __iconNode$9 = [
   [
     "path",
     {
@@ -17842,21 +17852,21 @@ const __iconNode$8 = [
     }
   ]
 ];
-const Shield = createLucideIcon("shield", __iconNode$8);
-const __iconNode$7 = [
+const Shield = createLucideIcon("shield", __iconNode$9);
+const __iconNode$8 = [
   ["rect", { width: "14", height: "20", x: "5", y: "2", rx: "2", ry: "2", key: "1yt0o3" }],
   ["path", { d: "M12 18h.01", key: "mhygvu" }]
 ];
-const Smartphone = createLucideIcon("smartphone", __iconNode$7);
-const __iconNode$6 = [
+const Smartphone = createLucideIcon("smartphone", __iconNode$8);
+const __iconNode$7 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ];
-const Trash2 = createLucideIcon("trash-2", __iconNode$6);
-const __iconNode$5 = [
+const Trash2 = createLucideIcon("trash-2", __iconNode$7);
+const __iconNode$6 = [
   [
     "path",
     {
@@ -17867,37 +17877,47 @@ const __iconNode$5 = [
   ["path", { d: "M12 9v4", key: "juzpu7" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const TriangleAlert = createLucideIcon("triangle-alert", __iconNode$5);
-const __iconNode$4 = [
+const TriangleAlert = createLucideIcon("triangle-alert", __iconNode$6);
+const __iconNode$5 = [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
   ["line", { x1: "19", x2: "19", y1: "8", y2: "14", key: "1bvyxn" }],
   ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
 ];
-const UserPlus = createLucideIcon("user-plus", __iconNode$4);
-const __iconNode$3 = [
+const UserPlus$1 = createLucideIcon("user-plus", __iconNode$5);
+const __iconNode$4 = [
   ["path", { d: "M2 21a8 8 0 0 1 13.292-6", key: "bjp14o" }],
   ["circle", { cx: "10", cy: "8", r: "5", key: "o932ke" }],
   ["path", { d: "m16 19 2 2 4-4", key: "1b14m6" }]
 ];
-const UserRoundCheck = createLucideIcon("user-round-check", __iconNode$3);
-const __iconNode$2 = [
+const UserRoundCheck = createLucideIcon("user-round-check", __iconNode$4);
+const __iconNode$3 = [
   ["path", { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2", key: "975kel" }],
   ["circle", { cx: "12", cy: "7", r: "4", key: "17ys0d" }]
 ];
-const User = createLucideIcon("user", __iconNode$2);
-const __iconNode$1 = [
+const User = createLucideIcon("user", __iconNode$3);
+const __iconNode$2 = [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
   ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
 ];
-const Users = createLucideIcon("users", __iconNode$1);
-const __iconNode = [
+const Users = createLucideIcon("users", __iconNode$2);
+const __iconNode$1 = [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
 ];
-const X$1 = createLucideIcon("x", __iconNode);
+const X$1 = createLucideIcon("x", __iconNode$1);
+const __iconNode = [
+  [
+    "path",
+    {
+      d: "M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",
+      key: "1xq2db"
+    }
+  ]
+];
+const Zap = createLucideIcon("zap", __iconNode);
 const MobileLanding = () => {
   const navigate = useNavigate();
   const [code, setCode] = reactExports.useState("");
@@ -33218,7 +33238,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-BzOjuz5P.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-CcRWEQqI.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66296,7 +66316,7 @@ const AdminSignup = () => {
               disabled: loading,
               className: `w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-200 hover:bg-secondary transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""}`,
               children: loading ? "Initializing..." : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 20 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 20 }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Register Admin Account" })
               ] })
             }
@@ -71664,7 +71684,7 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
       drawerTab === "Safety" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-semibold text-slate-800 mb-4", children: "Emergency contacts" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-[#2b4594] transition-colors", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 16 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 16 }),
           " Add contact"
         ] })
       ] })
@@ -72215,7 +72235,7 @@ const MemberDrawer = ({ member, groups, onClose, onSaved }) => {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-dashed border-slate-300 px-5 py-8 text-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 mb-3", children: "No emergency contacts added yet" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 15 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus$1, { size: 15 }),
                 " Add contact"
               ] })
             ] })
@@ -76449,6 +76469,30 @@ const ProfilePage = () => {
           }
         ) })
       ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-red-50/50 rounded-lg border border-red-200 shadow-sm p-6 max-w-md space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-bold text-red-800", children: "Delete account" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-red-700", children: "Permanently delete your account and remove all personal data. This action cannot be undone." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          type: "button",
+          onClick: async () => {
+            if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+              try {
+                await api.delete("/auth/delete-account");
+                alert("Your account has been deleted.");
+                localStorage.clear();
+                window.location.href = "/login";
+              } catch (err) {
+                alert(err.response?.data?.error || "Failed to delete account.");
+              }
+            }
+          },
+          className: "px-4 py-2 bg-red-600 text-white font-semibold text-sm rounded-md hover:bg-red-700 transition-colors",
+          children: "Delete My Account"
+        }
+      )
     ] })
   ] }) });
 };
@@ -78190,9 +78234,292 @@ const PublicSupportPage = () => {
     ] })
   ] }) });
 };
+const PublicLanding = () => {
+  const navigate = useNavigate();
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-slate-50", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "relative bg-[#2b4594] text-white py-20", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-[#2b4594] to-[#1e326e] opacity-90" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-2xl mb-6 backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Building2, { size: 40 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-bold tracking-tight mb-6", children: "Tripod Hub" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-10", children: [
+          "The public visitor management companion app.",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+          "Organizations use our platform to manage visitors, guards, and employees.",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("br", { className: "hidden md:block" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold", children: "You can use it too — just ask your organization." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => navigate("/admin/register"),
+              className: "w-full sm:w-auto px-8 py-4 bg-white text-[#2b4594] rounded-xl font-semibold hover:bg-blue-50 transition flex items-center justify-center gap-2",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 20 }),
+                "Start Your Organization"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => navigate("/mobile-landing"),
+              className: "w-full sm:w-auto px-8 py-4 bg-[#2b4594]/30 border border-white/30 text-white rounded-xl font-semibold hover:bg-[#2b4594]/40 transition flex items-center justify-center gap-2",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Smartphone, { size: 20 }),
+                "Download Mobile App"
+              ]
+            }
+          )
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-2 gap-12 items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-slate-900 mb-6", children: "What is Tripod Hub?" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-lg text-slate-700", children: [
+            "Tripod Hub is a ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#2b4594]", children: "B2B SaaS platform" }),
+            " that helps organizations manage visitor check-ins, employee attendance, and security operations."
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-slate-700", children: 'Think of it like "Airbnb for visitor management" — we provide the technology, and any organization can use it.' }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-50 border border-blue-100 rounded-xl p-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-semibold text-[#2b4594] mb-3 flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 18 }),
+              "Key Points"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-2 text-sm text-slate-700", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 16, className: "text-green-500 mt-0.5 flex-shrink-0" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Publicly available on App Store & Google Play" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 16, className: "text-green-500 mt-0.5 flex-shrink-0" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Free for end users (employees, guards, visitors)" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 16, className: "text-green-500 mt-0.5 flex-shrink-0" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Organizations pay for subscription" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 16, className: "text-green-500 mt-0.5 flex-shrink-0" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Any business can sign up and start using it" })
+              ] })
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-xl p-8 border border-slate-100", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-6 border-b border-slate-100 pb-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-semibold text-slate-900", children: "How It Works" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full", children: "Public Platform" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-[#2b4594] text-white flex items-center justify-center flex-shrink-0 font-bold", children: "1" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-semibold text-slate-900", children: "Organization Signs Up" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 mt-1", children: "Any business creates their own account at tripod-signin-app.onrender.com" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-[#2b4594] text-white flex items-center justify-center flex-shrink-0 font-bold", children: "2" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-semibold text-slate-900", children: "They Configure Their Site" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 mt-1", children: "Admin sets up visitor groups, locations, and security settings" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-[#2b4594] text-white flex items-center justify-center flex-shrink-0 font-bold", children: "3" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-semibold text-slate-900", children: "Employees & Guards Use the App" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 mt-1", children: "Staff download the app and sign in with credentials from their organization" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-[#2b4594] text-white flex items-center justify-center flex-shrink-0 font-bold", children: "4" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-semibold text-slate-900", children: "Visitors Check In Publicly" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-600 mt-1", children: "Anyone can visit and sign in at any Tripod Hub site — no account needed" })
+            ] })
+          ] })
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "bg-white py-20 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-16", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-slate-900 mb-4", children: "Public Features Available to Everyone" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-slate-600 max-w-2xl mx-auto", children: "You don't need an account to experience our core visitor management features." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-3 gap-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:border-[#2b4594]/30 transition", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 bg-[#2b4594]/10 rounded-2xl flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { size: 32, className: "text-[#2b4594]" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-semibold text-slate-900 mb-3", children: "Public Visitor Check-in" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 mb-6", children: "Visit any organization using Tripod Hub and sign in yourself — no account required. Just enter the site code and complete the check-in form." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => navigate("/checkin/TRIPOD"),
+              className: "text-[#2b4594] font-semibold flex items-center gap-2 hover:gap-3 transition",
+              children: [
+                "Try it now ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { size: 16 })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:border-[#2b4594]/30 transition", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 bg-[#2b4594]/10 rounded-2xl flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 32, className: "text-[#2b4594]" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-semibold text-slate-900 mb-3", children: "Health & Safety" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 mb-6", children: "All public check-ins include health & safety acknowledgment, visitor拍照, and sign-out functionality for site security." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => navigate("/checkin/TRIPOD"),
+              className: "text-[#2b4594] font-semibold flex items-center gap-2 hover:gap-3 transition",
+              children: [
+                "See how it works ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { size: 16 })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:border-[#2b4594]/30 transition", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 bg-[#2b4594]/10 rounded-2xl flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 32, className: "text-[#2b4594]" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-semibold text-slate-900 mb-3", children: "Public Support" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 mb-6", children: "Get help through our public support portal. Questions about pricing, setup, or usage? We're here for everyone." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              onClick: () => navigate("/support"),
+              className: "text-[#2b4594] font-semibold flex items-center gap-2 hover:gap-3 transition",
+              children: [
+                "Contact support ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { size: 16 })
+              ]
+            }
+          )
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-gradient-to-br from-[#2b4594] to-[#1e326e] rounded-3xl p-8 md:p-16 text-white text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl md:text-4xl font-bold mb-6", children: "Is Your Organization Using Tripod Hub?" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl text-blue-100 mb-10 max-w-2xl mx-auto", children: "If your company uses Tripod Hub for visitor management, download the mobile app and ask your admin for login credentials." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => navigate("/mobile-landing"),
+            className: "w-full sm:w-auto px-8 py-4 bg-white text-[#2b4594] rounded-xl font-semibold hover:bg-blue-50 transition",
+            children: "Download Mobile App"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => navigate("/support"),
+            className: "w-full sm:w-auto px-8 py-4 bg-[#2b4594]/40 border border-white/20 text-white rounded-xl font-semibold hover:bg-[#2b4594]/50 transition",
+            children: "Get Help from Admin"
+          }
+        )
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "bg-slate-50 py-20 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-16", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-slate-900 mb-4", children: "Not seeing your organization? Start your own!" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-slate-600 max-w-2xl mx-auto", children: "Tripod Hub is open to any business. Sign up today and start managing your visitor check-ins in minutes." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-2 gap-12 items-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-semibold text-slate-900 mb-6", children: "Why Choose Tripod Hub?" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-4", children: [
+            "No credit card required to start",
+            "Free for all employees and guards",
+            "Complete visitor management solution",
+            "Real-time attendance tracking",
+            "Evacuation management",
+            "Mobile app for all staff"
+          ].map((item, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { size: 20, className: "text-green-500 mt-0.5 flex-shrink-0" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-700", children: item })
+          ] }, i2)) })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 rounded-xl p-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-xl font-semibold text-slate-900 mb-6", children: "Create Your Organization" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium text-slate-700 mb-2", children: "First Name" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "text", className: "w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#2b4594] focus:border-transparent", placeholder: "John" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium text-slate-700 mb-2", children: "Last Name" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "text", className: "w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#2b4594] focus:border-transparent", placeholder: "Doe" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium text-slate-700 mb-2", children: "Email" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", className: "w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#2b4594] focus:border-transparent", placeholder: "john@company.com" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium text-slate-700 mb-2", children: "Organization Name" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "text", className: "w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#2b4594] focus:border-transparent", placeholder: "My Company Ltd" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => navigate("/admin/register"),
+                className: "w-full bg-[#2b4594] text-white py-4 rounded-xl font-semibold hover:bg-[#1e326e] transition",
+                children: "Start Your Free Trial"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 text-center mt-4", children: "By creating an account, you agree to our Terms of Service and Privacy Policy." })
+          ] })
+        ] })
+      ] }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "bg-slate-900 text-slate-300 py-16", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-4 gap-12", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Hub", className: "h-10 w-auto" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-bold text-xl", children: "Tripod Hub" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 max-w-md", children: "Professional visitor management and attendance tracking for organizations of all sizes. Publicly available B2B SaaS platform." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "mailto:Abid.fiaz@tripodsvcs.co.uk", className: "flex items-center gap-2 hover:text-white transition", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 18 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Abid.fiaz@tripodsvcs.co.uk" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "https://wa.me/447446084868", className: "flex items-center gap-2 hover:text-white transition", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { size: 18 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "+44 7446 084868" })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-white font-semibold mb-6", children: "Public Features" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/support", className: "hover:text-white transition", children: "Support" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/checkin/TRIPOD", className: "hover:text-white transition", children: "Try Public Check-in" }) })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-white font-semibold mb-6", children: "Platform" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "B2B SaaS Platform" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Multi-tenant Architecture" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Public & Private Access" }) })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "© 2026 Tripod Services Ltd. All rights reserved." }) })
+    ] }) })
+  ] });
+};
 const App = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/admin/login", replace: true }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicLanding, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/mobile-landing", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MobileLanding, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/form", element: /* @__PURE__ */ jsxRuntimeExports.jsx(MobileForm, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/checkin/:siteId", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PublicVisitorCheckIn, {}) }),
