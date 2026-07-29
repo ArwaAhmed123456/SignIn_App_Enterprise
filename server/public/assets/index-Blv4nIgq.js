@@ -17842,7 +17842,7 @@ const __iconNode$a = [
   ],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
+const ShieldCheck$1 = createLucideIcon("shield-check", __iconNode$a);
 const __iconNode$9 = [
   [
     "path",
@@ -33238,7 +33238,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-DEbCzxow.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-76rv8GBK.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -66393,7 +66393,7 @@ const AdminLayout = () => {
     { to: "/admin/manage/sites", icon: MapPin, label: "Sites", desc: "Site setup, branding, sign in flows and devices" },
     { to: "/admin/manage/visitor-groups", icon: Users, label: "Visitor groups", desc: "Manage visitor types, data privacy and configurations" },
     { to: "/admin/manage/notifications", icon: Bell, label: "Advanced notifications", desc: "Send custom notifications to specific recipients" },
-    { to: "/admin/manage/safety", icon: ShieldCheck, label: "Safety check", desc: "Manage people to be identified at sign in" },
+    { to: "/admin/manage/safety", icon: ShieldCheck$1, label: "Safety check", desc: "Manage people to be identified at sign in" },
     { to: "/admin/manage/account", icon: Settings, label: "Account management", desc: "Manage subscription, user roles and permissions" },
     { to: "/admin/manage/api", icon: Code, label: "Client API", desc: "Add an API key for external access to your data" }
   ].filter((item) => ["superadmin", "admin"].includes(adminRole) || item.to !== "/admin/manage/account");
@@ -66507,7 +66507,7 @@ const AdminLayout = () => {
               to: "/admin/evacuation",
               className: ({ isActive }) => `flex flex-col items-center justify-center gap-0.5 transition-colors ${isActive ? "text-red-600" : "text-slate-500 hover:text-slate-800"}`,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18, strokeWidth: 1.75 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 18, strokeWidth: 1.75 }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold", children: "Evacuation" })
               ]
             }
@@ -66670,7 +66670,7 @@ const AdminLayout = () => {
             to: "/admin/evacuation",
             className: ({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-semibold transition-colors ${isActive ? "bg-red-50 text-red-600" : "text-slate-600 hover:bg-slate-50"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 18 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 18 }),
               " Evacuation"
             ]
           }
@@ -73937,7 +73937,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setShowEvacModal(true), className: "px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 bg-white", children: "Add evacuation point" })
       ] }),
       evacPoints.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 py-12 flex flex-col items-center gap-2 text-slate-400", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 36, strokeWidth: 1.2 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 36, strokeWidth: 1.2 }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-slate-600 text-sm", children: "No evacuation points have been added to this site yet" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs", children: "Assign groups to an evacuation point for more efficient roll calls" })
       ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border border-slate-200 overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
@@ -74933,7 +74933,7 @@ const SafetyCheck = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { size: 15, className: "absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" })
     ] }),
     filtered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 py-16 flex flex-col items-center gap-4 text-slate-400", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 40, strokeWidth: 1.2 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 40, strokeWidth: 1.2 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-base font-semibold text-slate-600", children: "No people on the watch list" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-center max-w-sm", children: "Add people who should be identified when they sign in — banned visitors, VIPs, or anyone requiring special attention." })
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: filtered.map((p2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center gap-4 group hover:shadow-sm transition-shadow", children: [
@@ -76273,7 +76273,7 @@ const navItems = [
   { id: "sites", label: "Sites", icon: MapPin, path: "/admin/manage/sites" },
   { id: "visitor-groups", label: "Visitor groups", icon: Users, path: "/admin/manage/visitor-groups" },
   { id: "notifications", label: "Advanced notifications", icon: Bell, path: "/admin/manage/notifications" },
-  { id: "safety", label: "Safety check", icon: ShieldCheck, path: "/admin/manage/safety" },
+  { id: "safety", label: "Safety check", icon: ShieldCheck$1, path: "/admin/manage/safety" },
   { id: "api", label: "Client API", icon: Code, path: "/admin/manage/api" },
   { id: "account", label: "Account management", icon: Settings, path: "/admin/manage/account" }
 ];
@@ -76731,7 +76731,7 @@ const searchSupportContent = (query) => {
 const iconMap$1 = {
   play: CirclePlay,
   activity: UserRoundCheck,
-  shield: ShieldCheck
+  shield: ShieldCheck$1
 };
 const SupportPage = () => {
   const navigate = useNavigate();
@@ -77511,7 +77511,7 @@ const EvacuationPage = () => {
 const iconMap = {
   play: CirclePlay,
   activity: UserRoundCheck,
-  shield: ShieldCheck
+  shield: ShieldCheck$1
 };
 const SupportCollectionPage = () => {
   const { collectionSlug } = useParams();
@@ -78133,7 +78133,7 @@ const PublicSupportPage = () => {
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10 sm:px-8 lg:px-10", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-3xl border border-slate-200 bg-white p-8 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { size: 24 }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8e7] text-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck$1, { size: 24 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-5 text-4xl font-semibold tracking-tight text-slate-900", children: "Support" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 max-w-3xl text-lg text-slate-600", children: "Need help with the Sign In App experience? Use the information below for support requests, product questions, or assistance with account access." })
     ] }),
@@ -78237,44 +78237,41 @@ const PublicSupportPage = () => {
 const PublicLanding = () => {
   const navigate = useNavigate();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-slate-50", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "relative bg-[#2b4594] text-white py-20", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-[#2b4594] to-[#1e326e] opacity-90" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-2xl mb-6 backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Building2, { size: 40 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-bold tracking-tight mb-6", children: "Tripod Hub" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-10", children: [
-          "The public visitor management companion app.",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-          "Organizations use our platform to manage visitors, guards, and employees.",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("br", { className: "hidden md:block" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold", children: "You can use it too — just ask your organization." })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => navigate("/admin/register"),
-              className: "w-full sm:w-auto px-8 py-4 bg-white text-[#2b4594] rounded-xl font-semibold hover:bg-blue-50 transition flex items-center justify-center gap-2",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { size: 20 }),
-                "Start Your Organization"
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              onClick: () => navigate("/mobile-landing"),
-              className: "w-full sm:w-auto px-8 py-4 bg-[#2b4594]/30 border border-white/30 text-white rounded-xl font-semibold hover:bg-[#2b4594]/40 transition flex items-center justify-center gap-2",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Smartphone, { size: 20 }),
-                "Download Mobile App"
-              ]
-            }
-          )
-        ] })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "relative bg-[#2b4594] text-white py-16", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Services", className: "h-20 w-auto mx-auto" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-bold tracking-tight mb-6", children: "Tripod Hub" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-10", children: [
+        "The public visitor management companion app.",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+        "Organizations use our platform to manage visitors, guards, and employees.",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("br", { className: "hidden md:block" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-semibold", children: "You can use it too — just ask your organization." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => navigate("/admin/register"),
+            className: "w-full sm:w-auto px-8 py-4 bg-white text-[#2b4594] rounded-xl font-semibold hover:bg-blue-50 transition flex items-center justify-center gap-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { size: 20 }),
+              "Start Your Organization"
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => navigate("/mobile-landing"),
+            className: "w-full sm:w-auto px-8 py-4 bg-[#2b4594]/30 border border-white/30 text-white rounded-xl font-semibold hover:bg-[#2b4594]/40 transition flex items-center justify-center gap-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Smartphone, { size: 20 }),
+              "Download Mobile App"
+            ]
+          }
+        )
       ] })
-    ] }),
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-2 gap-12 items-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-slate-900 mb-6", children: "What is Tripod Hub?" }),
@@ -78478,42 +78475,42 @@ const PublicLanding = () => {
         ] })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "bg-slate-900 text-slate-300 py-16", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-4 gap-12", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "bg-slate-900 text-white py-12 border-t-4 border-[#2b4594]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-4 gap-8", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Hub", className: "h-10 w-auto" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-bold text-xl", children: "Tripod Hub" })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/Tipod_Final_Logo_high_pixel.png", alt: "Tripod Services", className: "h-12 w-auto" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-white font-bold text-2xl", children: "Tripod Hub" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 max-w-md", children: "Professional visitor management and attendance tracking for organizations of all sizes. Publicly available B2B SaaS platform." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 flex gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "mailto:Abid.fiaz@tripodsvcs.co.uk", className: "flex items-center gap-2 hover:text-white transition", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 18 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-300 max-w-md text-sm mb-4", children: "Professional visitor management and attendance tracking for organizations of all sizes. Publicly available B2B SaaS platform." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "mailto:Abid.fiaz@tripodsvcs.co.uk", className: "flex items-center gap-2 text-[#2b4594] hover:text-white transition font-semibold", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 16 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Abid.fiaz@tripodsvcs.co.uk" })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "https://wa.me/447446084868", className: "flex items-center gap-2 hover:text-white transition", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { size: 18 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "https://wa.me/447446084868", className: "flex items-center gap-2 text-[#2b4594] hover:text-white transition font-semibold", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { size: 16 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "+44 7446 084868" })
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-white font-semibold mb-6", children: "Public Features" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/support", className: "hover:text-white transition", children: "Support" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/checkin/TRIPOD", className: "hover:text-white transition", children: "Try Public Check-in" }) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-[#2b4594] font-bold mb-4 uppercase text-xs tracking-wider", children: "Public Features" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-2 text-sm", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/support", className: "text-slate-300 hover:text-white transition", children: "Support" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/checkin/TRIPOD", className: "text-slate-300 hover:text-white transition", children: "Try Public Check-in" }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-white font-semibold mb-6", children: "Platform" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "B2B SaaS Platform" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Multi-tenant Architecture" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-500", children: "Public & Private Access" }) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-[#2b4594] font-bold mb-4 uppercase text-xs tracking-wider", children: "Platform" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-2 text-sm text-slate-400", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "B2B SaaS Platform" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Multi-tenant Architecture" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Public & Private Access" })
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "© 2026 Tripod Services Ltd. All rights reserved." }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "© 2026 Tripod Services Ltd. All rights reserved." }) })
     ] }) })
   ] });
 };

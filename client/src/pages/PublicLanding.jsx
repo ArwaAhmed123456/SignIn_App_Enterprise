@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, CheckCircle, ShieldCheck, Users, Globe, ArrowRight, Smartphone, Clock, ChevronRight, Mail, Phone, Shield, Zap, UserPlus } from 'lucide-react';
+import { CheckCircle, Users, Globe, ArrowRight, Smartphone, Mail, Phone, Shield, Zap, Building2 } from 'lucide-react';
 
 const PublicLanding = () => {
   const navigate = useNavigate();
@@ -8,11 +8,10 @@ const PublicLanding = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero Section */}
-      <section className="relative bg-[#2b4594] text-white py-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2b4594] to-[#1e326e] opacity-90" />
+      <section className="relative bg-[#2b4594] text-white py-16">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-2xl mb-6 backdrop-blur-sm">
-            <Building2 size={40} />
+          <div className="mb-6">
+            <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod Services" className="h-20 w-auto mx-auto" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Tripod Hub
@@ -29,7 +28,7 @@ const PublicLanding = () => {
               onClick={() => navigate('/admin/register')}
               className="w-full sm:w-auto px-8 py-4 bg-white text-[#2b4594] rounded-xl font-semibold hover:bg-blue-50 transition flex items-center justify-center gap-2"
             >
-              <UserPlus size={20} />
+              <Zap size={20} />
               Start Your Organization
             </button>
             <button
@@ -284,55 +283,49 @@ const PublicLanding = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-16">
+      <footer className="bg-slate-900 text-white py-12 border-t-4 border-[#2b4594]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12">
+          <div className="grid md:grid-cols-4 gap-8">
             <div className="col-span-2">
-              <div className="flex items-center gap-3 mb-6">
-                <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod Hub" className="h-10 w-auto" />
-                <span className="text-white font-bold text-xl">Tripod Hub</span>
+              <div className="flex items-center gap-3 mb-4">
+                <img src="/Tipod_Final_Logo_high_pixel.png" alt="Tripod Services" className="h-12 w-auto" />
+                <span className="text-white font-bold text-2xl">Tripod Hub</span>
               </div>
-              <p className="text-slate-400 max-w-md">
+              <p className="text-slate-300 max-w-md text-sm mb-4">
                 Professional visitor management and attendance tracking for organizations of all sizes. Publicly available B2B SaaS platform.
               </p>
-              <div className="mt-6 flex gap-4">
-                <a href="mailto:Abid.fiaz@tripodsvcs.co.uk" className="flex items-center gap-2 hover:text-white transition">
-                  <Mail size={18} />
+              <div className="flex gap-4">
+                <a href="mailto:Abid.fiaz@tripodsvcs.co.uk" className="flex items-center gap-2 text-[#2b4594] hover:text-white transition font-semibold">
+                  <Mail size={16} />
                   <span>Abid.fiaz@tripodsvcs.co.uk</span>
                 </a>
-                <a href="https://wa.me/447446084868" className="flex items-center gap-2 hover:text-white transition">
-                  <Phone size={18} />
+                <a href="https://wa.me/447446084868" className="flex items-center gap-2 text-[#2b4594] hover:text-white transition font-semibold">
+                  <Phone size={16} />
                   <span>+44 7446 084868</span>
                 </a>
               </div>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-6">Public Features</h4>
-              <ul className="space-y-3">
+              <h4 className="text-[#2b4594] font-bold mb-4 uppercase text-xs tracking-wider">Public Features</h4>
+              <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/support" className="hover:text-white transition">Support</a>
+                  <a href="/support" className="text-slate-300 hover:text-white transition">Support</a>
                 </li>
                 <li>
-                  <a href="/checkin/TRIPOD" className="hover:text-white transition">Try Public Check-in</a>
+                  <a href="/checkin/TRIPOD" className="text-slate-300 hover:text-white transition">Try Public Check-in</a>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-6">Platform</h4>
-              <ul className="space-y-3">
-                <li>
-                  <span className="text-slate-500">B2B SaaS Platform</span>
-                </li>
-                <li>
-                  <span className="text-slate-500">Multi-tenant Architecture</span>
-                </li>
-                <li>
-                  <span className="text-slate-500">Public & Private Access</span>
-                </li>
+              <h4 className="text-[#2b4594] font-bold mb-4 uppercase text-xs tracking-wider">Platform</h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>B2B SaaS Platform</li>
+                <li>Multi-tenant Architecture</li>
+                <li>Public & Private Access</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-sm">
+          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500 text-sm">
             <p>© 2026 Tripod Services Ltd. All rights reserved.</p>
           </div>
         </div>
