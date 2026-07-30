@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, ActivityIndicator,
     ScrollView, Alert, Image, Animated, StatusBar, Modal, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Shield, Mail, Lock, User, Phone, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle, Building2, ChevronDown } from 'lucide-react-native';
+import { Shield, Mail, Lock, User, Phone, Eye, EyeOff, ChevronLeft, ChevronRight, CheckCircle, Building2, ChevronDown, RefreshCw } from 'lucide-react-native';
 import api from '../services/api';
 
 const GuardSignup = ({ navigation }) => {
@@ -14,16 +14,31 @@ const GuardSignup = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [sites, setSites] = useState([]);
+    const [sitesLoading, setSitesLoading] = useState(false);
+    const [sitesError, setSitesError] = useState(false);
     const [selectedSite, setSelectedSite] = useState(null);
     const [siteModalOpen, setSiteModalOpen] = useState(false);
     const [focus, setFocus] = useState({ name: false, email: false, phone: false, password: false, confirm: false });
 
-    useEffect(() => {
-        // Load available sites/companies for registration (public endpoint — no auth required)
-        api.get('/projects/all-public')
-            .then((r) => setSites(Array.isArray(r.data) ? r.data : r.data?.value || []))
-            .catch(() => setSites([]));
+    const loadSites = useCallback(async () => {
+        setSitesLoading(true);
+        setSitesError(false);
+        try {
+            const r = await api.get('/projects/all-public', { timeout: 30000 });
+            const data = Array.isArray(r.data) ? r.data : r.data?.value || [];
+            setSites(data);
+            if (data.length === 0) setSitesError(true);
+        } catch {
+            setSites([]);
+            setSitesError(true);
+        } finally {
+            setSitesLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadSites();
+    }, [loadSites]);
 
     const handleSignup = async () => {
         const { name, email, password, confirmPassword } = formData;
@@ -159,9 +174,12 @@ const GuardSignup = ({ navigation }) => {
                         >
                             <Building2 size={18} color={selectedSite ? '#2b4594' : '#94a3b8'} />
                             <Text style={{ flex: 1, marginLeft: 12, fontSize: 15, color: selectedSite ? '#0f172a' : '#c8d0dc', fontWeight: selectedSite ? '600' : '400' }}>
-                                {selectedSite ? selectedSite.name : 'Select your company / site'}
+                                {sitesLoading ? 'Loading companies...' : selectedSite ? selectedSite.name : 'Select your company / site'}
                             </Text>
-                            <ChevronDown size={16} color="#94a3b8" />
+                            {sitesLoading
+                                ? <ActivityIndicator size="small" color="#2b4594" />
+                                : <ChevronDown size={16} color="#94a3b8" />
+                            }
                         </TouchableOpacity>
                         {/* Site picker modal */}
                         <Modal visible={siteModalOpen} transparent animationType="slide" onRequestClose={() => setSiteModalOpen(false)}>
@@ -184,7 +202,24 @@ const GuardSignup = ({ navigation }) => {
                                         )}
                                         ListEmptyComponent={
                                             <View style={{ padding: 24, alignItems: 'center' }}>
-                                                <Text style={{ color: '#9ca3af', fontSize: 14 }}>No sites found. Contact your administrator.</Text>
+                                                {sitesLoading ? (
+                                                    <ActivityIndicator size="small" color="#2b4594" />
+                                                ) : sitesError ? (
+                                                    <>
+                                                        <Text style={{ color: '#9ca3af', fontSize: 14, textAlign: 'center', marginBottom: 12 }}>
+                                                            Could not load companies. The server may be waking up — please try again.
+                                                        </Text>
+                                                        <TouchableOpacity
+                                                            onPress={loadSites}
+                                                            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#2b4594', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}
+                                                        >
+                                                            <RefreshCw size={14} color="#fff" />
+                                                            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Retry</Text>
+                                                        </TouchableOpacity>
+                                                    </>
+                                                ) : (
+                                                    <Text style={{ color: '#9ca3af', fontSize: 14 }}>No sites found. Contact your administrator.</Text>
+                                                )}
                                             </View>
                                         }
                                     />
