@@ -33228,7 +33228,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-cnxQb9Io.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-B4C4S-uq.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -75445,6 +75445,7 @@ const InviteModal = ({ onClose, onInvited }) => {
 };
 const MobileUserModal = ({ onClose, onCreated }) => {
   const [form, setForm] = reactExports.useState({ name: "", email: "", phone: "", password: "", mobileRole: "guard", site_id: "" });
+  const [showPassword, setShowPassword] = reactExports.useState(false);
   const [sendWelcome, setSendWelcome] = reactExports.useState(true);
   const [sendAppCode, setSendAppCode] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
@@ -75572,17 +75573,28 @@ const MobileUserModal = ({ onClose, onCreated }) => {
           "Password ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "password",
-            value: form.password,
-            onChange: (e2) => setForm((f2) => ({ ...f2, password: e2.target.value })),
-            placeholder: "Min 8 characters",
-            className: inp,
-            autoComplete: "new-password"
-          }
-        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: showPassword ? "text" : "password",
+              value: form.password,
+              onChange: (e2) => setForm((f2) => ({ ...f2, password: e2.target.value })),
+              placeholder: "Min 8 characters",
+              className: inp,
+              autoComplete: "new-password"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => setShowPassword((v2) => !v2),
+              className: "absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600",
+              children: showPassword ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { size: 16 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { size: 16 })
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-1", children: "User will login with this password. Min 8 characters." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -75866,7 +75878,7 @@ const AccountManagement = () => {
         isPortal: false,
         site: m2.site || "",
         site_id: m2.site_id || ""
-      })).filter((m2) => isSuper || !currentSiteId || m2.site_id === currentSiteId);
+      })).filter((m2) => isSuper || !currentSiteId || String(m2.site_id) === String(currentSiteId));
       setUsers([...admins, ...members].filter((u2) => isSuper || u2.role !== "superadmin"));
     } catch (err) {
       console.error("Failed to fetch users", err);

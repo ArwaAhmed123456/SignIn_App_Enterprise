@@ -28,6 +28,9 @@
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",
+        "CAMERA",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
         "CAMERA"
       ]
     },
@@ -57,6 +60,9 @@
     "owner": "hayat123a",
     "runtimeVersion": {
       "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/995ac383-70e8-4f81-b6e1-8ff63b77a8a9"
     }
   }
 }

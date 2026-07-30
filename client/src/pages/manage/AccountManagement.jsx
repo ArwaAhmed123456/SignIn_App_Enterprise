@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X, Mail, Pencil, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Users, Shield, FileText, CreditCard, ChevronRight, Plus, Trash2, X, Mail, Pencil, CheckCircle, XCircle, Clock, Eye, EyeOff } from 'lucide-react';
 import api from '../../api';
 
 const ROLES = ['superadmin', 'admin', 'viewer'];
@@ -328,6 +328,7 @@ const InviteModal = ({ onClose, onInvited }) => {
 // ─── Create mobile user modal (Guard/Manager) ─────────────────────────────────
 const MobileUserModal = ({ onClose, onCreated }) => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', mobileRole: 'guard', site_id: '' });
+  const [showPassword, setShowPassword]   = useState(false);
   const [sendWelcome, setSendWelcome]     = useState(true);
   const [sendAppCode, setSendAppCode]     = useState(true);
   const [saving, setSaving]   = useState(false);
@@ -448,8 +449,23 @@ const MobileUserModal = ({ onClose, onCreated }) => {
           {/* Password */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Password <span className="text-red-500">*</span></label>
-            <input type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              placeholder="Min 8 characters" className={inp} autoComplete="new-password" />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                placeholder="Min 8 characters"
+                className={inp}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
             <p className="text-xs text-slate-500 mt-1">User will login with this password. Min 8 characters.</p>
           </div>
 
@@ -718,7 +734,7 @@ const AccountManagement = () => {
           site: m.site || '',
           site_id: m.site_id || ''
         }))
-        .filter(m => isSuper || !currentSiteId || m.site_id === currentSiteId); // Filter by site for managers
+        .filter(m => isSuper || !currentSiteId || String(m.site_id) === String(currentSiteId));
       
       setUsers([...admins, ...members].filter(u => isSuper || u.role !== 'superadmin'));
     } catch (err) {
