@@ -303,7 +303,7 @@ router.post('/invite', verifySuperAdmin, async (req, res) => {
 // ─── List admins ───────────────────────────────────────────────────────────────
 router.get('/admins', verifySuperAdmin, async (req, res) => {
     try {
-        const admins = await Admin.find({}, '-password -reset_token -reset_expires').populate('site_id', 'name');
+        const admins = await Admin.find({}, '-password -reset_token -reset_expires').lean();
         res.json(admins);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
@@ -323,7 +323,7 @@ router.put('/admins/:id', verifySuperAdmin, async (req, res) => {
         if (site_id    !== undefined) updates.site_id    = site_id || null;
         if (first_name !== undefined) updates.first_name = first_name;
         if (last_name  !== undefined) updates.last_name  = last_name;
-        const updated = await Admin.findByIdAndUpdate(req.params.id, updates, { new: true }).populate('site_id', 'name');
+        const updated = await Admin.findByIdAndUpdate(req.params.id, updates, { new: true }).lean();
         res.json({ message: 'Admin updated', admin: updated });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });

@@ -764,6 +764,10 @@ const AccountManagement = () => {
   };
   const changeRole = (id, role) => setUsers(u => u.map(x => x.id === id ? { ...x, role } : x));
 
+  const fmtDate = (val) => {
+    try { return val ? new Date(val).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; } catch { return val || '—'; }
+  };
+
   // Overview
   if (activeSection === 'overview') return (
     <div className="max-w-2xl">
@@ -793,9 +797,6 @@ const AccountManagement = () => {
 
   // Guard approvals section
   if (activeSection === 'approvals') {
-    const fmtDate = (val) => {
-      try { return val ? new Date(val).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; } catch { return val || '—'; }
-    };
     return (
       <div className="max-w-4xl">
         <div className="flex items-center gap-3 mb-6">
