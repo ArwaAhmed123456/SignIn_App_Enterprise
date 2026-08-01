@@ -33228,7 +33228,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-z0PwI6yi.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-IY3X42nt.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -71316,6 +71316,7 @@ const EditAllPanel = ({ onClose }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("di
 ] });
 const AddMemberModal = ({ groups, onClose, onSaved }) => {
   const [drawerTab, setDrawerTab] = reactExports.useState("Details");
+  const [showPassword, setShowPassword] = reactExports.useState(false);
   const [form, setForm] = reactExports.useState({
     group: "",
     name: "",
@@ -71464,16 +71465,27 @@ const AddMemberModal = ({ groups, onClose, onSaved }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-slate-700 mb-1", children: "Password (optional)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "password",
-                value: form.password,
-                onChange: (e2) => set("password", e2.target.value),
-                placeholder: "Set a password for this member (optional)",
-                className: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2b4594]"
-              }
-            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: showPassword ? "text" : "password",
+                  value: form.password,
+                  onChange: (e2) => set("password", e2.target.value),
+                  placeholder: "Set a password for this member (optional)",
+                  className: "w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:border-[#2b4594]"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setShowPassword((v2) => !v2),
+                  className: "absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600",
+                  children: showPassword ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { size: 15 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { size: 15 })
+                }
+              )
+            ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "If set, this password will be included in the welcome email so the member can login directly." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -76121,7 +76133,7 @@ const AccountManagement = () => {
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-600", children: u2.email || "--" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${u2.role === "guard" ? "bg-blue-100 text-[#2b4594]" : u2.role === "manager" ? "bg-purple-100 text-purple-700" : u2.role === "admin" ? "bg-slate-200 text-slate-700" : "bg-green-100 text-green-700"}`, children: u2.role }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs", children: u2.site || "—" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3 text-slate-500 text-xs max-w-[120px] truncate", title: u2.site || "—", children: u2.site || "—" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-5 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${u2.status === "active" || u2.status === "current" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`, children: u2.status === "current" ? "Active" : u2.status }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "px-5 py-3 text-right flex items-center justify-end gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
