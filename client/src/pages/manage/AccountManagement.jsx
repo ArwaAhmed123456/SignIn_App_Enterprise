@@ -1015,7 +1015,7 @@ const AccountManagement = () => {
                         'bg-green-100 text-green-700'
                       }`}>{u.role}</span>
                     </td>
-                    <td className="px-5 py-3 text-slate-500 text-xs">{u.site || '—'}</td>
+                    <td className="px-5 py-3 text-slate-500 text-xs max-w-[120px] truncate" title={u.site || '—'}>{u.site || '—'}</td>
                     <td className="px-5 py-3">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
                         u.status === 'active' || u.status === 'current'

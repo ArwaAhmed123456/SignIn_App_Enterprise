@@ -33228,7 +33228,7 @@ function le(t3) {
   var h2 = l2.getContext("2d");
   h2.fillStyle = "#fff", h2.fillRect(0, 0, l2.width, l2.height);
   var f2 = { ignoreMouse: true, ignoreAnimation: true, ignoreDimensions: true }, d2 = this;
-  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-B4C4S-uq.js"), true ? [] : void 0)).catch(function(t4) {
+  return (i.canvg ? Promise.resolve(i.canvg) : __vitePreload(() => import("./index.es-z0PwI6yi.js"), true ? [] : void 0)).catch(function(t4) {
     return Promise.reject(new Error("Could not load canvg: " + t4));
   }).then(function(t4) {
     return t4.default ? t4.default : t4;
@@ -71192,7 +71192,7 @@ const DEFAULT_COLS = ["Name", "Email", "Phone", "Role", "Latest activity"];
 const EXPORT_FIELDS = ["Full name", "Email", "Phone number", "Role", "QR Codes", "RFID Tags"];
 const DRAWER_TABS = ["Details", "Notifications", "Safety", "QR/RFID", "Documents", "Companion"];
 const initials = (name = "") => name.split(" ").map((w2) => w2[0]).join("").toUpperCase().slice(0, 2) || "??";
-const fmtDate$3 = (iso) => {
+const fmtDate$2 = (iso) => {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 };
@@ -72424,8 +72424,8 @@ const PeopleDirectory = () => {
   }, [activeTab]);
   const lastColLabel = activeTab === "upcoming" ? "Start date" : activeTab === "archived" ? "Archived date" : "Latest activity";
   const lastColValue = (m2) => {
-    if (activeTab === "upcoming") return m2.start_date ? fmtDate$3(m2.start_date) : "—";
-    if (activeTab === "archived") return m2.updated_at ? fmtDate$3(m2.updated_at) : "—";
+    if (activeTab === "upcoming") return m2.start_date ? fmtDate$2(m2.start_date) : "—";
+    if (activeTab === "archived") return m2.updated_at ? fmtDate$2(m2.updated_at) : "—";
     const key = (m2.name || "").trim().toLowerCase();
     const v2 = memberActivity[key];
     if (!v2) return "—";
@@ -73017,7 +73017,7 @@ function PrintBadgeSection() {
     )
   ] });
 }
-const fmtDate$2 = (iso) => {
+const fmtDate$1 = (iso) => {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 };
@@ -73889,7 +73889,7 @@ function SiteSettings({ site, groups, onBack, onDeleted }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: posters.map((p2, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 font-medium text-slate-800", children: p2.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500 text-xs", children: p2.groups?.join(", ") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: fmtDate$2(p2.createdAt) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: fmtDate$1(p2.createdAt) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "button",
@@ -75904,6 +75904,13 @@ const AccountManagement = () => {
     }
   };
   const changeRole = (id, role) => setUsers((u2) => u2.map((x2) => x2.id === id ? { ...x2, role } : x2));
+  const fmtDate2 = (val) => {
+    try {
+      return val ? new Date(val).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
+    } catch {
+      return val || "—";
+    }
+  };
   if (activeSection === "overview") return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-2xl", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-bold text-slate-800 mb-2", children: "Account management" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-8", children: "Manage subscription, user roles and permissions for your organisation." }),
@@ -75927,13 +75934,6 @@ const AccountManagement = () => {
     ] })
   ] });
   if (activeSection === "approvals") {
-    const fmtDate2 = (val) => {
-      try {
-        return val ? new Date(val).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
-      } catch {
-        return val || "—";
-      }
-    };
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActiveSection("overview"), className: "text-sm text-[#2b4594] hover:underline", children: "← Account management" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between mb-6", children: [
@@ -76044,7 +76044,7 @@ const AccountManagement = () => {
                   " • ",
                   g2.site || "No site",
                   " • ",
-                  fmtDate(g2.created_at)
+                  fmtDate2(g2.created_at)
                 ] })
               ] })
             ] }),
@@ -77013,7 +77013,7 @@ const SupportPage = () => {
     ] })
   ] }) });
 };
-const fmtDate$1 = (iso) => {
+const fmtDate = (iso) => {
   if (!iso) return "—";
   const d2 = new Date(iso);
   return d2.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " + d2.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + " GMT" + (-(d2.getTimezoneOffset() / 60) >= 0 ? "+" : "") + -(d2.getTimezoneOffset() / 60);
@@ -77189,7 +77189,7 @@ const EvacuationPage = () => {
       Group: participant.group,
       Safe: participant.safe ? "Yes" : "No",
       "Marked by": participant.marked_by || "",
-      "Marked at": participant.marked_at ? fmtDate$1(participant.marked_at) : ""
+      "Marked at": participant.marked_at ? fmtDate(participant.marked_at) : ""
     }));
     const csv = [
       Object.keys(rows[0]).join(","),
@@ -77410,7 +77410,7 @@ const EvacuationPage = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 font-semibold text-slate-800", children: p2.name }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-600", children: p2.group }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_by || "—" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_at ? fmtDate$1(p2.marked_at) : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3 text-slate-500", children: p2.marked_at ? fmtDate(p2.marked_at) : "—" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
                   {
@@ -77438,7 +77438,7 @@ const EvacuationPage = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-1 text-slate-500", children: [
                   notification.sent_by,
                   " at ",
-                  fmtDate$1(notification.sent_at)
+                  fmtDate(notification.sent_at)
                 ] })
               ] }, notification.id)) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: "No notifications have been sent yet." }) })
             ] }),
@@ -77462,7 +77462,7 @@ const EvacuationPage = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-3", children: "Completed by" })
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: reports.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/70", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-700", children: fmtDate$1(r.started_at) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-700", children: fmtDate(r.started_at) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: fmtDuration(r.duration_s) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: r.accounted_for }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-slate-600", children: r.started_by }),
