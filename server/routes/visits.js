@@ -264,6 +264,106 @@ router.post('/:id/sign-out', async (req, res) => {
   }
 });
 
+// ─── PUT /api/visits/:id (Edit visit) ─────────────────────────────────────────
+router.put('/:id', verifyAdmin, async (req, res) => {
+  const {
+    name,
+    group,
+    userType,
+    site_id,
+    siteId,
+    trade,
+    car_reg,
+    carReg,
+    reason,
+    notes,
+    date,
+    time_in,
+    timeIn,
+    sign_in_time,
+    time_out,
+    timeOut,
+    sign_out_time,
+  } = req.body;
+
+  try {
+    const log = await ActivityLog.findById(req.params.id);
+    if (!log) return res.status(404).json({ error: 'Visit not found' });
+
+    if (name !== undefined) log.name = String(name).trim();
+    if (group !== undefined || userType !== undefined) {
+      log.userType = group || userType || log.userType || 'Visitor';
+    }
+    if (trade !== undefined) log.trade = trade;
+    if (car_reg !== undefined || carReg !== undefined) {
+      log.carReg = car_reg !== undefined ? car_reg : carReg;
+    }
+    if (reason !== undefined || notes !== undefined) {
+      log.reason = reason !== undefined ? reason : notes;
+    }
+
+    if (site_id || siteId) {
+      const resolvedSid = await resolveFirst(site_id || siteId);
+      if (resolvedSid) log.siteId = resolvedSid;
+    }
+
+    if (date !== undefined) log.date = date;
+
+    // Helper to normalize time to "HH:MM"
+    const normalizeTime = (val) => {
+      if (!val) return null;
+      if (typeof val === 'string' && val.includes('T')) {
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) {
+          return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+      }
+      return String(val).slice(0, 5);
+    };
+
+    const newTimeInRaw = time_in !== undefined ? time_in : (timeIn !== undefined ? timeIn : sign_in_time);
+    if (newTimeInRaw !== undefined) {
+      log.timeIn = normalizeTime(newTimeInRaw);
+      if (log.timeIn && log.date) {
+        log.checkIn = new Date(`${log.date}T${log.timeIn}`);
+      }
+    }
+
+    const newTimeOutRaw = time_out !== undefined ? time_out : (timeOut !== undefined ? timeOut : sign_out_time);
+    if (newTimeOutRaw !== undefined) {
+      if (!newTimeOutRaw || newTimeOutRaw === '--' || newTimeOutRaw === 'null') {
+        log.timeOut = null;
+        log.checkOut = null;
+        log.hours = null;
+        log.duration = null;
+      } else {
+        log.timeOut = normalizeTime(newTimeOutRaw);
+        if (log.timeOut && log.date) {
+          log.checkOut = new Date(`${log.date}T${log.timeOut}`);
+        }
+      }
+    }
+
+    // Recalculate hours & duration if timeOut is present
+    if (log.timeIn && log.timeOut && log.date) {
+      const start = new Date(`${log.date}T${log.timeIn}`);
+      const end = new Date(`${log.date}T${log.timeOut}`);
+      let diffMs = end - start;
+      if (diffMs < 0) diffMs += 86400000;
+      if (diffMs === 0) diffMs = 86400000;
+      log.hours = parseFloat((diffMs / 3600000).toFixed(2)) || 0;
+      log.duration = log.hours;
+    }
+
+    await log.save();
+    const siteMap = await buildSiteMap([log]);
+    res.json({ success: true, visit: fmt(log, siteMap) });
+  } catch (err) {
+    console.error('Update visit error:', err);
+    res.status(500).json({ error: 'Server error updating visit' });
+  }
+});
+
 // ─── DELETE /api/visits/:id ───────────────────────────────────────────────────
 router.delete('/:id', verifyStrictAdmin, async (req, res) => {
   try {

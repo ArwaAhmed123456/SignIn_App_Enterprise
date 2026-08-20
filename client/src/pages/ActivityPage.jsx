@@ -7,6 +7,7 @@ import {
   Filter,
   LogOut,
   MoreHorizontal,
+  Pencil,
   Search,
   Settings,
   Trash2,
@@ -459,6 +460,260 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
               className="rounded-lg bg-[#2b4594] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#1e326e] disabled:opacity-60"
             >
               {saving ? 'Signing in...' : 'Sign in'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const EditVisitModal = ({ visit, sites, groups, onClose, onSaved }) => {
+  const extractTime = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string' && val.includes('T')) {
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      }
+    }
+    return String(val).slice(0, 5);
+  };
+
+  const extractDate = (val, fullTime) => {
+    if (val && String(val).includes('-')) return val;
+    if (fullTime) {
+      const d = new Date(fullTime);
+      if (!isNaN(d.getTime())) {
+        return toInputDate(d);
+      }
+    }
+    return toInputDate(new Date());
+  };
+
+  const [name, setName] = useState(visit.name || '');
+  const [siteId, setSiteId] = useState(
+    visit.site_id || sites.find((s) => s.name === visit.site)?.id || sites[0]?.id || ''
+  );
+  const [group, setGroup] = useState(visit.group || 'Visitor');
+  const [trade, setTrade] = useState(visit.trade || '');
+  const [carReg, setCarReg] = useState(visit.car_reg || '');
+  const [reason, setReason] = useState(visit.reason || '');
+  const [date, setDate] = useState(extractDate(visit.date, visit.sign_in_time));
+  const [timeIn, setTimeIn] = useState(extractTime(visit.sign_in_time));
+  const [timeOut, setTimeOut] = useState(extractTime(visit.sign_out_time));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Name is required');
+      return;
+    }
+    if (!timeIn) {
+      setError('Signed-in time is required');
+      return;
+    }
+    setSaving(true);
+    setError('');
+
+    try {
+      const response = await api.put(`/visits/${visit.id}`, {
+        name: name.trim(),
+        site_id: siteId,
+        group,
+        trade,
+        car_reg: carReg,
+        reason,
+        date,
+        time_in: timeIn,
+        time_out: timeOut || null,
+      });
+
+      toast.success('Visit updated successfully');
+      if (onSaved) onSaved(response.data.visit);
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update visit');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">Edit visit</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Update visitor details and timings</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 p-6 max-h-[80vh] overflow-y-auto">
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Site</label>
+              <select
+                value={siteId}
+                onChange={(e) => setSiteId(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              >
+                {sites.map((site) => (
+                  <option key={site.id} value={site.id}>
+                    {site.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Group</label>
+              <select
+                value={group}
+                onChange={(e) => setGroup(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              >
+                {(groups.length > 0 ? groups : [
+                  { id: '1', name: 'Visitors' },
+                  { id: '2', name: 'Employees' },
+                  { id: '3', name: 'Contractors' },
+                  { id: '4', name: 'Workers' },
+                  { id: '5', name: 'Deliveries' },
+                ]).map((g) => (
+                  <option key={g.id} value={g.name}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
+                Signed In <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="time"
+                required
+                value={timeIn}
+                onChange={(e) => setTimeIn(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-semibold text-slate-700">Signed Out</label>
+                {timeOut && (
+                  <button
+                    type="button"
+                    onClick={() => setTimeOut('')}
+                    className="text-[11px] text-[#2b4594] hover:underline"
+                    title="Set to currently on site"
+                  >
+                    Clear (On site)
+                  </button>
+                )}
+              </div>
+              <input
+                type="time"
+                value={timeOut}
+                onChange={(e) => setTimeOut(e.target.value)}
+                placeholder="--:--"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Trade / Company</label>
+              <input
+                type="text"
+                value={trade}
+                onChange={(e) => setTrade(e.target.value)}
+                placeholder="e.g. Electrical, Contractor"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Car Registration</label>
+              <input
+                type="text"
+                value={carReg}
+                onChange={(e) => setCarReg(e.target.value.toUpperCase())}
+                placeholder="e.g. LJ75KUZ"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594] font-mono uppercase"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">Notes / Purpose of Visit</label>
+            <textarea
+              rows={3}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Reason for visit..."
+              className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#2b4594] focus:ring-1 focus:ring-[#2b4594]"
+            />
+          </div>
+
+          {error && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          )}
+
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-lg bg-[#2b4594] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#1e326e] disabled:opacity-60"
+            >
+              {saving ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>
@@ -1320,6 +1575,7 @@ const ActivityPage = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [showNewVisit, setShowNewVisit] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [editingVisit, setEditingVisit] = useState(null);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [siteOpen, setSiteOpen] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -2122,6 +2378,18 @@ const ActivityPage = () => {
                                 onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                 onClick={() => {
                                   setOpenVisitMenuId(null);
+                                  setEditingVisit(visit);
+                                }}
+                                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50"
+                              >
+                                <Pencil size={14} />
+                                Edit visit
+                              </button>
+                              <button
+                                type="button"
+                                onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                onClick={() => {
+                                  setOpenVisitMenuId(null);
                                   handleDeleteVisit(visit.id);
                                 }}
                                 className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50"
@@ -2345,6 +2613,16 @@ const ActivityPage = () => {
                 )}
                 <button
                   type="button"
+                  onClick={() => {
+                    setEditingVisit(selectedVisit);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <Pencil size={16} className="text-slate-400" />
+                  Edit visit
+                </button>
+                <button
+                  type="button"
                   onClick={async () => {
                     await handleDeleteVisit(selectedVisit.id);
                     setDrawerOpen(false);
@@ -2360,6 +2638,22 @@ const ActivityPage = () => {
           </div>
         )}
       </SlideOutDrawer>
+
+      {editingVisit && (
+        <EditVisitModal
+          visit={editingVisit}
+          sites={sites}
+          groups={groups}
+          onClose={() => setEditingVisit(null)}
+          onSaved={(updatedVisit) => {
+            loadVisits();
+            if (selectedSiteId) loadVisitStats(selectedSiteId);
+            if (selectedVisit && selectedVisit.id === editingVisit.id) {
+              setSelectedVisit(updatedVisit);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
