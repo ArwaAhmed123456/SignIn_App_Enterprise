@@ -45,11 +45,22 @@ const getDateRange = (preset) => {
 };
 
 const formatDateTime = (value) => {
-  if (!value) return '--';
+  if (!value || value === '--') return '--';
+  if (typeof value === 'string' && value.includes('T')) {
+    const [datePart, timePart] = value.split('T');
+    const parts = datePart.split('-');
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      const time = timePart ? timePart.slice(0, 5) : '';
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthName = months[parseInt(month, 10) - 1] || month;
+      return `${parseInt(day, 10)} ${monthName} ${year}, ${time}`;
+    }
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '--';
   return date.toLocaleString('en-GB', {
-    day: '2-digit',
+    day: 'numeric',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
@@ -470,23 +481,23 @@ const NewVisitModal = ({ sites, selectedSiteId, groups, onClose, onSaved }) => {
 
 const EditVisitModal = ({ visit, sites, groups, onClose, onSaved }) => {
   const extractTime = (val) => {
-    if (!val) return '';
-    if (typeof val === 'string' && val.includes('T')) {
-      const d = new Date(val);
-      if (!isNaN(d.getTime())) {
-        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    if (!val || val === '--') return '';
+    if (typeof val === 'string') {
+      if (val.includes('T')) {
+        const afterT = val.split('T')[1];
+        if (afterT) return afterT.slice(0, 5);
+      }
+      if (val.includes(':')) {
+        return val.trim().slice(0, 5);
       }
     }
-    return String(val).slice(0, 5);
+    return '';
   };
 
   const extractDate = (val, fullTime) => {
-    if (val && String(val).includes('-')) return val;
-    if (fullTime) {
-      const d = new Date(fullTime);
-      if (!isNaN(d.getTime())) {
-        return toInputDate(d);
-      }
+    if (val && String(val).includes('-')) return String(val).trim().slice(0, 10);
+    if (fullTime && typeof fullTime === 'string' && fullTime.includes('-')) {
+      return fullTime.split('T')[0].slice(0, 10);
     }
     return toInputDate(new Date());
   };
@@ -2519,11 +2530,7 @@ const ActivityPage = () => {
                 <span className="text-slate-500">Signed in</span>
                 <div>
                   <span className="font-medium text-slate-800">
-                    {selectedVisit.sign_in_time
-                      ? new Date(selectedVisit.sign_in_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ', ' +
-                        new Date(selectedVisit.sign_in_time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                      : '—'
-                    }
+                    {formatDateTime(selectedVisit.sign_in_time)}
                   </span>
                   {selectedVisit.checked_in_by && (
                     <p className="text-xs text-slate-400 mt-0.5">by {selectedVisit.checked_in_by}</p>
@@ -2532,11 +2539,7 @@ const ActivityPage = () => {
 
                 <span className="text-slate-500">Signed out</span>
                 <span className="font-medium text-slate-800">
-                  {selectedVisit.sign_out_time
-                    ? new Date(selectedVisit.sign_out_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ', ' +
-                      new Date(selectedVisit.sign_out_time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                    : '—'
-                  }
+                  {selectedVisit.sign_out_time ? formatDateTime(selectedVisit.sign_out_time) : '—'}
                 </span>
 
                 <span className="text-slate-500">Total time</span>

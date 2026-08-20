@@ -34,25 +34,33 @@ const verifyStrictAdmin = (req, res, next) => {
   } catch { res.status(401).json({ error: 'Unauthorized' }); }
 };
 
-const fmt = (l, siteNameMap = {}) => ({
-  id:          l._id,
-  name:        l.name,
-  group:       l.userType,
-  site:        siteNameMap[String(l.siteId)] || l.siteName || null,
-  site_id:     l.siteId,
-  sign_in_time:  l.checkIn,
-  sign_out_time: l.checkOut,
-  duration:    l.hours ? `${l.hours}h` : null,
-  trade:       l.trade,
-  car_reg:     l.carReg,
-  reason:      l.reason,
-  image_url:   l.imageUrl,
-  member_id:   l.memberId,
-  created_at:  l.createdAt,
-  pre_registered:     l.preRegistered    || false,
-  checked_in_by_guard: l.checkedInByGuard || false,
-  checked_in_by:       l.checkedInBy      || '',
-});
+const fmt = (l, siteNameMap = {}) => {
+  const signInIso = l.date && l.timeIn ? `${l.date}T${l.timeIn}:00` : (l.checkIn ? new Date(l.checkIn).toISOString().slice(0, 19) : null);
+  const signOutIso = l.date && l.timeOut ? `${l.date}T${l.timeOut}:00` : (l.checkOut ? new Date(l.checkOut).toISOString().slice(0, 19) : null);
+
+  return {
+    id:          l._id,
+    name:        l.name,
+    group:       l.userType,
+    site:        siteNameMap[String(l.siteId)] || l.siteName || null,
+    site_id:     l.siteId,
+    sign_in_time:  signInIso,
+    sign_out_time: signOutIso,
+    duration:    l.hours ? `${l.hours}h` : null,
+    trade:       l.trade,
+    car_reg:     l.carReg,
+    reason:      l.reason,
+    image_url:   l.imageUrl,
+    member_id:   l.memberId,
+    created_at:  l.createdAt,
+    date:        l.date,
+    time_in:     l.timeIn,
+    time_out:    l.timeOut,
+    pre_registered:     l.preRegistered    || false,
+    checked_in_by_guard: l.checkedInByGuard || false,
+    checked_in_by:       l.checkedInBy      || '',
+  };
+};
 
 const nowStr = () => {
   const n = new Date();
@@ -307,39 +315,42 @@ router.put('/:id', verifyAdmin, async (req, res) => {
       if (resolvedSid) log.siteId = resolvedSid;
     }
 
-    if (date !== undefined) log.date = date;
+    if (date !== undefined && date) log.date = String(date).trim();
 
-    // Helper to normalize time to "HH:MM"
-    const normalizeTime = (val) => {
-      if (!val) return null;
-      if (typeof val === 'string' && val.includes('T')) {
-        const d = new Date(val);
-        if (!isNaN(d.getTime())) {
-          return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-        }
+    // Helper to normalize time to "HH:MM" without timezone offset
+    const extractHHMM = (val) => {
+      if (!val || val === '--' || val === 'null' || val === 'undefined') return null;
+      val = String(val).trim();
+      if (val.includes('T')) {
+        const afterT = val.split('T')[1];
+        if (afterT) return afterT.slice(0, 5);
       }
-      return String(val).slice(0, 5);
+      return val.slice(0, 5);
     };
 
     const newTimeInRaw = time_in !== undefined ? time_in : (timeIn !== undefined ? timeIn : sign_in_time);
     if (newTimeInRaw !== undefined) {
-      log.timeIn = normalizeTime(newTimeInRaw);
-      if (log.timeIn && log.date) {
-        log.checkIn = new Date(`${log.date}T${log.timeIn}`);
+      const parsedIn = extractHHMM(newTimeInRaw);
+      if (parsedIn) {
+        log.timeIn = parsedIn;
+        if (log.date) {
+          log.checkIn = new Date(`${log.date}T${log.timeIn}:00`);
+        }
       }
     }
 
     const newTimeOutRaw = time_out !== undefined ? time_out : (timeOut !== undefined ? timeOut : sign_out_time);
     if (newTimeOutRaw !== undefined) {
-      if (!newTimeOutRaw || newTimeOutRaw === '--' || newTimeOutRaw === 'null') {
+      const parsedOut = extractHHMM(newTimeOutRaw);
+      if (!parsedOut) {
         log.timeOut = null;
         log.checkOut = null;
         log.hours = null;
         log.duration = null;
       } else {
-        log.timeOut = normalizeTime(newTimeOutRaw);
-        if (log.timeOut && log.date) {
-          log.checkOut = new Date(`${log.date}T${log.timeOut}`);
+        log.timeOut = parsedOut;
+        if (log.date) {
+          log.checkOut = new Date(`${log.date}T${log.timeOut}:00`);
         }
       }
     }
@@ -353,6 +364,9 @@ router.put('/:id', verifyAdmin, async (req, res) => {
       if (diffMs === 0) diffMs = 86400000;
       log.hours = parseFloat((diffMs / 3600000).toFixed(2)) || 0;
       log.duration = log.hours;
+    } else {
+      log.hours = null;
+      log.duration = null;
     }
 
     await log.save();
