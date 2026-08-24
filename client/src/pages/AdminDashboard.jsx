@@ -270,7 +270,7 @@ const AdminDashboard = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('adminToken');
+        ['adminToken','adminRole','adminFirstName','adminLastName','adminOrg'].forEach(k => localStorage.removeItem(k));
         toast.success("Logged out");
         navigate('/admin/login');
     };

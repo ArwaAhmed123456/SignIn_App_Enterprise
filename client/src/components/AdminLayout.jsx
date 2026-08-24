@@ -14,9 +14,10 @@ const AdminLayout = () => {
   const [manageOpen,  setManageOpen]  = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
-  const profileRef    = useRef(null);
-  const supportRef    = useRef(null);
-  const manageRef     = useRef(null);
+  const desktopProfileRef = useRef(null);
+  const mobileProfileRef  = useRef(null);
+  const supportRef        = useRef(null);
+  const manageRef         = useRef(null);
 
   const isManageActive  = location.pathname.startsWith('/admin/manage');
   const isSupportActive = location.pathname.startsWith('/admin/support');
@@ -49,13 +50,18 @@ const AdminLayout = () => {
   const initials     = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'AD';
 
   const handleLogout = () => {
+    setProfileOpen(false);
+    setMobileMenuOpen(false);
     ['adminToken','adminRole','adminFirstName','adminLastName','adminOrg'].forEach(k => localStorage.removeItem(k));
     navigate('/admin/login');
   };
 
   useEffect(() => {
     const h = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+      const isInsideProfile =
+        (desktopProfileRef.current && desktopProfileRef.current.contains(e.target)) ||
+        (mobileProfileRef.current  && mobileProfileRef.current.contains(e.target));
+      if (!isInsideProfile) setProfileOpen(false);
       if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false);
       if (manageRef.current  && !manageRef.current.contains(e.target))  setManageOpen(false);
     };
@@ -204,7 +210,7 @@ const AdminLayout = () => {
               )}
             </div>
 
-            <div className="relative" ref={profileRef}>
+            <div className="relative" ref={desktopProfileRef}>
               <button onClick={() => setProfileOpen(o => !o)}
                 className="flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-800 transition-colors">
                 <div className="w-6 h-6 rounded-full bg-[#2b4594] flex items-center justify-center text-[10px] font-bold text-white">{initials}</div>
@@ -221,7 +227,7 @@ const AdminLayout = () => {
                     <Link to="/admin/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                       <User size={15} className="text-slate-400" /> My profile
                     </Link>
-                    <button onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                    <button type="button" onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                       <LogOut size={15} className="text-slate-400" /> Log out
                     </button>
                   </div>
@@ -232,7 +238,7 @@ const AdminLayout = () => {
 
           {/* Tablet/Mobile right side — profile avatar + hamburger */}
           <div className="flex lg:hidden items-center gap-3 ml-auto">
-            <div className="relative" ref={profileRef}>
+            <div className="relative" ref={mobileProfileRef}>
               <button onClick={() => setProfileOpen(o => !o)}
                 className="w-8 h-8 rounded-full bg-[#2b4594] flex items-center justify-center text-[11px] font-bold text-white">
                 {initials}
@@ -247,7 +253,7 @@ const AdminLayout = () => {
                     <Link to="/admin/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                       <User size={15} className="text-slate-400" /> My profile
                     </Link>
-                    <button onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                    <button type="button" onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                       <LogOut size={15} className="text-slate-400" /> Log out
                     </button>
                   </div>
